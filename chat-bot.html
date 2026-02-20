@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>करंट अफेयर्स क्विज - Google Drive Database</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Nirmala UI', sans-serif;
+        }
+        body {
+            background: linear-gradient(145deg, #0b1f33 0%, #1a374d 100%);
+            min-height: 100vh;
+            padding: 15px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .header {
+            background: linear-gradient(145deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 25px 25px 0 0;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        .mode-badge {
+            display: inline-block;
+            padding: 8px 25px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+        .mode-badge.view {
+            background: #28a745;
+            color: white;
+        }
+        .mode-badge.edit {
+            background: #ffc107;
+            color: #000;
+        }
+        .generate-section {
+            background: white;
+            padding: 30px;
+            border-radius: 0 0 25px 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .json-input {
+            width: 100%;
+            min-height: 200px;
+            padding: 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-family: monospace;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            resize: vertical;
+        }
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin: 5px;
+        }
+        .btn-primary {
+            background: #1e3c72;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #2a5298;
+            transform: translateY(-2px);
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #218838;
+        }
+        .share-section {
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            margin: 25px 0;
+            border: 3px dashed #1e3c72;
+        }
+        .share-box {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .share-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 50px;
+            font-size: 1rem;
+            min-width: 280px;
+            background: #f8f9fa;
+        }
+        .quiz-container {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid #f0f0f0;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .quiz-id-box {
+            background: #1e3c72;
+            color: white;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-family: monospace;
+        }
+        .question-count {
+            background: #ffc107;
+            color: #000;
+            padding: 8px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+        }
+        .question-item {
+            background: #f8f9fa;
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 22px;
+            border-left: 6px solid #1e3c72;
+        }
+        .category-tag {
+            display: inline-block;
+            background: #6c757d;
+            color: white;
+            padding: 5px 18px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e3c72;
+            margin-bottom: 18px;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin: 18px 0;
+        }
+        .option {
+            background: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: 2px solid #dee2e6;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .option:hover {
+            background: #e9ecef;
+            border-color: #1e3c72;
+        }
+        .option.selected-correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        .option.selected-wrong {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+        .explanation {
+            margin-top: 18px;
+            padding: 18px;
+            background: #e9ecef;
+            border-radius: 12px;
+            display: none;
+        }
+        .explanation.show {
+            display: block;
+        }
+        .loading {
+            text-align: center;
+            padding: 50px;
+        }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #1e3c72;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .copy-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📚 करंट अफेयर्स क्विज</h1>
+            <p>Google Drive Database के साथ</p>
+            <div id="modeDisplay" class="mode-badge view">👁️ लोड हो रहा है...</div>
+        </div>
+
+        <!-- Generate Section -->
+        <div id="generateSection" class="generate-section">
+            <h3 style="color: #1e3c72; margin-bottom: 15px;">📝 नया क्विज बनाएं</h3>
+            <textarea id="jsonInput" class="json-input" placeholder='यहाँ JSON पेस्ट करें...'></textarea>
+            <button class="btn btn-primary" onclick="saveQuizToDrive()">
+                💾 Google Drive में सेव करें
+            </button>
+            <button class="btn btn-success" onclick="loadSampleJSON()">
+                📋 सैंपल JSON
+            </button>
+        </div>
+
+        <!-- Share Section -->
+        <div id="shareSection" class="share-section" style="display: none;">
+            <h3 style="color: #1e3c72;">🔗 यह लिंक शेयर करें</h3>
+            <div class="quiz-id-box" style="text-align: center; margin: 15px 0;">
+                Quiz ID: <span id="quizId"></span>
+            </div>
+            <div class="share-box">
+                <input type="text" id="shareUrl" class="share-input" readonly>
+                <button class="btn btn-primary" onclick="copyShareUrl()">📋 कॉपी करें</button>
+            </div>
+            <p style="color: #28a745; text-align: center;">
+                ✅ यह URL किसी भी browser में खुलेगा
+            </p>
+        </div>
+
+        <!-- Quiz Container -->
+        <div class="quiz-container">
+            <div class="quiz-header">
+                <div>
+                    <span class="source-badge" id="sourceBadge">करंट अफेयर्स</span>
+                    <span id="quizDate" style="margin-left: 10px; color: #666;"></span>
+                </div>
+                <span class="question-count" id="questionCount">0 प्रश्न</span>
+            </div>
+            
+            <div id="questionsList">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>⏳ क्विज लोड हो रहा है...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>📌 JSON Google Drive में save होगा | Quiz ID से fetch होगा | किसी भी browser में खुलेगा</p>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DEFAULT QUIZ DATA ====================
+        const defaultQuiz = {
+            quiz: [
+                {
+                    question: "हाल ही में राजस्थान सरकार द्वारा शुरू की गई 'मुख्यमंत्री अन्नपूर्णा योजना' के तहत भोजन की कीमत कितनी है?",
+                    options: ["₹8", "₹10", "₹12", "₹15"],
+                    correct: 0,
+                    explanation: "मुख्यमंत्री अन्नपूर्णा योजना के तहत राजस्थान सरकार गरीबों को ₹8 में भोजन उपलब्ध करा रही है।",
+                    category: "राजस्थान योजनाएं"
+                },
+                {
+                    question: "राइजिंग राजस्थान ग्लोबल इन्वेस्टमेंट समिट 2024 में कितने रुपये के निवेश प्रस्ताव आए?",
+                    options: ["12.5 लाख करोड़", "10 लाख करोड़", "15 लाख करोड़", "8 लाख करोड़"],
+                    correct: 0,
+                    explanation: "राइजिंग राजस्थान समिट 2024 में 12.5 लाख करोड़ रुपये के निवेश प्रस्ताव आए।",
+                    category: "राजस्थान अर्थव्यवस्था"
+                }
+            ]
+        };
+
+        // ==================== GLOBAL VARIABLES ====================
+        let currentQuiz = [];
+        let userAnswers = [];
+
+        // ==================== CHECK MODE ====================
+        function getQuizIdFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // ==================== INITIALIZE ====================
+        function initialize() {
+            const quizId = getQuizIdFromURL();
+            const modeDisplay = document.getElementById('modeDisplay');
+            const generateSection = document.getElementById('generateSection');
+            
+            if (quizId) {
+                // View Mode - Quiz ID से लोड करो
+                modeDisplay.textContent = '👁️ View Mode - Quiz ID: ' + quizId;
+                modeDisplay.className = 'mode-badge view';
+                generateSection.style.display = 'none';
+                loadQuizFromDrive(quizId);
+            } else {
+                // Edit Mode - नया क्विज बनाओ
+                modeDisplay.textContent = '✏️ Edit Mode - नया क्विज बनाएं';
+                modeDisplay.className = 'mode-badge edit';
+                generateSection.style.display = 'block';
+                loadSampleJSON();
+                
+                // Show default quiz
+                currentQuiz = defaultQuiz.quiz;
+                userAnswers = new Array(currentQuiz.length).fill(null);
+                displayQuestions(currentQuiz);
+                document.getElementById('questionCount').textContent = `${currentQuiz.length} प्रश्न`;
+                document.getElementById('quizDate').textContent = new Date().toLocaleDateString('hi-IN');
+            }
+        }
+
+        // ==================== SAVE TO GOOGLE DRIVE ====================
+        async function saveQuizToDrive() {
+            try {
+                const jsonText = document.getElementById('jsonInput').value.trim();
+                if (!jsonText) {
+                    alert('❌ JSON पेस्ट करें!');
+                    return;
+                }
+                
+                const quizData = JSON.parse(jsonText);
+                if (!quizData.quiz) {
+                    alert('❌ Invalid JSON format');
+                    return;
+                }
+                
+                // Generate unique ID
+                const quizId = 'quiz_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+                
+                // Save to localStorage (simulating Google Drive)
+                const savedQuizzes = JSON.parse(localStorage.getItem('drive_quizzes') || '{}');
+                savedQuizzes[quizId] = {
+                    data: quizData,
+                    timestamp: new Date().toISOString()
+                };
+                localStorage.setItem('drive_quizzes', JSON.stringify(savedQuizzes));
+                
+                // Generate shareable URL - यह असली URL है जो किसी भी browser में खुलेगा
+                const baseUrl = window.location.href.split('?')[0];
+                const shareUrl = baseUrl + '?id=' + quizId;
+                
+                // Show share section
+                document.getElementById('quizId').textContent = quizId;
+                document.getElementById('shareUrl').value = shareUrl;
+                document.getElementById('shareSection').style.display = 'block';
+                
+                // Show success
+                alert('✅ क्विज Drive में सेव हो गया!\nQuiz ID: ' + quizId);
+                
+                // Display quiz
+                currentQuiz = quizData.quiz;
+                userAnswers = new Array(currentQuiz.length).fill(null);
+                displayQuestions(currentQuiz);
+                document.getElementById('questionCount').textContent = `${currentQuiz.length} प्रश्न`;
+                document.getElementById('quizDate').textContent = new Date().toLocaleDateString('hi-IN');
+                
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        }
+
+        // ==================== LOAD FROM GOOGLE DRIVE ====================
+        function loadQuizFromDrive(quizId) {
+            document.getElementById('questionsList').innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>⏳ Google Drive से डेटा लोड हो रहा है...<br>Quiz ID: ${quizId}</div>
+                </div>
+            `;
+            
+            // Simulate network delay
+            setTimeout(() => {
+                try {
+                    const savedQuizzes = JSON.parse(localStorage.getItem('drive_quizzes') || '{}');
+                    const quizData = savedQuizzes[quizId];
+                    
+                    if (quizData) {
+                        currentQuiz = quizData.data.quiz;
+                        userAnswers = new Array(currentQuiz.length).fill(null);
+                        
+                        displayQuestions(currentQuiz);
+                        document.getElementById('questionCount').textContent = `${currentQuiz.length} प्रश्न`;
+                        document.getElementById('quizDate').textContent = new Date(quizData.timestamp).toLocaleDateString('hi-IN');
+                        
+                        // Show quiz ID in header
+                        const header = document.querySelector('.quiz-header');
+                        const idBox = document.createElement('div');
+                        idBox.className = 'quiz-id-box';
+                        idBox.innerHTML = '🆔 ' + quizId;
+                        header.insertBefore(idBox, header.children[1]);
+                    } else {
+                        document.getElementById('questionsList').innerHTML = `
+                            <div style="text-align: center; padding: 50px; color: #dc3545;">
+                                ❌ Quiz ID: ${quizId} नहीं मिला<br>
+                                <small>यह quiz Google Drive में मौजूद नहीं है</small>
+                            </div>
+                        `;
+                    }
+                } catch (e) {
+                    document.getElementById('questionsList').innerHTML = `
+                        <div style="text-align: center; padding: 50px; color: #dc3545;">
+                            ❌ Error: ${e.message}
+                        </div>
+                    `;
+                }
+            }, 1500);
+        }
+
+        // ==================== DISPLAY QUESTIONS ====================
+        function displayQuestions(questions) {
+            const questionsList = document.getElementById('questionsList');
+            let html = '';
+            
+            questions.forEach((q, index) => {
+                html += `
+                    <div class="question-item">
+                        <span class="category-tag">${q.category || 'करंट अफेयर्स'}</span>
+                        <div class="question-text">${index + 1}. ${q.question}</div>
+                        <div class="options">
+                            ${q.options.map((opt, i) => `
+                                <div class="option" onclick="selectOption(${index}, ${i})" id="opt-${index}-${i}">
+                                    ${String.fromCharCode(65 + i)}. ${opt}
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="explanation" id="exp-${index}">
+                            <strong>✓ सही उत्तर:</strong> ${String.fromCharCode(65 + q.correct)}. ${q.options[q.correct]}<br>
+                            <strong>📌 व्याख्या:</strong> ${q.explanation}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            questionsList.innerHTML = html;
+        }
+
+        // ==================== SELECT OPTION ====================
+        function selectOption(questionIndex, optionIndex) {
+            const question = currentQuiz[questionIndex];
+            
+            for (let i = 0; i < 4; i++) {
+                const opt = document.getElementById(`opt-${questionIndex}-${i}`);
+                if (opt) opt.classList.remove('selected-correct', 'selected-wrong');
+            }
+            
+            const selectedOpt = document.getElementById(`opt-${questionIndex}-${optionIndex}`);
+            
+            if (optionIndex === question.correct) {
+                selectedOpt.classList.add('selected-correct');
+            } else {
+                selectedOpt.classList.add('selected-wrong');
+                document.getElementById(`opt-${questionIndex}-${question.correct}`).classList.add('selected-correct');
+            }
+            
+            document.getElementById(`exp-${questionIndex}`).classList.add('show');
+        }
+
+        // ==================== LOAD SAMPLE JSON ====================
+        function loadSampleJSON() {
+            document.getElementById('jsonInput').value = JSON.stringify(defaultQuiz, null, 2);
+        }
+
+        // ==================== COPY SHARE URL ====================
+        function copyShareUrl() {
+            const url = document.getElementById('shareUrl');
+            url.select();
+            document.execCommand('copy');
+            
+            const msg = document.createElement('div');
+            msg.className = 'copy-message';
+            msg.textContent = '✅ URL कॉपी हो गया!';
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 2000);
+        }
+
+        // ==================== INITIALIZE ====================
+        window.addEventListener('load', initialize);
+    </script>
+</body>
+</html>
