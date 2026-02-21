@@ -97,6 +97,14 @@
             background: #17a2b8;
             color: white;
         }
+        .btn-warning {
+            background: #ff9800;
+            color: white;
+        }
+        .btn-warning:hover {
+            background: #e68900;
+            transform: translateY(-2px);
+        }
         .share-section {
             background: white;
             padding: 30px;
@@ -193,6 +201,28 @@
         .date-picker-section .btn-load:hover {
             background: #2a5298;
             transform: translateY(-2px);
+        }
+        .available-dates {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .date-chip {
+            display: inline-block;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            margin: 5px;
+            cursor: pointer;
+            border: 2px solid #1e3c72;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .date-chip:hover {
+            background: #1e3c72;
+            color: white;
         }
         .question-item {
             background: #f8f9fa;
@@ -297,6 +327,14 @@
             text-align: center;
             margin: 20px 0;
         }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -304,14 +342,19 @@
         <!-- Header -->
         <div class="header">
             <h1>📚 करंट अफेयर्स क्विज</h1>
-            <p>GitHub + JSONBin Permanent Storage</p>
+            <p>GitHub + JSONBin Permanent Storage | डेट वाइज आर्काइव</p>
             <div id="modeDisplay" class="mode-badge view">👁️ लोड हो रहा है...</div>
         </div>
 
         <!-- Generate Section (Edit Mode) -->
         <div id="generateSection" class="generate-section">
-            <h3 style="color: #1e3c72; margin-bottom: 15px;">📝 नया क्विज बनाएं</h3>
+            <h3 style="color: #1e3c72; margin-bottom: 15px;">📝 नया क्विज बनाएं (डेट के साथ)</h3>
             <textarea id="jsonInput" class="json-input" placeholder='यहाँ JSON पेस्ट करें...'></textarea>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="font-weight: 600; color: #1e3c72;">📅 क्विज की तारीख:</label>
+                <input type="date" id="quizDateInput" style="padding: 10px; border-radius: 10px; border: 2px solid #dee2e6; margin-left: 10px;">
+            </div>
             
             <button class="btn btn-primary" onclick="saveQuizToJSONBin()">
                 💾 JSONBin में सेव करें
@@ -319,15 +362,18 @@
             <button class="btn btn-info" onclick="loadSampleJSON()">
                 📋 सैंपल JSON
             </button>
+            <button class="btn btn-warning" onclick="showAllQuizzes()">
+                📚 सभी क्विज दिखाएं
+            </button>
             
             <div style="margin-top: 15px; color: #28a745; font-size: 0.9rem;" id="binStatus">
-                ✅ JSONBin Connected | Bin ID: 6997e25cd0ea881f40c8983b
+                ✅ JSONBin Connected | Master Bin ID: 6997e25cd0ea881f40c8983b
             </div>
         </div>
 
         <!-- Share Section -->
         <div id="shareSection" class="share-section" style="display: none;">
-            <h3 style="color: #1e3c72;">🔗 यह लिंक शेयर करें (सिर्फ Quiz दिखेगी)</h3>
+            <h3 style="color: #1e3c72;">🔗 यह लिंक शेयर करें</h3>
             
             <div class="quiz-id-box" style="margin: 15px auto;">
                 Quiz ID: <span id="quizId"></span>
@@ -339,7 +385,7 @@
             </div>
             
             <p style="color: #28a745; text-align: center;">
-                ✅ यह URL GitHub Pages पर है | JSONBin से data fetch होगा | कभी नहीं मरेगा
+                ✅ यह URL GitHub Pages पर है | JSONBin से data fetch होगा
             </p>
         </div>
 
@@ -361,6 +407,12 @@
                     🔍 यह डेट लोड करें
                 </button>
             </div>
+
+            <!-- Available Dates -->
+            <div id="availableDatesSection" class="available-dates" style="display: none;">
+                <strong>📌 उपलब्ध तारीखें:</strong>
+                <div id="dateChips"></div>
+            </div>
             
             <div id="questionsList">
                 <div class="loading">
@@ -371,7 +423,7 @@
         </div>
         
         <div class="footer">
-            <p>📌 JSONBin: 6997e25cd0ea881f40c8983b | GitHub Pages | Permanent Storage | डेट वाइज आर्काइव</p>
+            <p>📌 JSONBin Master Bin: 6997e25cd0ea881f40c8983b | डेट वाइज क्विज के लिए नया बिन बनेगा</p>
         </div>
     </div>
 
@@ -406,6 +458,7 @@
         // ==================== GLOBAL VARIABLES ====================
         let currentQuiz = [];
         let userAnswers = [];
+        let allQuizzes = {}; // { "2024-01-15": { quiz: [], created: "" } }
 
         // ==================== CHECK MODE ====================
         function getQuizIdFromURL() {
@@ -419,20 +472,25 @@
         }
 
         // ==================== INITIALIZE ====================
-        function initialize() {
+        async function initialize() {
             const quizId = getQuizIdFromURL();
             const dateParam = getDateFromURL();
             const modeDisplay = document.getElementById('modeDisplay');
             const generateSection = document.getElementById('generateSection');
             const datePickerSection = document.getElementById('datePickerSection');
+            const availableDatesSection = document.getElementById('availableDatesSection');
+
+            // पहले सभी उपलब्ध क्विज लोड करें
+            await loadAllQuizzes();
 
             if (quizId) {
                 // View Mode - Quiz ID से लोड करो
                 modeDisplay.textContent = '👁️ View Mode - Quiz ID: ' + quizId;
                 modeDisplay.className = 'mode-badge view';
                 generateSection.style.display = 'none';
-                datePickerSection.style.display = 'flex'; // Show date picker
-                document.getElementById('sourceBadge').textContent = '📆 डेट वाइज क्विज';
+                datePickerSection.style.display = 'flex';
+                availableDatesSection.style.display = 'block';
+                document.getElementById('sourceBadge').textContent = '📆 क्विज आईडी';
                 loadQuizFromJSONBin(quizId);
                 
                 // Set today's date in picker
@@ -445,17 +503,68 @@
                 modeDisplay.className = 'mode-badge view';
                 generateSection.style.display = 'none';
                 datePickerSection.style.display = 'flex';
+                availableDatesSection.style.display = 'block';
                 document.getElementById('sourceBadge').textContent = '📆 डेट वाइज क्विज';
                 document.getElementById('quizDatePicker').value = dateParam;
-                loadQuizByDate(dateParam);
+                
+                // Check if quiz exists for this date
+                if (allQuizzes[dateParam]) {
+                    displayQuizByDate(dateParam, allQuizzes[dateParam]);
+                } else {
+                    loadQuizByDate(dateParam);
+                }
             } else {
                 // Edit Mode - नया क्विज बनाओ
                 modeDisplay.textContent = '✏️ Edit Mode - नया क्विज बनाएं';
                 modeDisplay.className = 'mode-badge edit';
                 generateSection.style.display = 'block';
                 datePickerSection.style.display = 'none';
+                availableDatesSection.style.display = 'none';
                 loadSampleJSON();
+                
+                // Set today's date in input
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('quizDateInput').value = today;
             }
+        }
+
+        // ==================== LOAD ALL QUIZZES ====================
+        async function loadAllQuizzes() {
+            try {
+                // Master bin से सभी क्विज की लिस्ट लोड करें
+                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.binId}/latest`, {
+                    headers: {
+                        'X-Master-Key': JSONBIN_CONFIG.masterKey
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.record.quizzes) {
+                        allQuizzes = data.record.quizzes;
+                        displayAvailableDates();
+                    }
+                }
+            } catch (error) {
+                console.log('No master bin or empty');
+            }
+        }
+
+        // ==================== DISPLAY AVAILABLE DATES ====================
+        function displayAvailableDates() {
+            const dates = Object.keys(allQuizzes).sort().reverse();
+            if (dates.length === 0) return;
+
+            const dateChips = document.getElementById('dateChips');
+            let html = '';
+            
+            dates.forEach(date => {
+                const displayDate = new Date(date).toLocaleDateString('hi-IN');
+                html += `<span class="date-chip" onclick="loadQuizByDate('${date}')">📅 ${displayDate}</span>`;
+            });
+            
+            dateChips.innerHTML = html;
+            document.getElementById('availableDatesSection').style.display = 'block';
         }
 
         // ==================== LOAD QUIZ BY DATE ====================
@@ -482,56 +591,35 @@
             `;
 
             try {
-                // यहां आप अपनी JSONBin से डेट के हिसाब से क्विज लोड कर सकते हैं
-                // उदाहरण के लिए, हम एक डेट-आधारित बिन ID बना सकते हैं
-                // या फिर सभी क्विज को एक बिन में स्टोर कर सकते हैं और डेट से फिल्टर कर सकते हैं
-                
-                // फिलहाल हम मुख्य बिन से लोड कर रहे हैं (आप अपनी स्ट्रक्चर बना सकते हैं)
-                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.binId}/latest`, {
+                // पहले check करें कि इस डेट के लिए कोई बिन ID सेव है या नहीं
+                const masterResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.binId}/latest`, {
                     headers: {
                         'X-Master-Key': JSONBIN_CONFIG.masterKey
                     }
                 });
 
-                if (!response.ok) {
-                    throw new Error('डेटा नहीं मिला');
-                }
-
-                const data = await response.json();
-                
-                // यहां आप डेट के हिसाब से फिल्टर कर सकते हैं
-                // उदाहरण के लिए, अगर आपके पास डेट-वाइज क्विज का स्ट्रक्चर है
-                let quizData = data.record.quiz;
-                
-                // डेमो के लिए: हम डेट के आधार पर अलग क्विज दिखा रहे हैं
-                // आप अपने एक्चुअल डेटा स्ट्रक्चर के अनुसार बदल सकते हैं
-                if (date === new Date().toISOString().split('T')[0]) {
-                    // आज का क्विज
-                } else {
-                    // पुराने डेट का क्विज - डेमो के लिए थोड़ा बदलाव
-                    quizData = quizData.map((q, index) => ({
-                        ...q,
-                        question: `[${date}] ` + q.question
-                    }));
-                }
-
-                if (quizData && quizData.length > 0) {
-                    currentQuiz = quizData;
-                    userAnswers = new Array(currentQuiz.length).fill(null);
-                    displayQuestions(currentQuiz);
-                    document.getElementById('questionCount').textContent = `${currentQuiz.length} प्रश्न`;
-                    document.getElementById('quizDate').textContent = displayDate;
-                    document.getElementById('sourceBadge').textContent = '📆 डेट वाइज क्विज';
-
-                    // URL अपडेट करें (बिना पेज रीलोड किए)
-                    const newUrl = window.location.pathname + '?date=' + date;
-                    window.history.pushState({ path: newUrl }, '', newUrl);
+                if (masterResponse.ok) {
+                    const masterData = await masterResponse.json();
+                    const dateBinId = masterData.record.quizzes?.[date];
                     
-                    // Mode display अपडेट करें
-                    document.getElementById('modeDisplay').textContent = '📅 डेट वाइज क्विज: ' + date;
-                } else {
-                    throw new Error('इस डेट के लिए कोई क्विज नहीं है');
+                    if (dateBinId) {
+                        // अगर बिन ID मिल गई तो उससे लोड करें
+                        const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${dateBinId}/latest`, {
+                            headers: {
+                                'X-Master-Key': JSONBIN_CONFIG.masterKey
+                            }
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            displayQuizByDate(date, data.record);
+                            return;
+                        }
+                    }
                 }
+
+                // अगर कुछ नहीं मिला तो error दिखाएं
+                throw new Error('इस डेट के लिए कोई क्विज नहीं है');
 
             } catch (error) {
                 document.getElementById('questionsList').innerHTML = `
@@ -547,12 +635,45 @@
             }
         }
 
+        // ==================== DISPLAY QUIZ BY DATE ====================
+        function displayQuizByDate(date, quizData) {
+            const displayDate = new Date(date).toLocaleDateString('hi-IN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            if (quizData.quiz && quizData.quiz.length > 0) {
+                currentQuiz = quizData.quiz;
+                userAnswers = new Array(currentQuiz.length).fill(null);
+                displayQuestions(currentQuiz);
+                document.getElementById('questionCount').textContent = `${currentQuiz.length} प्रश्न`;
+                document.getElementById('quizDate').textContent = displayDate;
+                document.getElementById('sourceBadge').textContent = '📆 डेट वाइज क्विज';
+
+                // URL अपडेट करें
+                const newUrl = window.location.pathname + '?date=' + date;
+                window.history.pushState({ path: newUrl }, '', newUrl);
+                
+                // Mode display अपडेट करें
+                document.getElementById('modeDisplay').textContent = '📅 डेट वाइज क्विज: ' + date;
+                document.getElementById('modeDisplay').className = 'mode-badge view';
+            }
+        }
+
         // ==================== SAVE TO JSONBIN ====================
         async function saveQuizToJSONBin() {
             try {
                 const jsonText = document.getElementById('jsonInput').value.trim();
+                const quizDate = document.getElementById('quizDateInput').value;
+                
                 if (!jsonText) {
                     alert('❌ JSON पेस्ट करें!');
+                    return;
+                }
+
+                if (!quizDate) {
+                    alert('❌ तारीख चुनें!');
                     return;
                 }
 
@@ -562,7 +683,7 @@
                     return;
                 }
 
-                // Create new bin with quiz data
+                // पहले डेट के लिए नया बिन बनाएं
                 const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b`, {
                     method: 'POST',
                     headers: {
@@ -572,34 +693,74 @@
                     body: JSON.stringify({
                         quiz: quizData.quiz,
                         created: new Date().toISOString(),
-                        title: 'करंट अफेयर्स क्विज'
+                        date: quizDate,
+                        title: `करंट अफेयर्स क्वि�ज - ${quizDate}`
                     })
                 });
 
                 const data = await response.json();
-                const quizId = data.metadata.id;
+                const newBinId = data.metadata.id;
 
-                // Generate shareable URL
-                const baseUrl = window.location.origin + window.location.pathname;
-                const shareUrl = baseUrl + '?id=' + quizId;
+                // अब master bin को update करें
+                const masterResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.binId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_CONFIG.masterKey
+                    },
+                    body: JSON.stringify({
+                        quizzes: {
+                            ...allQuizzes,
+                            [quizDate]: newBinId
+                        },
+                        lastUpdated: new Date().toISOString()
+                    })
+                });
 
-                // Show share section
-                document.getElementById('quizId').textContent = quizId;
-                document.getElementById('shareUrl').value = shareUrl;
-                document.getElementById('shareSection').style.display = 'block';
+                if (masterResponse.ok) {
+                    // Generate shareable URL
+                    const baseUrl = window.location.origin + window.location.pathname;
+                    const shareUrl = baseUrl + '?date=' + quizDate;
 
-                alert('✅ क्विज JSONBin में सेव हो गया!\nQuiz ID: ' + quizId);
-                
-                // Display quiz
-                currentQuiz = quizData.quiz;
-                userAnswers = new Array(currentQuiz.length).fill(null);
-                displayQuestions(currentQuiz);
-                document.getElementById('questionCount').textContent = `${currentQuiz.length} प्रश्न`;
-                document.getElementById('quizDate').textContent = new Date().toLocaleDateString('hi-IN');
+                    // Show share section
+                    document.getElementById('quizId').textContent = newBinId;
+                    document.getElementById('shareUrl').value = shareUrl;
+                    document.getElementById('shareSection').style.display = 'block';
+
+                    alert('✅ क्विज JSONBin में सेव हो गया!\nतारीख: ' + quizDate + '\nBin ID: ' + newBinId);
+                    
+                    // Update allQuizzes
+                    allQuizzes[quizDate] = newBinId;
+                    displayAvailableDates();
+                    
+                    // Display quiz
+                    currentQuiz = quizData.quiz;
+                    userAnswers = new Array(currentQuiz.length).fill(null);
+                    displayQuestions(currentQuiz);
+                    document.getElementById('questionCount').textContent = `${currentQuiz.length} प्रश्न`;
+                    document.getElementById('quizDate').textContent = new Date(quizDate).toLocaleDateString('hi-IN');
+                }
 
             } catch (error) {
                 alert('❌ Error: ' + error.message);
             }
+        }
+
+        // ==================== SHOW ALL QUIZZES ====================
+        function showAllQuizzes() {
+            if (Object.keys(allQuizzes).length === 0) {
+                alert('कोई क्विज उपलब्ध नहीं है');
+                return;
+            }
+
+            const dates = Object.keys(allQuizzes).sort().reverse();
+            let message = 'उपलब्ध क्विज:\n\n';
+            dates.forEach(date => {
+                const displayDate = new Date(date).toLocaleDateString('hi-IN');
+                message += `📅 ${displayDate}\n`;
+            });
+            
+            alert(message);
         }
 
         // ==================== LOAD FROM JSONBIN ====================
@@ -643,7 +804,7 @@
 
             } catch (error) {
                 document.getElementById('questionsList').innerHTML = `
-                    <div style="text-align: center; padding: 50px; color: #dc3545;">
+                    <div class="error-message">
                         ❌ ${error.message}<br>
                         <small>Quiz ID: ${quizId} JSONBin में मौजूद नहीं है</small>
                     </div>
