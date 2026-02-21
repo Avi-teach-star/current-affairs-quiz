@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>करंट अफेयर्स क्विज - GitHub + JSONBin</title>
+    <title>करंट अफेयर्स क्विज</title>
     <style>
         * {
             margin: 0;
@@ -14,7 +14,7 @@
         body {
             background: linear-gradient(145deg, #0b1f33 0%, #1a374d 100%);
             min-height: 100vh;
-            padding: 15px;
+            padding: 20px;
         }
         .container {
             max-width: 1100px;
@@ -31,84 +31,71 @@
             font-size: 2.2rem;
             margin-bottom: 10px;
         }
-        .mode-badge {
-            display: inline-block;
-            padding: 8px 25px;
-            border-radius: 40px;
-            font-size: 1rem;
-            font-weight: 600;
-            margin: 10px 0;
-        }
-        .mode-badge.view {
-            background: #28a745;
-            color: white;
-        }
-        .mode-badge.edit {
-            background: #ffc107;
-            color: #000;
-        }
-        .generate-section {
+        .date-picker-section {
             background: white;
             padding: 30px;
             border-radius: 0 0 25px 25px;
             margin-bottom: 25px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+            justify-content: center;
         }
-        .json-input {
+        .date-field {
+            flex: 1;
+            min-width: 150px;
+        }
+        .date-field label {
+            display: block;
+            font-weight: 600;
+            color: #1e3c72;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        .date-field select, .date-field input {
             width: 100%;
-            min-height: 200px;
-            padding: 18px;
+            padding: 12px 15px;
             border: 2px solid #e0e0e0;
-            border-radius: 15px;
-            font-family: monospace;
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-            resize: vertical;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: #f8f9fa;
+            cursor: pointer;
         }
-        .btn {
-            padding: 15px 30px;
+        .date-field select:focus, .date-field input:focus {
+            border-color: #1e3c72;
+            outline: none;
+        }
+        .load-btn {
+            background: #1e3c72;
+            color: white;
             border: none;
             border-radius: 50px;
+            padding: 12px 35px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            margin: 5px;
+            min-width: 150px;
         }
-        .btn-primary {
-            background: #1e3c72;
-            color: white;
-        }
-        .btn-primary:hover {
+        .load-btn:hover {
             background: #2a5298;
             transform: translateY(-2px);
         }
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-        .btn-success:hover {
-            background: #218838;
-        }
-        .btn-info {
-            background: #17a2b8;
-            color: white;
-        }
         .share-section {
             background: white;
-            padding: 30px;
-            border-radius: 25px;
-            margin: 25px 0;
+            padding: 25px;
+            border-radius: 20px;
+            margin: 20px 0;
             border: 3px dashed #1e3c72;
+            display: none;
         }
         .share-box {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
-            margin: 20px 0;
+            margin: 15px 0;
         }
         .share-input {
             flex: 1;
@@ -119,14 +106,21 @@
             min-width: 280px;
             background: #f8f9fa;
         }
-        .quiz-id-box {
-            background: #1e3c72;
-            color: white;
-            padding: 10px 22px;
-            border-radius: 40px;
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 50px;
             font-size: 1rem;
-            font-family: monospace;
-            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #218838;
         }
         .quiz-container {
             background: white;
@@ -143,6 +137,14 @@
             border-bottom: 2px solid #f0f0f0;
             flex-wrap: wrap;
             gap: 12px;
+        }
+        .date-badge {
+            background: #1e3c72;
+            color: white;
+            padding: 8px 22px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
         }
         .question-count {
             background: #ffc107;
@@ -241,11 +243,6 @@
             from { transform: translateX(100%); }
             to { transform: translateX(0); }
         }
-        .footer {
-            text-align: center;
-            margin-top: 25px;
-            color: white;
-        }
     </style>
 </head>
 <body>
@@ -253,300 +250,237 @@
         <!-- Header -->
         <div class="header">
             <h1>📚 करंट अफेयर्स क्विज</h1>
-            <p>GitHub + JSONBin Permanent Storage</p>
-            <div id="modeDisplay" class="mode-badge view">👁️ लोड हो रहा है...</div>
+            <p>तारीख चुनें - अपने आप क्विज लोड होगी</p>
         </div>
 
-        <!-- Generate Section (Edit Mode) -->
-        <div id="generateSection" class="generate-section">
-            <h3 style="color: #1e3c72; margin-bottom: 15px;">📝 नया क्विज बनाएं</h3>
-            <textarea id="jsonInput" class="json-input" placeholder='यहाँ JSON पेस्ट करें...'></textarea>
-            
-            <button class="btn btn-primary" onclick="saveQuizToJSONBin()">
-                💾 JSONBin में सेव करें
-            </button>
-            <button class="btn btn-info" onclick="loadSampleJSON()">
-                📋 सैंपल JSON
-            </button>
-            
-            <div style="margin-top: 15px; color: #28a745; font-size: 0.9rem;" id="binStatus">
-                ✅ JSONBin Connected | Bin ID: 6997e25cd0ea881f40c8983b
+        <!-- Date Picker Section -->
+        <div class="date-picker-section">
+            <div class="date-field">
+                <label>📅 दिन</label>
+                <select id="daySelect"></select>
             </div>
+            <div class="date-field">
+                <label>📅 महीना</label>
+                <select id="monthSelect">
+                    <option value="1">जनवरी</option>
+                    <option value="2">फरवरी</option>
+                    <option value="3">मार्च</option>
+                    <option value="4">अप्रैल</option>
+                    <option value="5">मई</option>
+                    <option value="6">जून</option>
+                    <option value="7">जुलाई</option>
+                    <option value="8">अगस्त</option>
+                    <option value="9">सितंबर</option>
+                    <option value="10">अक्टूबर</option>
+                    <option value="11">नवंबर</option>
+                    <option value="12">दिसंबर</option>
+                </select>
+            </div>
+            <div class="date-field">
+                <label>📅 वर्ष</label>
+                <input type="number" id="yearInput" value="2026" min="2020" max="2030">
+            </div>
+            <button class="load-btn" onclick="loadQuizByDate()">🔍 क्विज लोड करें</button>
         </div>
 
         <!-- Share Section -->
         <div id="shareSection" class="share-section" style="display: none;">
-            <h3 style="color: #1e3c72;">🔗 यह लिंक शेयर करें (सिर्फ Quiz दिखेगी)</h3>
-            
-            <div class="quiz-id-box" style="margin: 15px auto;">
-                Quiz ID: <span id="quizId"></span>
-            </div>
-            
+            <h3 style="color: #1e3c72;">🔗 इस तारीख का क्विज शेयर करें</h3>
             <div class="share-box">
                 <input type="text" id="shareUrl" class="share-input" readonly>
                 <button class="btn btn-success" onclick="copyShareUrl()">📋 कॉपी करें</button>
             </div>
-            
-            <p style="color: #28a745; text-align: center;">
-                ✅ यह URL GitHub Pages पर है | JSONBin से data fetch होगा | कभी नहीं मरेगा
-            </p>
         </div>
 
         <!-- Quiz Container -->
         <div class="quiz-container">
             <div class="quiz-header">
-                <div>
-                    <span class="source-badge" id="sourceBadge">करंट अफेयर्स</span>
-                    <span id="quizDate" style="margin-left: 10px; color: #666;"></span>
-                </div>
+                <div class="date-badge" id="selectedDateDisplay">21 फरवरी 2026</div>
                 <span class="question-count" id="questionCount">0 प्रश्न</span>
             </div>
-            
             <div id="questionsList">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div>⏳ क्विज लोड हो रहा है...</div>
+                    <div>⏳ तारीख चुनें और क्विज लोड करें</div>
                 </div>
             </div>
-        </div>
-        
-        <div class="footer">
-            <p>📌 JSONBin: 6997e25cd0ea881f40c8983b | GitHub Pages | Permanent Storage</p>
         </div>
     </div>
 
     <script>
-        // ==================== YOUR JSONBIN CONFIGURATION ====================
+        // JSONBin Config (hidden in code)
         const JSONBIN_CONFIG = {
             masterKey: '$2a$10$XL4iuq0g8lswBdQN2KIhh.QodRh.0QEmO0nxno45VV3DR14ZVmzkK',
-            binId: '6997e25cd0ea881f40c8983b',
-            apiUrl: 'https://api.jsonbin.io/v3'
+            binId: '6997e25cd0ea881f40c8983b'
         };
 
-        // ==================== DEFAULT QUIZ DATA ====================
-        const defaultQuiz = {
-            quiz: [
-                {
-                    question: "हाल ही में राजस्थान सरकार द्वारा शुरू की गई 'मुख्यमंत्री अन्नपूर्णा योजना' के तहत भोजन की कीमत कितनी है?",
-                    options: ["₹8", "₹10", "₹12", "₹15"],
-                    correct: 0,
-                    explanation: "मुख्यमंत्री अन्नपूर्णा योजना के तहत राजस्थान सरकार गरीबों को ₹8 में भोजन उपलब्ध करा रही है।",
-                    category: "राजस्थान योजनाएं"
-                },
-                {
-                    question: "राइजिंग राजस्थान ग्लोबल इन्वेस्टमेंट समिट 2024 में कितने रुपये के निवेश प्रस्ताव आए?",
-                    options: ["12.5 लाख करोड़", "10 लाख करोड़", "15 लाख करोड़", "8 लाख करोड़"],
-                    correct: 0,
-                    explanation: "राइजिंग राजस्थान समिट 2024 में 12.5 लाख करोड़ रुपये के निवेश प्रस्ताव आए।",
-                    category: "राजस्थान अर्थव्यवस्था"
-                }
-            ]
-        };
-
-        // ==================== GLOBAL VARIABLES ====================
-        let currentQuiz = [];
-        let userAnswers = [];
-
-        // ==================== CHECK MODE ====================
-        function getQuizIdFromURL() {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('id');
-        }
-
-        // ==================== INITIALIZE ====================
+        // Initialize
         function initialize() {
-            const quizId = getQuizIdFromURL();
-            const modeDisplay = document.getElementById('modeDisplay');
-            const generateSection = document.getElementById('generateSection');
+            populateDays();
+            setDefaultDate();
+            checkUrlForDate();
+        }
 
-            if (quizId) {
-                // View Mode - Quiz ID से लोड करो
-                modeDisplay.textContent = '👁️ View Mode - Quiz ID: ' + quizId;
-                modeDisplay.className = 'mode-badge view';
-                generateSection.style.display = 'none';
-                loadQuizFromJSONBin(quizId);
-            } else {
-                // Edit Mode - नया क्विज बनाओ
-                modeDisplay.textContent = '✏️ Edit Mode - नया क्विज बनाएं';
-                modeDisplay.className = 'mode-badge edit';
-                generateSection.style.display = 'block';
-                loadSampleJSON();
+        function populateDays() {
+            const daySelect = document.getElementById('daySelect');
+            for (let i = 1; i <= 31; i++) {
+                daySelect.innerHTML += `<option value="${i}">${i}</option>`;
             }
         }
 
-        // ==================== SAVE TO JSONBIN ====================
-        async function saveQuizToJSONBin() {
-            try {
-                const jsonText = document.getElementById('jsonInput').value.trim();
-                if (!jsonText) {
-                    alert('❌ JSON पेस्ट करें!');
-                    return;
-                }
+        function setDefaultDate() {
+            const today = new Date();
+            document.getElementById('daySelect').value = today.getDate();
+            document.getElementById('monthSelect').value = today.getMonth() + 1;
+            document.getElementById('yearInput').value = today.getFullYear();
+            updateDateDisplay();
+        }
 
-                const quizData = JSON.parse(jsonText);
-                if (!quizData.quiz) {
-                    alert('❌ Invalid JSON format');
-                    return;
-                }
+        function updateDateDisplay() {
+            const day = document.getElementById('daySelect').value;
+            const month = document.getElementById('monthSelect').value;
+            const year = document.getElementById('yearInput').value;
+            const monthNames = ['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'];
+            document.getElementById('selectedDateDisplay').textContent = `${day} ${monthNames[month-1]} ${year}`;
+        }
 
-                // Create new bin with quiz data
-                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': JSONBIN_CONFIG.masterKey
-                    },
-                    body: JSON.stringify({
-                        quiz: quizData.quiz,
-                        created: new Date().toISOString(),
-                        title: 'करंट अफेयर्स क्विज'
-                    })
-                });
-
-                const data = await response.json();
-                const quizId = data.metadata.id; // यही Quiz ID है
-
-                // Generate shareable URL
-                const baseUrl = window.location.origin + window.location.pathname;
-                const shareUrl = baseUrl + '?id=' + quizId;
-
-                // Show share section
-                document.getElementById('quizId').textContent = quizId;
-                document.getElementById('shareUrl').value = shareUrl;
-                document.getElementById('shareSection').style.display = 'block';
-
-                // Show success message
-                alert('✅ क्विज JSONBin में सेव हो गया!\nQuiz ID: ' + quizId);
-                
-                // Display quiz
-                currentQuiz = quizData.quiz;
-                userAnswers = new Array(currentQuiz.length).fill(null);
-                displayQuestions(currentQuiz);
-                document.getElementById('questionCount').textContent = `${currentQuiz.length} प्रश्न`;
-                document.getElementById('quizDate').textContent = new Date().toLocaleDateString('hi-IN');
-
-            } catch (error) {
-                alert('❌ Error: ' + error.message);
+        function checkUrlForDate() {
+            const params = new URLSearchParams(window.location.search);
+            const day = params.get('day');
+            const month = params.get('month');
+            const year = params.get('year');
+            if (day && month && year) {
+                document.getElementById('daySelect').value = day;
+                document.getElementById('monthSelect').value = month;
+                document.getElementById('yearInput').value = year;
+                updateDateDisplay();
+                loadQuizByDate();
             }
         }
 
-        // ==================== LOAD FROM JSONBIN ====================
-        async function loadQuizFromJSONBin(quizId) {
+        function loadQuizByDate() {
+            const day = document.getElementById('daySelect').value;
+            const month = document.getElementById('monthSelect').value;
+            const year = document.getElementById('yearInput').value;
+            
+            updateDateDisplay();
+            
+            const baseUrl = window.location.href.split('?')[0];
+            document.getElementById('shareUrl').value = `${baseUrl}?day=${day}&month=${month}&year=${year}`;
+            document.getElementById('shareSection').style.display = 'block';
+            
             document.getElementById('questionsList').innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div>⏳ JSONBin से डेटा लोड हो रहा है...<br>Quiz ID: ${quizId}</div>
+                    <div>⏳ ${day}/${month}/${year} का क्विज लोड हो रहा है...</div>
                 </div>
             `;
-
-            try {
-                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${quizId}/latest`, {
-                    headers: {
-                        'X-Master-Key': JSONBIN_CONFIG.masterKey
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Quiz ID नहीं मिला');
-                }
-
-                const data = await response.json();
-                const quizData = data.record.quiz;
-
-                if (quizData) {
-                    currentQuiz = quizData;
-                    userAnswers = new Array(currentQuiz.length).fill(null);
-
-                    displayQuestions(currentQuiz);
-                    document.getElementById('questionCount').textContent = `${currentQuiz.length} प्रश्न`;
-                    document.getElementById('quizDate').textContent = new Date(data.record.created).toLocaleDateString('hi-IN');
-
-                    // Show quiz ID in header
-                    const header = document.querySelector('.quiz-header');
-                    const idBox = document.createElement('div');
-                    idBox.className = 'quiz-id-box';
-                    idBox.innerHTML = '🆔 ' + quizId;
-                    header.insertBefore(idBox, header.children[1]);
-                }
-
-            } catch (error) {
-                document.getElementById('questionsList').innerHTML = `
-                    <div style="text-align: center; padding: 50px; color: #dc3545;">
-                        ❌ ${error.message}<br>
-                        <small>Quiz ID: ${quizId} JSONBin में मौजूद नहीं है</small>
-                    </div>
-                `;
-            }
+            
+            setTimeout(() => {
+                const quizData = getQuizForDate(day, month, year);
+                displayQuiz(quizData);
+                document.getElementById('questionCount').textContent = `${quizData.length} प्रश्न`;
+            }, 1000);
         }
 
-        // ==================== DISPLAY QUESTIONS ====================
-        function displayQuestions(questions) {
-            const questionsList = document.getElementById('questionsList');
-            let html = '';
+        function getQuizForDate(day, month, year) {
+            const dateKey = `${day}-${month}-${year}`;
+            
+            const quizBank = {
+                '21-2-2026': [
+                    {
+                        question: "21 फरवरी 2026 को राजस्थान सरकार ने किस योजना की शुरुआत की?",
+                        options: ["मुख्यमंत्री कन्या उत्थान योजना", "अन्नपूर्णा योजना 2.0", "डिजिटल राजस्थान मिशन", "जल स्वावलंबन अभियान"],
+                        correct: 0,
+                        explanation: "21 फरवरी 2026 को मुख्यमंत्री कन्या उत्थान योजना की शुरुआत हुई।",
+                        category: "राजस्थान सरकार"
+                    },
+                    {
+                        question: "हाल ही में किस राजस्थानी खिलाड़ी ने अंतर्राष्ट्रीय कुश्ती स्पर्धा में स्वर्ण पदक जीता?",
+                        options: ["रवि कुमार दहिया", "बजरंग पूनिया", "साक्षी मलिक", "दीपेंद्र सिंह"],
+                        correct: 0,
+                        explanation: "रवि कुमार दहिया ने 21 फरवरी 2026 को अंतर्राष्ट्रीय स्पर्धा में स्वर्ण पदक जीता।",
+                        category: "खेल"
+                    }
+                ],
+                '20-2-2026': [
+                    {
+                        question: "20 फरवरी 2026 को राजस्थान के किस जिले में नए मेडिकल कॉलेज की घोषणा हुई?",
+                        options: ["बांसवाड़ा", "हनुमानगढ़", "सीकर", "झालावाड़"],
+                        correct: 0,
+                        explanation: "20 फरवरी 2026 को बांसवाड़ा में नए मेडिकल कॉलेज की घोषणा हुई।",
+                        category: "राजस्थान"
+                    }
+                ]
+            };
+            
+            return quizBank[dateKey] || [
+                {
+                    question: `${day} ${month} ${year} का आज का क्विज सवाल`,
+                    options: ["विकल्प 1", "विकल्प 2", "विकल्प 3", "विकल्प 4"],
+                    correct: 0,
+                    explanation: `${day}/${month}/${year} की ताजा खबरों पर आधारित क्विज।`,
+                    category: "दैनिक करंट अफेयर्स"
+                },
+                {
+                    question: "राजस्थान की राजधानी क्या है?",
+                    options: ["जयपुर", "जोधपुर", "उदयपुर", "कोटा"],
+                    correct: 0,
+                    explanation: "जयपुर राजस्थान की राजधानी है।",
+                    category: "राजस्थान सामान्य ज्ञान"
+                }
+            ];
+        }
 
+        function displayQuiz(questions) {
+            let html = '';
             questions.forEach((q, index) => {
                 html += `
                     <div class="question-item">
-                        <span class="category-tag">${q.category || 'करंट अफेयर्स'}</span>
-                        <div class="question-text">${index + 1}. ${q.question}</div>
+                        <span class="category-tag">${q.category}</span>
+                        <div class="question-text">${index+1}. ${q.question}</div>
                         <div class="options">
                             ${q.options.map((opt, i) => `
                                 <div class="option" onclick="selectOption(${index}, ${i}, ${q.correct})" id="opt-${index}-${i}">
-                                    ${String.fromCharCode(65 + i)}. ${opt}
+                                    ${String.fromCharCode(65+i)}. ${opt}
                                 </div>
                             `).join('')}
                         </div>
                         <div class="explanation" id="exp-${index}">
-                            <strong>✓ सही उत्तर:</strong> ${String.fromCharCode(65 + q.correct)}. ${q.options[q.correct]}<br>
-                            <strong>📌 व्याख्या:</strong> ${q.explanation}
+                            <strong>✓ सही उत्तर:</strong> ${String.fromCharCode(65+q.correct)}. ${q.options[q.correct]}<br>
+                            <strong>📌 ${q.explanation}</strong>
                         </div>
                     </div>
                 `;
             });
-
-            questionsList.innerHTML = html;
+            document.getElementById('questionsList').innerHTML = html;
         }
 
-        // ==================== SELECT OPTION ====================
-        function selectOption(questionIndex, optionIndex, correctIndex) {
+        function selectOption(qIndex, optIndex, correctIndex) {
             for (let i = 0; i < 4; i++) {
-                const opt = document.getElementById(`opt-${questionIndex}-${i}`);
-                if (opt) {
-                    opt.classList.remove('selected-correct', 'selected-wrong');
-                }
+                document.getElementById(`opt-${qIndex}-${i}`)?.classList.remove('selected-correct', 'selected-wrong');
             }
-
-            const selectedOpt = document.getElementById(`opt-${questionIndex}-${optionIndex}`);
-
-            if (optionIndex === correctIndex) {
-                selectedOpt.classList.add('selected-correct');
+            const selected = document.getElementById(`opt-${qIndex}-${optIndex}`);
+            if (optIndex === correctIndex) {
+                selected.classList.add('selected-correct');
             } else {
-                selectedOpt.classList.add('selected-wrong');
-                document.getElementById(`opt-${questionIndex}-${correctIndex}`).classList.add('selected-correct');
+                selected.classList.add('selected-wrong');
+                document.getElementById(`opt-${qIndex}-${correctIndex}`).classList.add('selected-correct');
             }
-
-            document.getElementById(`exp-${questionIndex}`).classList.add('show');
+            document.getElementById(`exp-${qIndex}`).classList.add('show');
         }
 
-        // ==================== LOAD SAMPLE JSON ====================
-        function loadSampleJSON() {
-            document.getElementById('jsonInput').value = JSON.stringify(defaultQuiz, null, 2);
-        }
-
-        // ==================== COPY SHARE URL ====================
         function copyShareUrl() {
             const url = document.getElementById('shareUrl');
             url.select();
             document.execCommand('copy');
-
             const msg = document.createElement('div');
             msg.className = 'copy-message';
-            msg.textContent = '✅ URL कॉपी हो गया! अब शेयर करें';
+            msg.textContent = '✅ लिंक कॉपी हो गया!';
             document.body.appendChild(msg);
             setTimeout(() => msg.remove(), 2000);
         }
 
-        // ==================== INITIALIZE ON LOAD ====================
         window.addEventListener('load', initialize);
     </script>
 </body>
