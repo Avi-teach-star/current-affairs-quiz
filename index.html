@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>करंट अफेयर्स क्विज</title>
+    <title>करंट अफेयर्स क्विज - स्टाइलिश डेट पिकर</title>
     <style>
         * {
             margin: 0;
@@ -14,7 +14,7 @@
         body {
             background: linear-gradient(145deg, #0b1f33 0%, #1a374d 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
         }
         .container {
             max-width: 1100px;
@@ -26,62 +26,236 @@
             padding: 30px;
             border-radius: 25px 25px 0 0;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shine 10s infinite;
+        }
+        @keyframes shine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         .header h1 {
             font-size: 2.2rem;
             margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
         }
-        .date-picker-section {
-            background: white;
+        .mode-badge {
+            display: inline-block;
+            padding: 8px 25px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 10px 0;
+            background: #ffc107;
+            color: #000;
+            box-shadow: 0 5px 15px rgba(255,193,7,0.3);
+        }
+        
+        /* स्टाइलिश डेट पिकर सेक्शन */
+        .stylish-date-picker {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
             padding: 30px;
-            border-radius: 0 0 25px 25px;
+            border-radius: 20px;
+            margin: 25px 0;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border: 2px solid rgba(30,60,114,0.1);
+        }
+        .date-picker-title {
+            text-align: center;
             margin-bottom: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            font-size: 1.4rem;
+            color: #1e3c72;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+        }
+        .date-picker-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #1e3c72, #ffc107, #1e3c72);
+            margin: 10px auto;
+            border-radius: 2px;
+        }
+        .date-picker-grid {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
-            align-items: flex-end;
             justify-content: center;
+            align-items: flex-end;
         }
-        .date-field {
+        .date-picker-item {
             flex: 1;
-            min-width: 150px;
+            min-width: 180px;
         }
-        .date-field label {
+        .date-picker-item label {
             display: block;
             font-weight: 600;
             color: #1e3c72;
-            margin-bottom: 8px;
-            font-size: 1rem;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            padding-left: 5px;
         }
-        .date-field select, .date-field input {
+        .custom-select {
+            position: relative;
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 1rem;
-            background: #f8f9fa;
+        }
+        .custom-select select {
+            width: 100%;
+            padding: 15px 20px;
+            border: 3px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            background: white;
             cursor: pointer;
+            appearance: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
         }
-        .date-field select:focus, .date-field input:focus {
+        .custom-select select:hover {
             border-color: #1e3c72;
-            outline: none;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(30,60,114,0.2);
         }
-        .load-btn {
-            background: #1e3c72;
+        .custom-select select:focus {
+            outline: none;
+            border-color: #ffc107;
+            box-shadow: 0 0 0 4px rgba(255,193,7,0.2);
+        }
+        .custom-select::after {
+            content: '▼';
+            font-size: 1rem;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #1e3c72;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+        .custom-select:hover::after {
+            color: #ffc107;
+            transform: translateY(-50%) scale(1.2);
+        }
+        .year-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 3px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            background: white;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .year-input:hover {
+            border-color: #1e3c72;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(30,60,114,0.2);
+        }
+        .year-input:focus {
+            outline: none;
+            border-color: #ffc107;
+            box-shadow: 0 0 0 4px rgba(255,193,7,0.2);
+        }
+        .load-quiz-btn {
+            background: linear-gradient(145deg, #1e3c72, #2a5298);
             color: white;
             border: none;
+            border-radius: 60px;
+            padding: 18px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            min-width: 200px;
+            box-shadow: 0 10px 25px rgba(30,60,114,0.4);
+            border: 2px solid rgba(255,255,255,0.3);
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        .load-quiz-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        .load-quiz-btn:hover::before {
+            left: 100%;
+        }
+        .load-quiz-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(30,60,114,0.6);
+            background: linear-gradient(145deg, #2a5298, #1e3c72);
+        }
+        .generate-section {
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .json-input {
+            width: 100%;
+            min-height: 200px;
+            padding: 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-family: monospace;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            resize: vertical;
+        }
+        .btn {
+            padding: 15px 30px;
+            border: none;
             border-radius: 50px;
-            padding: 12px 35px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
-            min-width: 150px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin: 5px;
         }
-        .load-btn:hover {
+        .btn-primary {
+            background: #1e3c72;
+            color: white;
+        }
+        .btn-primary:hover {
             background: #2a5298;
             transform: translateY(-2px);
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #218838;
+        }
+        .btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
+        .btn-warning:hover {
+            background: #e0a800;
         }
         .share-section {
             background: white;
@@ -106,22 +280,6 @@
             min-width: 280px;
             background: #f8f9fa;
         }
-        .btn {
-            padding: 15px 25px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-        .btn-success:hover {
-            background: #218838;
-        }
         .quiz-container {
             background: white;
             border-radius: 25px;
@@ -139,19 +297,22 @@
             gap: 12px;
         }
         .date-badge {
-            background: #1e3c72;
+            background: linear-gradient(145deg, #1e3c72, #2a5298);
             color: white;
-            padding: 8px 22px;
-            border-radius: 40px;
-            font-size: 1rem;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
             font-weight: 600;
+            box-shadow: 0 5px 15px rgba(30,60,114,0.3);
+            border: 2px solid rgba(255,255,255,0.2);
         }
         .question-count {
             background: #ffc107;
             color: #000;
-            padding: 8px 22px;
+            padding: 10px 25px;
             border-radius: 40px;
             font-weight: 600;
+            font-size: 1.1rem;
         }
         .question-item {
             background: #f8f9fa;
@@ -159,6 +320,11 @@
             padding: 22px;
             margin-bottom: 22px;
             border-left: 6px solid #1e3c72;
+            transition: 0.3s;
+        }
+        .question-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
         .category-tag {
             display: inline-block;
@@ -192,6 +358,7 @@
         .option:hover {
             background: #e9ecef;
             border-color: #1e3c72;
+            transform: translateX(3px);
         }
         .option.selected-correct {
             background: #d4edda;
@@ -243,6 +410,11 @@
             from { transform: translateX(100%); }
             to { transform: translateX(0); }
         }
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -250,84 +422,162 @@
         <!-- Header -->
         <div class="header">
             <h1>📚 करंट अफेयर्स क्विज</h1>
-            <p>तारीख चुनें - अपने आप क्विज लोड होगी</p>
+            <p>JSON पेस्ट करें या तारीख चुनें</p>
+            <div class="mode-badge">✏️ एडिटर मोड</div>
         </div>
 
-        <!-- Date Picker Section -->
-        <div class="date-picker-section">
-            <div class="date-field">
-                <label>📅 दिन</label>
-                <select id="daySelect"></select>
+        <!-- Stylish Date Picker Section -->
+        <div class="stylish-date-picker">
+            <div class="date-picker-title">
+                📅 तारीख चुनें
             </div>
-            <div class="date-field">
-                <label>📅 महीना</label>
-                <select id="monthSelect">
-                    <option value="1">जनवरी</option>
-                    <option value="2">फरवरी</option>
-                    <option value="3">मार्च</option>
-                    <option value="4">अप्रैल</option>
-                    <option value="5">मई</option>
-                    <option value="6">जून</option>
-                    <option value="7">जुलाई</option>
-                    <option value="8">अगस्त</option>
-                    <option value="9">सितंबर</option>
-                    <option value="10">अक्टूबर</option>
-                    <option value="11">नवंबर</option>
-                    <option value="12">दिसंबर</option>
-                </select>
+            <div class="date-picker-grid">
+                <div class="date-picker-item">
+                    <label>दिन</label>
+                    <div class="custom-select">
+                        <select id="daySelect">
+                            <!-- JavaScript से भरेगा -->
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="date-picker-item">
+                    <label>महीना</label>
+                    <div class="custom-select">
+                        <select id="monthSelect">
+                            <option value="1">जनवरी</option>
+                            <option value="2">फरवरी</option>
+                            <option value="3">मार्च</option>
+                            <option value="4">अप्रैल</option>
+                            <option value="5">मई</option>
+                            <option value="6">जून</option>
+                            <option value="7">जुलाई</option>
+                            <option value="8">अगस्त</option>
+                            <option value="9">सितंबर</option>
+                            <option value="10">अक्टूबर</option>
+                            <option value="11">नवंबर</option>
+                            <option value="12">दिसंबर</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="date-picker-item">
+                    <label>वर्ष</label>
+                    <input type="number" id="yearInput" class="year-input" value="2026" min="2020" max="2030">
+                </div>
+                
+                <div class="date-picker-item">
+                    <button class="load-quiz-btn" onclick="loadQuizByDate()">
+                        🔍 क्विज लोड करें
+                    </button>
+                </div>
             </div>
-            <div class="date-field">
-                <label>📅 वर्ष</label>
-                <input type="number" id="yearInput" value="2026" min="2020" max="2030">
+        </div>
+
+        <!-- Generate Section (Old Version) -->
+        <div class="generate-section">
+            <h3 style="color: #1e3c72; margin-bottom: 15px;">📝 नया क्विज बनाएं</h3>
+            <textarea id="jsonInput" class="json-input" placeholder='यहाँ JSON पेस्ट करें...'></textarea>
+            
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="saveQuizToJSONBin()">
+                    💾 JSONBin में सेव करें
+                </button>
+                <button class="btn btn-warning" onclick="loadSampleJSON()">
+                    📋 सैंपल JSON
+                </button>
             </div>
-            <button class="load-btn" onclick="loadQuizByDate()">🔍 क्विज लोड करें</button>
         </div>
 
         <!-- Share Section -->
         <div id="shareSection" class="share-section" style="display: none;">
-            <h3 style="color: #1e3c72;">🔗 इस तारीख का क्विज शेयर करें</h3>
+            <h3 style="color: #1e3c72;">🔗 यह लिंक शेयर करें</h3>
+            
             <div class="share-box">
                 <input type="text" id="shareUrl" class="share-input" readonly>
                 <button class="btn btn-success" onclick="copyShareUrl()">📋 कॉपी करें</button>
             </div>
+            
+            <p style="color: #28a745; text-align: center;">
+                ✅ यह URL किसी भी browser में खुलेगा
+            </p>
         </div>
 
         <!-- Quiz Container -->
         <div class="quiz-container">
             <div class="quiz-header">
-                <div class="date-badge" id="selectedDateDisplay">21 फरवरी 2026</div>
+                <div class="date-badge" id="selectedDateDisplay">
+                    21 फरवरी 2026
+                </div>
                 <span class="question-count" id="questionCount">0 प्रश्न</span>
             </div>
+            
             <div id="questionsList">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div>⏳ तारीख चुनें और क्विज लोड करें</div>
+                    <div>⏳ क्विज लोड हो रहा है...</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // JSONBin Config (hidden in code)
+        // JSONBin Config
         const JSONBIN_CONFIG = {
             masterKey: '$2a$10$XL4iuq0g8lswBdQN2KIhh.QodRh.0QEmO0nxno45VV3DR14ZVmzkK',
-            binId: '6997e25cd0ea881f40c8983b'
+            binId: '6997e25cd0ea881f40c8983b',
+            apiUrl: 'https://api.jsonbin.io/v3'
         };
+
+        // Default Quiz
+        const defaultQuiz = {
+            quiz: [
+                {
+                    question: "हाल ही में राजस्थान सरकार द्वारा शुरू की गई 'मुख्यमंत्री अन्नपूर्णा योजना' के तहत भोजन की कीमत कितनी है?",
+                    options: ["₹8", "₹10", "₹12", "₹15"],
+                    correct: 0,
+                    explanation: "मुख्यमंत्री अन्नपूर्णा योजना के तहत राजस्थान सरकार गरीबों को ₹8 में भोजन उपलब्ध करा रही है।",
+                    category: "राजस्थान योजनाएं"
+                },
+                {
+                    question: "राइजिंग राजस्थान ग्लोबल इन्वेस्टमेंट समिट 2024 में कितने रुपये के निवेश प्रस्ताव आए?",
+                    options: ["12.5 लाख करोड़", "10 लाख करोड़", "15 लाख करोड़", "8 लाख करोड़"],
+                    correct: 0,
+                    explanation: "राइजिंग राजस्थान समिट 2024 में 12.5 लाख करोड़ रुपये के निवेश प्रस्ताव आए।",
+                    category: "राजस्थान अर्थव्यवस्था"
+                }
+            ]
+        };
+
+        // Global variables
+        let currentQuiz = [];
+        let userAnswers = [];
 
         // Initialize
         function initialize() {
             populateDays();
             setDefaultDate();
-            checkUrlForDate();
+            loadSampleJSON();
+            
+            // Show default quiz
+            currentQuiz = defaultQuiz.quiz;
+            userAnswers = new Array(currentQuiz.length).fill(null);
+            displayQuestions(currentQuiz);
+            document.getElementById('questionCount').textContent = `${currentQuiz.length} प्रश्न`;
         }
 
+        // Populate days
         function populateDays() {
             const daySelect = document.getElementById('daySelect');
             for (let i = 1; i <= 31; i++) {
-                daySelect.innerHTML += `<option value="${i}">${i}</option>`;
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                daySelect.appendChild(option);
             }
         }
 
+        // Set default date
         function setDefaultDate() {
             const today = new Date();
             document.getElementById('daySelect').value = today.getDate();
@@ -336,38 +586,22 @@
             updateDateDisplay();
         }
 
+        // Update date display
         function updateDateDisplay() {
             const day = document.getElementById('daySelect').value;
             const month = document.getElementById('monthSelect').value;
             const year = document.getElementById('yearInput').value;
-            const monthNames = ['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'];
+            const monthNames = ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
             document.getElementById('selectedDateDisplay').textContent = `${day} ${monthNames[month-1]} ${year}`;
         }
 
-        function checkUrlForDate() {
-            const params = new URLSearchParams(window.location.search);
-            const day = params.get('day');
-            const month = params.get('month');
-            const year = params.get('year');
-            if (day && month && year) {
-                document.getElementById('daySelect').value = day;
-                document.getElementById('monthSelect').value = month;
-                document.getElementById('yearInput').value = year;
-                updateDateDisplay();
-                loadQuizByDate();
-            }
-        }
-
+        // Load quiz by date
         function loadQuizByDate() {
             const day = document.getElementById('daySelect').value;
             const month = document.getElementById('monthSelect').value;
             const year = document.getElementById('yearInput').value;
             
             updateDateDisplay();
-            
-            const baseUrl = window.location.href.split('?')[0];
-            document.getElementById('shareUrl').value = `${baseUrl}?day=${day}&month=${month}&year=${year}`;
-            document.getElementById('shareSection').style.display = 'block';
             
             document.getElementById('questionsList').innerHTML = `
                 <div class="loading">
@@ -378,11 +612,12 @@
             
             setTimeout(() => {
                 const quizData = getQuizForDate(day, month, year);
-                displayQuiz(quizData);
+                displayQuestions(quizData);
                 document.getElementById('questionCount').textContent = `${quizData.length} प्रश्न`;
             }, 1000);
         }
 
+        // Get quiz for date
         function getQuizForDate(day, month, year) {
             const dateKey = `${day}-${month}-${year}`;
             
@@ -414,66 +649,112 @@
                 ]
             };
             
-            return quizBank[dateKey] || [
-                {
-                    question: `${day} ${month} ${year} का आज का क्विज सवाल`,
-                    options: ["विकल्प 1", "विकल्प 2", "विकल्प 3", "विकल्प 4"],
-                    correct: 0,
-                    explanation: `${day}/${month}/${year} की ताजा खबरों पर आधारित क्विज।`,
-                    category: "दैनिक करंट अफेयर्स"
-                },
-                {
-                    question: "राजस्थान की राजधानी क्या है?",
-                    options: ["जयपुर", "जोधपुर", "उदयपुर", "कोटा"],
-                    correct: 0,
-                    explanation: "जयपुर राजस्थान की राजधानी है।",
-                    category: "राजस्थान सामान्य ज्ञान"
-                }
-            ];
+            return quizBank[dateKey] || defaultQuiz.quiz;
         }
 
-        function displayQuiz(questions) {
+        // Save to JSONBin
+        async function saveQuizToJSONBin() {
+            try {
+                const jsonText = document.getElementById('jsonInput').value.trim();
+                if (!jsonText) {
+                    alert('❌ JSON पेस्ट करें!');
+                    return;
+                }
+
+                const quizData = JSON.parse(jsonText);
+                if (!quizData.quiz) {
+                    alert('❌ Invalid JSON format');
+                    return;
+                }
+
+                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_CONFIG.masterKey
+                    },
+                    body: JSON.stringify({
+                        quiz: quizData.quiz,
+                        created: new Date().toISOString()
+                    })
+                });
+
+                const data = await response.json();
+                const quizId = data.metadata.id;
+
+                const baseUrl = window.location.href.split('?')[0];
+                const shareUrl = baseUrl + '?id=' + quizId;
+
+                document.getElementById('shareUrl').value = shareUrl;
+                document.getElementById('shareSection').style.display = 'block';
+
+                alert('✅ क्विज JSONBin में सेव हो गया!\nQuiz ID: ' + quizId);
+
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        }
+
+        // Load sample JSON
+        function loadSampleJSON() {
+            document.getElementById('jsonInput').value = JSON.stringify(defaultQuiz, null, 2);
+        }
+
+        // Display questions
+        function displayQuestions(questions) {
+            const questionsList = document.getElementById('questionsList');
             let html = '';
+
             questions.forEach((q, index) => {
                 html += `
                     <div class="question-item">
-                        <span class="category-tag">${q.category}</span>
-                        <div class="question-text">${index+1}. ${q.question}</div>
+                        <span class="category-tag">${q.category || 'करंट अफेयर्स'}</span>
+                        <div class="question-text">${index + 1}. ${q.question}</div>
                         <div class="options">
                             ${q.options.map((opt, i) => `
                                 <div class="option" onclick="selectOption(${index}, ${i}, ${q.correct})" id="opt-${index}-${i}">
-                                    ${String.fromCharCode(65+i)}. ${opt}
+                                    ${String.fromCharCode(65 + i)}. ${opt}
                                 </div>
                             `).join('')}
                         </div>
                         <div class="explanation" id="exp-${index}">
-                            <strong>✓ सही उत्तर:</strong> ${String.fromCharCode(65+q.correct)}. ${q.options[q.correct]}<br>
+                            <strong>✓ सही उत्तर:</strong> ${String.fromCharCode(65 + q.correct)}. ${q.options[q.correct]}<br>
                             <strong>📌 ${q.explanation}</strong>
                         </div>
                     </div>
                 `;
             });
-            document.getElementById('questionsList').innerHTML = html;
+
+            questionsList.innerHTML = html;
         }
 
+        // Select option
         function selectOption(qIndex, optIndex, correctIndex) {
             for (let i = 0; i < 4; i++) {
-                document.getElementById(`opt-${qIndex}-${i}`)?.classList.remove('selected-correct', 'selected-wrong');
+                const opt = document.getElementById(`opt-${qIndex}-${i}`);
+                if (opt) {
+                    opt.classList.remove('selected-correct', 'selected-wrong');
+                }
             }
+
             const selected = document.getElementById(`opt-${qIndex}-${optIndex}`);
+            
             if (optIndex === correctIndex) {
                 selected.classList.add('selected-correct');
             } else {
                 selected.classList.add('selected-wrong');
                 document.getElementById(`opt-${qIndex}-${correctIndex}`).classList.add('selected-correct');
             }
+
             document.getElementById(`exp-${qIndex}`).classList.add('show');
         }
 
+        // Copy share URL
         function copyShareUrl() {
             const url = document.getElementById('shareUrl');
             url.select();
             document.execCommand('copy');
+
             const msg = document.createElement('div');
             msg.className = 'copy-message';
             msg.textContent = '✅ लिंक कॉपी हो गया!';
@@ -481,6 +762,7 @@
             setTimeout(() => msg.remove(), 2000);
         }
 
+        // Initialize on load
         window.addEventListener('load', initialize);
     </script>
 </body>
