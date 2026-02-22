@@ -77,8 +77,35 @@
             font-size: clamp(0.9rem, 2.5vw, 1rem);
             width: min(250px, 80%);
         }
-        .admin-login .btn {
-            padding: clamp(10px, 2.5vw, 12px) clamp(20px, 4vw, 30px);
+        .btn {
+            padding: clamp(10px, 2.5vw, 12px) clamp(15px, 3vw, 20px);
+            border: none;
+            border-radius: 50px;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 5px;
+        }
+        .btn-primary {
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-info {
+            background: #17a2b8;
+            color: white;
         }
         .generate-section {
             background: white;
@@ -97,51 +124,6 @@
             font-size: clamp(0.85rem, 2.5vw, 0.95rem);
             margin-bottom: 20px;
             resize: vertical;
-        }
-        .btn {
-            padding: clamp(12px, 2.5vw, 15px) clamp(20px, 4vw, 30px);
-            border: none;
-            border-radius: 50px;
-            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin: 5px;
-            white-space: nowrap;
-        }
-        @media (max-width: 480px) {
-            .btn {
-                width: 100%;
-                margin: 5px 0;
-            }
-        }
-        .btn-primary {
-            background: linear-gradient(145deg, #667eea, #764ba2);
-            color: white;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-        .btn-success:hover {
-            background: #218838;
-            transform: translateY(-2px);
-        }
-        .btn-info {
-            background: #17a2b8;
-            color: white;
-        }
-        .btn-info:hover {
-            background: #138496;
-            transform: translateY(-2px);
         }
         .share-section {
             background: white;
@@ -165,16 +147,6 @@
             font-size: clamp(0.9rem, 2.5vw, 1rem);
             background: #f8f9fa;
         }
-        .quiz-id-box {
-            background: linear-gradient(145deg, #667eea, #764ba2);
-            color: white;
-            padding: clamp(8px, 2vw, 10px) clamp(15px, 3vw, 22px);
-            border-radius: 40px;
-            font-size: clamp(0.9rem, 2.5vw, 1rem);
-            font-family: monospace;
-            text-align: center;
-            word-break: break-all;
-        }
         .quiz-container {
             background: white;
             border-radius: 25px;
@@ -191,12 +163,6 @@
             flex-wrap: wrap;
             gap: 12px;
         }
-        .quiz-header > div {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
         .question-count {
             background: #ffc107;
             color: #000;
@@ -204,50 +170,124 @@
             border-radius: 40px;
             font-weight: 600;
             font-size: clamp(0.9rem, 2.5vw, 1rem);
-            white-space: nowrap;
         }
         
-        /* Calendar Style Date Picker - Fully Responsive */
-        .calendar-section {
+        /* Date Display Box */
+        .date-display-box {
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+            border-radius: 60px;
+            padding: clamp(12px, 2.5vw, 15px) clamp(20px, 4vw, 25px);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 2px solid #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .date-display-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        .date-display-box:active {
+            transform: translateY(0);
+        }
+        .current-date {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: clamp(1.1rem, 3vw, 1.3rem);
+            font-weight: 600;
+            color: #333;
+        }
+        .current-date span {
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white;
+            padding: clamp(8px, 1.5vw, 10px) clamp(15px, 3vw, 20px);
+            border-radius: 40px;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+        .calendar-icon {
             background: white;
-            border-radius: 20px;
-            padding: clamp(15px, 3vw, 25px);
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border: 1px solid #e0e0e0;
+            width: clamp(40px, 8vw, 45px);
+            height: clamp(40px, 8vw, 45px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Modal Calendar */
+        .calendar-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .calendar-modal.active {
+            display: flex;
+        }
+        .calendar-modal-content {
+            background: white;
+            border-radius: 30px;
+            width: min(450px, 95%);
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: clamp(20px, 4vw, 25px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: clamp(15px, 3vw, 20px);
+            margin-bottom: 20px;
             padding: 0 5px;
-            flex-wrap: wrap;
-            gap: 10px;
         }
         .calendar-header h3 {
             color: #333;
-            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            font-size: clamp(1.2rem, 4vw, 1.4rem);
             font-weight: 600;
         }
         .calendar-nav {
             display: flex;
-            gap: clamp(10px, 2vw, 15px);
+            gap: 10px;
         }
         .calendar-nav button {
-            background: none;
+            background: #f0f0f0;
             border: none;
-            font-size: clamp(1.2rem, 4vw, 1.5rem);
-            cursor: pointer;
-            width: clamp(35px, 8vw, 40px);
-            height: clamp(35px, 8vw, 40px);
+            width: clamp(35px, 7vw, 40px);
+            height: clamp(35px, 7vw, 40px);
             border-radius: 50%;
+            font-size: clamp(1.1rem, 3vw, 1.3rem);
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: 0.2s;
             color: #667eea;
-            background: #f0f0f0;
         }
         .calendar-nav button:hover {
             background: #e0e0e0;
@@ -263,15 +303,13 @@
             color: #666;
             margin-bottom: 10px;
             padding: 5px 0;
-            font-size: clamp(0.8rem, 2.2vw, 0.95rem);
-        }
-        .weekdays span {
-            padding: 5px;
+            font-size: clamp(0.8rem, 2.2vw, 0.9rem);
         }
         .calendar-days {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: clamp(3px, 1vw, 5px);
+            margin-bottom: 20px;
         }
         .calendar-day {
             aspect-ratio: 1;
@@ -283,21 +321,19 @@
             cursor: pointer;
             transition: 0.2s;
             font-weight: 500;
-            position: relative;
             background: #f8f9fa;
             padding: 5px;
         }
         .calendar-day:hover {
             background: #e9ecef;
-            transform: scale(1.02);
+            transform: scale(1.05);
         }
         .calendar-day:active {
-            transform: scale(0.98);
+            transform: scale(0.95);
         }
         .calendar-day.selected {
             background: linear-gradient(145deg, #667eea, #764ba2);
             color: white;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
         .calendar-day.has-quiz {
             border: 2px solid #28a745;
@@ -314,51 +350,43 @@
             transform: none;
         }
         .day-number {
-            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
             font-weight: 600;
         }
         .quiz-indicator {
-            font-size: clamp(0.6rem, 1.8vw, 0.7rem);
+            font-size: clamp(0.6rem, 1.5vw, 0.7rem);
             margin-top: 2px;
             color: #28a745;
         }
         .calendar-day.selected .quiz-indicator {
             color: white;
         }
-        .selected-date-display {
-            text-align: center;
-            margin-top: clamp(15px, 3vw, 20px);
-            padding: clamp(12px, 2.5vw, 15px);
-            background: #f8f9fa;
-            border-radius: 15px;
-            font-size: clamp(1rem, 3vw, 1.2rem);
-            font-weight: 600;
-            color: #333;
+        .calendar-actions {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
         }
-        .selected-date-display span {
+        .calendar-actions button {
+            padding: clamp(8px, 2vw, 10px) clamp(15px, 3vw, 20px);
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .calendar-actions .confirm {
             background: linear-gradient(145deg, #667eea, #764ba2);
             color: white;
-            padding: clamp(6px, 1.5vw, 8px) clamp(15px, 3vw, 25px);
-            border-radius: 40px;
-            margin-left: 5px;
-            font-size: clamp(0.9rem, 2.5vw, 1rem);
-            white-space: nowrap;
         }
-        @media (max-width: 480px) {
-            .selected-date-display {
-                flex-direction: column;
-                gap: 10px;
-            }
-            .selected-date-display span {
-                margin-left: 0;
-            }
+        .calendar-actions .cancel {
+            background: #f0f0f0;
+            color: #666;
         }
         
+        /* Questions */
         .question-item {
             background: #f8f9fa;
             border-radius: clamp(15px, 3vw, 18px);
@@ -380,7 +408,6 @@
             font-weight: 600;
             color: #333;
             margin-bottom: 18px;
-            line-height: 1.5;
         }
         .options {
             display: grid;
@@ -396,7 +423,6 @@
             cursor: pointer;
             transition: 0.2s;
             font-size: clamp(0.9rem, 2.5vw, 1rem);
-            word-break: break-word;
         }
         .option:hover {
             background: #e9ecef;
@@ -416,8 +442,6 @@
             background: #e9ecef;
             border-radius: 12px;
             display: none;
-            font-size: clamp(0.9rem, 2.5vw, 1rem);
-            line-height: 1.6;
         }
         .explanation.show {
             display: block;
@@ -449,8 +473,6 @@
             border-radius: 50px;
             animation: slideIn 0.3s ease;
             z-index: 1000;
-            font-size: clamp(0.9rem, 2.5vw, 1rem);
-            max-width: 90%;
         }
         @keyframes slideIn {
             from { transform: translateX(100%); }
@@ -461,7 +483,6 @@
             margin-top: 25px;
             color: white;
             font-size: clamp(0.8rem, 2.2vw, 0.9rem);
-            padding: 0 10px;
         }
         .error-message {
             background: #f8d7da;
@@ -470,11 +491,10 @@
             border-radius: 15px;
             text-align: center;
             margin: 20px 0;
-            font-size: clamp(0.9rem, 2.5vw, 1rem);
         }
-        
-        /* Modal */
-        .modal {
+
+        /* Admin Modal */
+        .admin-modal {
             display: none;
             position: fixed;
             top: 0;
@@ -482,15 +502,15 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.5);
-            z-index: 1000;
+            z-index: 1500;
             justify-content: center;
             align-items: center;
             padding: 20px;
         }
-        .modal.active {
+        .admin-modal.active {
             display: flex;
         }
-        .modal-content {
+        .admin-modal-content {
             background: white;
             padding: clamp(20px, 5vw, 30px);
             border-radius: 25px;
@@ -498,12 +518,12 @@
             width: 100%;
             text-align: center;
         }
-        .modal-content h3 {
+        .admin-modal-content h3 {
             margin-bottom: 20px;
             color: #333;
             font-size: clamp(1.2rem, 4vw, 1.5rem);
         }
-        .modal-content input {
+        .admin-modal-content input {
             width: 100%;
             padding: clamp(12px, 3vw, 15px);
             border: 2px solid #e0e0e0;
@@ -511,37 +531,27 @@
             margin-bottom: 20px;
             font-size: clamp(0.9rem, 2.5vw, 1rem);
         }
-        .modal-buttons {
+        .admin-modal-buttons {
             display: flex;
             gap: 10px;
             justify-content: center;
             flex-wrap: wrap;
         }
-        .modal-buttons .btn {
-            flex: 1;
-            min-width: 120px;
-        }
 
-        /* Mobile optimizations */
         @media (max-width: 480px) {
-            .calendar-day {
-                padding: 3px;
+            .date-display-box {
+                flex-direction: column;
+                text-align: center;
             }
-            .day-number {
-                font-size: 0.9rem;
+            .current-date {
+                flex-direction: column;
             }
-            .quiz-indicator {
-                font-size: 0.6rem;
+            .calendar-actions {
+                flex-direction: column;
             }
-            .weekdays span {
-                font-size: 0.8rem;
+            .calendar-actions button {
+                width: 100%;
             }
-        }
-
-        /* Touch-friendly */
-        .calendar-day, .btn, .option, .date-chip {
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
         }
     </style>
 </head>
@@ -558,7 +568,7 @@
         <div class="admin-section" id="adminSection">
             <div id="adminLoginForm" class="admin-login">
                 <input type="password" id="adminPassword" placeholder="एडमिन पासवर्ड डालें">
-                <button class="btn btn-primary" onclick="adminLogin()">🔑 एडमिन लॉगिन</button>
+                <button class="btn btn-primary" onclick="openAdminModal()">🔑 एडमिन लॉगिन</button>
             </div>
             <div id="adminControls" style="display: none;">
                 <button class="btn btn-primary" onclick="showEditMode()">✏️ एडिट मोड में जाएं</button>
@@ -566,81 +576,50 @@
             </div>
         </div>
 
-        <!-- Generate Section (Edit Mode - Only for Admin) -->
+        <!-- Generate Section (Edit Mode) -->
         <div id="generateSection" class="generate-section" style="display: none;">
             <h3 style="color: #333; margin-bottom: 15px;">📝 नया क्विज बनाएं / एडिट करें</h3>
             
-            <div style="margin-bottom: 20px; display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="margin-bottom: 20px;">
                 <label style="font-weight: 600; color: #333;">📅 तारीख:</label>
-                <input type="date" id="quizDateInput" style="padding: 12px; border-radius: 10px; border: 2px solid #e0e0e0; flex: 1; min-width: 200px;">
+                <input type="date" id="quizDateInput" style="padding: 12px; border-radius: 10px; border: 2px solid #e0e0e0; margin-left: 10px;">
             </div>
             
             <textarea id="jsonInput" class="json-input" placeholder='यहाँ JSON पेस्ट करें...'></textarea>
             
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-                <button class="btn btn-primary" onclick="saveQuizToJSONBin()">
-                    💾 JSONBin में सेव करें
-                </button>
-                <button class="btn btn-info" onclick="loadSampleJSON()">
-                    📋 सैंपल JSON
-                </button>
-            </div>
-            
-            <div style="margin-top: 15px; color: #28a745; font-size: 0.9rem; text-align: center;" id="binStatus">
-                ✅ JSONBin Connected
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="saveQuizToJSONBin()">💾 सेव करें</button>
+                <button class="btn btn-info" onclick="loadSampleJSON()">📋 सैंपल JSON</button>
             </div>
         </div>
 
-        <!-- Share Section (Only for Admin) -->
+        <!-- Share Section -->
         <div id="shareSection" class="share-section" style="display: none;">
             <h3 style="color: #333;">🔗 यह लिंक शेयर करें</h3>
-            
-            <div class="quiz-id-box" style="margin: 15px auto;">
-                Quiz ID: <span id="quizId"></span>
-            </div>
-            
+            <div class="quiz-id-box">Quiz ID: <span id="quizId"></span></div>
             <div class="share-box">
                 <input type="text" id="shareUrl" class="share-input" readonly>
                 <button class="btn btn-success" onclick="copyShareUrl()">📋 कॉपी करें</button>
             </div>
         </div>
 
-        <!-- Quiz Container (View Mode - For Everyone) -->
-        <div class="quiz-container" id="quizContainer">
+        <!-- Quiz Container -->
+        <div class="quiz-container">
             <div class="quiz-header">
                 <div>
-                    <span class="source-badge" id="sourceBadge">📅 दैनिक क्विज</span>
-                    <span id="quizDate" style="margin-left: 10px; color: #666; font-size: clamp(0.9rem, 2.5vw, 1rem);"></span>
+                    <span id="sourceBadge">📅 दैनिक क्विज</span>
+                    <span id="quizDate" style="margin-left: 10px;"></span>
                 </div>
                 <span class="question-count" id="questionCount">0 प्रश्न</span>
             </div>
 
-            <!-- Calendar Style Date Picker - Click to show -->
-            <div class="calendar-section" id="calendarSection">
-                <div class="calendar-header">
-                    <h3 id="calendarMonthYear">जनवरी 2025</h3>
-                    <div class="calendar-nav">
-                        <button onclick="changeMonth(-1)" aria-label="पिछला महीना">←</button>
-                        <button onclick="changeMonth(1)" aria-label="अगला महीना">→</button>
-                    </div>
+            <!-- Date Display Box -->
+            <div class="date-display-box" onclick="openCalendarModal()">
+                <div class="current-date">
+                    <span>📅 आज की तारीख</span>
+                    <span id="selectedDateDisplay">22 February 2026</span>
                 </div>
-                
-                <div class="weekdays">
-                    <span>सोम</span>
-                    <span>मंगल</span>
-                    <span>बुध</span>
-                    <span>गुरु</span>
-                    <span>शुक्र</span>
-                    <span>शनि</span>
-                    <span>रवि</span>
-                </div>
-                
-                <div class="calendar-days" id="calendarDays"></div>
-                
-                <div class="selected-date-display">
-                    <span id="selectedDateDisplay">आज की तारीख चुनें</span>
-                    <button class="btn btn-success" onclick="loadQuizForSelectedDate()" style="white-space: nowrap;">🔍 क्विज देखें</button>
-                </div>
+                <div class="calendar-icon">📆</div>
             </div>
             
             <div id="questionsList">
@@ -656,28 +635,56 @@
         </div>
     </div>
 
-    <!-- Admin Password Modal -->
-    <div class="modal" id="adminModal">
-        <div class="modal-content">
+    <!-- Calendar Modal -->
+    <div class="calendar-modal" id="calendarModal">
+        <div class="calendar-modal-content">
+            <div class="calendar-header">
+                <h3 id="modalCalendarMonthYear">फरवरी 2026</h3>
+                <div class="calendar-nav">
+                    <button onclick="changeModalMonth(-1)">←</button>
+                    <button onclick="changeModalMonth(1)">→</button>
+                </div>
+            </div>
+            
+            <div class="weekdays">
+                <span>सोम</span>
+                <span>मंगल</span>
+                <span>बुध</span>
+                <span>गुरु</span>
+                <span>शुक्र</span>
+                <span>शनि</span>
+                <span>रवि</span>
+            </div>
+            
+            <div class="calendar-days" id="modalCalendarDays"></div>
+            
+            <div class="calendar-actions">
+                <button class="cancel" onclick="closeCalendarModal()">रद्द करें</button>
+                <button class="confirm" onclick="confirmDateSelection()">चुनें</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Modal -->
+    <div class="admin-modal" id="adminModal">
+        <div class="admin-modal-content">
             <h3>🔐 एडमिन पासवर्ड</h3>
             <input type="password" id="modalPassword" placeholder="पासवर्ड डालें">
-            <div class="modal-buttons">
+            <div class="admin-modal-buttons">
                 <button class="btn btn-primary" onclick="verifyAdmin()">लॉगिन</button>
-                <button class="btn btn-info" onclick="closeModal()">कैंसल</button>
+                <button class="btn btn-info" onclick="closeAdminModal()">कैंसल</button>
             </div>
         </div>
     </div>
 
     <script>
-        // ==================== YOUR JSONBIN CONFIGURATION ====================
         const JSONBIN_CONFIG = {
             masterKey: '$2a$10$XL4iuq0g8lswBdQN2KIhh.QodRh.0QEmO0nxno45VV3DR14ZVmzkK',
             masterBinId: '6997e25cd0ea881f40c8983b',
             apiUrl: 'https://api.jsonbin.io/v3',
-            adminPassword: 'admin@123' // Change this to your password
+            adminPassword: 'admin@123'
         };
 
-        // ==================== DEFAULT QUIZ DATA ====================
         const defaultQuiz = {
             quiz: [
                 {
@@ -686,38 +693,30 @@
                     correct: 0,
                     explanation: "मुख्यमंत्री अन्नपूर्णा योजना के तहत राजस्थान सरकार गरीबों को ₹8 में भोजन उपलब्ध करा रही है।",
                     category: "राजस्थान योजनाएं"
-                },
-                {
-                    question: "राइजिंग राजस्थान ग्लोबल इन्वेस्टमेंट समिट 2024 में कितने रुपये के निवेश प्रस्ताव आए?",
-                    options: ["12.5 लाख करोड़", "10 लाख करोड़", "15 लाख करोड़", "8 लाख करोड़"],
-                    correct: 0,
-                    explanation: "राइजिंग राजस्थान समिट 2024 में 12.5 लाख करोड़ रुपये के निवेश प्रस्ताव आए।",
-                    category: "राजस्थान अर्थव्यवस्था"
                 }
             ]
         };
 
-        // ==================== GLOBAL VARIABLES ====================
         let currentQuiz = [];
         let userAnswers = [];
         let dateBinMap = {};
         let allBins = [];
-        let currentDate = new Date();
+        let currentModalDate = new Date();
         let selectedDate = new Date();
         let isAdmin = false;
 
-        // ==================== INITIALIZE ====================
         async function initialize() {
             await loadAllBins();
             
-            // Set current date as selected
+            // Set current date
             const today = new Date();
             selectedDate = new Date(today);
-            currentDate = new Date(today);
+            currentModalDate = new Date(today);
             
-            renderCalendar();
+            updateSelectedDateDisplay();
+            renderModalCalendar();
             
-            // Try to load today's quiz
+            // Load today's quiz
             const todayStr = formatDate(today);
             if (dateBinMap[todayStr]) {
                 loadQuizByDate(todayStr);
@@ -730,87 +729,81 @@
             }
         }
 
-        // ==================== FORMAT DATE ====================
         function formatDate(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         }
 
-        // ==================== RENDER CALENDAR ====================
-        function renderCalendar() {
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
+        function updateSelectedDateDisplay() {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('selectedDateDisplay').textContent = 
+                selectedDate.toLocaleDateString('hi-IN', options);
+        }
+
+        // Calendar Modal Functions
+        function openCalendarModal() {
+            document.getElementById('calendarModal').classList.add('active');
+            renderModalCalendar();
+        }
+
+        function closeCalendarModal() {
+            document.getElementById('calendarModal').classList.remove('active');
+        }
+
+        function renderModalCalendar() {
+            const year = currentModalDate.getFullYear();
+            const month = currentModalDate.getMonth();
             
             const monthNames = ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून',
                 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
             
-            document.getElementById('calendarMonthYear').textContent = 
+            document.getElementById('modalCalendarMonthYear').textContent = 
                 `${monthNames[month]} ${year}`;
             
-            const firstDay = new Date(year, month, 1).getDay(); // 0 = Sunday
+            const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-            
-            // Adjust for Monday first (0 = Monday, 6 = Sunday)
             const startDay = firstDay === 0 ? 6 : firstDay - 1;
             
             let calendarHTML = '';
             
-            // Empty cells for days before month starts
             for (let i = 0; i < startDay; i++) {
                 calendarHTML += '<div class="calendar-day empty"></div>';
             }
             
-            // Days of the month
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const hasQuiz = dateBinMap[dateStr] ? true : false;
                 const isSelected = selectedDate.getFullYear() === year && 
                                   selectedDate.getMonth() === month && 
                                   selectedDate.getDate() === day;
-                const isToday = new Date().getFullYear() === year && 
-                               new Date().getMonth() === month && 
-                               new Date().getDate() === day;
-                
-                let additionalClass = '';
-                if (isToday && !isSelected) additionalClass = ' today';
                 
                 calendarHTML += `
-                    <div class="calendar-day ${hasQuiz ? 'has-quiz' : ''} ${isSelected ? 'selected' : ''}${additionalClass}" 
-                         onclick="selectDate(${year}, ${month}, ${day})">
+                    <div class="calendar-day ${hasQuiz ? 'has-quiz' : ''} ${isSelected ? 'selected' : ''}" 
+                         onclick="selectModalDate(${year}, ${month}, ${day})">
                         <span class="day-number">${day}</span>
                         ${hasQuiz ? '<span class="quiz-indicator">📝</span>' : ''}
                     </div>
                 `;
             }
             
-            document.getElementById('calendarDays').innerHTML = calendarHTML;
-            
-            // Update selected date display
-            updateSelectedDateDisplay();
+            document.getElementById('modalCalendarDays').innerHTML = calendarHTML;
         }
 
-        // ==================== SELECT DATE ====================
-        function selectDate(year, month, day) {
+        function changeModalMonth(delta) {
+            currentModalDate.setMonth(currentModalDate.getMonth() + delta);
+            renderModalCalendar();
+        }
+
+        function selectModalDate(year, month, day) {
             selectedDate = new Date(year, month, day);
-            renderCalendar();
+            renderModalCalendar();
         }
 
-        // ==================== CHANGE MONTH ====================
-        function changeMonth(delta) {
-            currentDate.setMonth(currentDate.getMonth() + delta);
-            renderCalendar();
+        function confirmDateSelection() {
+            updateSelectedDateDisplay();
+            closeCalendarModal();
+            loadQuizForSelectedDate();
         }
 
-        // ==================== UPDATE SELECTED DATE DISPLAY ====================
-        function updateSelectedDateDisplay() {
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            const displayDate = selectedDate.toLocaleDateString('hi-IN', options);
-            document.getElementById('selectedDateDisplay').textContent = displayDate;
-        }
-
-        // ==================== LOAD QUIZ FOR SELECTED DATE ====================
         function loadQuizForSelectedDate() {
             const dateStr = formatDate(selectedDate);
             
@@ -827,139 +820,17 @@
             }
         }
 
-        // ==================== ADMIN LOGIN ====================
-        function adminLogin() {
-            document.getElementById('adminModal').classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('adminModal').classList.remove('active');
-        }
-
-        function verifyAdmin() {
-            const password = document.getElementById('modalPassword').value;
-            if (password === JSONBIN_CONFIG.adminPassword) {
-                isAdmin = true;
-                document.getElementById('adminModal').classList.remove('active');
-                document.getElementById('adminLoginForm').style.display = 'none';
-                document.getElementById('adminControls').style.display = 'block';
-                document.getElementById('modeDisplay').textContent = '🔑 एडमिन मोड';
-                alert('✅ एडमिन लॉगिन सफल! अब आप एडिट कर सकते हैं।');
-            } else {
-                alert('❌ गलत पासवर्ड');
-            }
-        }
-
-        function logoutAdmin() {
-            isAdmin = false;
-            document.getElementById('adminLoginForm').style.display = 'flex';
-            document.getElementById('adminControls').style.display = 'none';
-            document.getElementById('generateSection').style.display = 'none';
-            document.getElementById('shareSection').style.display = 'none';
-            document.getElementById('modeDisplay').textContent = '👁️ व्यू मोड';
-            document.getElementById('modalPassword').value = '';
-        }
-
-        function showEditMode() {
-            document.getElementById('generateSection').style.display = 'block';
-            // Set selected date in edit mode
-            document.getElementById('quizDateInput').value = formatDate(selectedDate);
-            // Load quiz for editing if exists
-            const dateStr = formatDate(selectedDate);
-            if (dateBinMap[dateStr]) {
-                loadQuizForEdit();
-            }
-        }
-
-        // ==================== LOAD ALL BINS ====================
-        async function loadAllBins() {
-            try {
-                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.masterBinId}/latest`, {
-                    headers: {
-                        'X-Master-Key': JSONBIN_CONFIG.masterKey
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.record && data.record.dateMap) {
-                        dateBinMap = data.record.dateMap;
-                    }
-                    if (data.record && data.record.bins) {
-                        allBins = data.record.bins;
-                    }
-                }
-            } catch (error) {
-                console.log('Error loading bins:', error);
-            }
-        }
-
-        // ==================== LOAD QUIZ FOR EDIT ====================
-        async function loadQuizForEdit() {
-            const date = document.getElementById('quizDateInput').value;
-            
-            if (!date) {
-                alert('❌ कोई तारीख चुनें!');
-                return;
-            }
-
-            const binId = dateBinMap[date];
-            
-            if (!binId) {
-                alert('📝 इस डेट के लिए कोई क्विज नहीं है। आप नया बना सकते हैं!');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${binId}/latest`, {
-                    headers: {
-                        'X-Master-Key': JSONBIN_CONFIG.masterKey
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    document.getElementById('jsonInput').value = JSON.stringify({ quiz: data.record.quiz }, null, 2);
-                    
-                    const statusDiv = document.getElementById('binStatus');
-                    statusDiv.innerHTML = `✅ ${date} का क्विज लोड हो गया | Bin ID: ${binId}`;
-                    statusDiv.style.color = '#28a745';
-                }
-            } catch (error) {
-                alert('❌ क्विज लोड करने में समस्या: ' + error.message);
-            }
-        }
-
-        // ==================== LOAD QUIZ BY DATE ====================
         async function loadQuizByDate(date) {
             const binId = dateBinMap[date];
             
-            if (!binId) {
-                document.getElementById('questionsList').innerHTML = `
-                    <div class="error-message">
-                        📅 ${new Date(date).toLocaleDateString('hi-IN', { year: 'numeric', month: 'long', day: 'numeric' })} के लिए कोई क्विज नहीं है।
-                    </div>
-                `;
-                return;
-            }
+            if (!binId) return;
 
-            document.getElementById('questionsList').innerHTML = `
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <div>⏳ क्विज लोड हो रहा है...</div>
-                </div>
-            `;
+            document.getElementById('questionsList').innerHTML = '<div class="loading"><div class="spinner"></div><div>⏳ क्विज लोड हो रहा है...</div></div>';
 
             try {
                 const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${binId}/latest`, {
-                    headers: {
-                        'X-Master-Key': JSONBIN_CONFIG.masterKey
-                    }
+                    headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
                 });
-
-                if (!response.ok) {
-                    throw new Error('क्विज नहीं मिला');
-                }
 
                 const data = await response.json();
                 const quizData = data.record.quiz;
@@ -969,147 +840,33 @@
                     userAnswers = new Array(currentQuiz.length).fill(null);
                     displayQuestions(currentQuiz);
                     
-                    const displayDate = new Date(date).toLocaleDateString('hi-IN', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    });
-                    
                     document.getElementById('questionCount').textContent = `${currentQuiz.length} प्रश्न`;
-                    document.getElementById('quizDate').textContent = displayDate;
+                    document.getElementById('quizDate').textContent = 
+                        new Date(date).toLocaleDateString('hi-IN', { year: 'numeric', month: 'long', day: 'numeric' });
                 }
-
             } catch (error) {
-                document.getElementById('questionsList').innerHTML = `
-                    <div class="error-message">
-                        ❌ ${error.message}
-                    </div>
-                `;
+                document.getElementById('questionsList').innerHTML = `<div class="error-message">❌ ${error.message}</div>`;
             }
         }
 
-        // ==================== SAVE TO JSONBIN ====================
-        async function saveQuizToJSONBin() {
-            if (!isAdmin) {
-                alert('❌ केवल एडमिन ही सेव कर सकते हैं!');
-                return;
-            }
-
+        async function loadAllBins() {
             try {
-                const jsonText = document.getElementById('jsonInput').value.trim();
-                const quizDate = document.getElementById('quizDateInput').value;
-                
-                if (!jsonText) {
-                    alert('❌ JSON पेस्ट करें!');
-                    return;
-                }
-
-                if (!quizDate) {
-                    alert('❌ तारीख चुनें!');
-                    return;
-                }
-
-                const quizData = JSON.parse(jsonText);
-                if (!quizData.quiz || !Array.isArray(quizData.quiz)) {
-                    alert('❌ Invalid JSON format. "quiz" array required.');
-                    return;
-                }
-
-                let binId = dateBinMap[quizDate];
-                let response;
-
-                if (binId) {
-                    // Update existing bin
-                    response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${binId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Master-Key': JSONBIN_CONFIG.masterKey
-                        },
-                        body: JSON.stringify({
-                            quiz: quizData.quiz,
-                            updated: new Date().toISOString(),
-                            date: quizDate,
-                            title: `करंट अफेयर्स क्विज - ${quizDate}`
-                        })
-                    });
-                } else {
-                    // Create new bin
-                    response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Master-Key': JSONBIN_CONFIG.masterKey
-                        },
-                        body: JSON.stringify({
-                            quiz: quizData.quiz,
-                            created: new Date().toISOString(),
-                            date: quizDate,
-                            title: `करंट अफेयर्स क्विज - ${quizDate}`
-                        })
-                    });
-                }
-
-                const data = await response.json();
-                const newBinId = binId || data.metadata.id;
-
-                // Update master bin
-                if (!binId) {
-                    allBins.push({
-                        binId: newBinId,
-                        date: quizDate,
-                        title: `करंट अफेयर्स क्विज - ${quizDate}`,
-                        created: new Date().toISOString()
-                    });
-                }
-
-                dateBinMap[quizDate] = newBinId;
-
-                // Save to master bin
-                const masterResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.masterBinId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': JSONBIN_CONFIG.masterKey
-                    },
-                    body: JSON.stringify({
-                        dateMap: dateBinMap,
-                        bins: allBins,
-                        lastUpdated: new Date().toISOString()
-                    })
+                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.masterBinId}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
                 });
 
-                if (masterResponse.ok) {
-                    // Generate shareable URL
-                    const baseUrl = window.location.origin + window.location.pathname;
-                    const shareUrl = baseUrl + '?date=' + quizDate;
-
-                    // Show share section
-                    document.getElementById('quizId').textContent = newBinId;
-                    document.getElementById('shareUrl').value = shareUrl;
-                    document.getElementById('shareSection').style.display = 'block';
-
-                    // Show success message
-                    const statusDiv = document.getElementById('binStatus');
-                    statusDiv.innerHTML = `✅ क्विज सेव हो गया! तारीख: ${quizDate} | Bin ID: ${newBinId}`;
-                    statusDiv.style.color = '#28a745';
-                    
-                    alert('✅ क्विज JSONBin में सेव हो गया!\nतारीख: ' + quizDate);
-                    
-                    // Refresh calendar
-                    renderCalendar();
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.record && data.record.dateMap) dateBinMap = data.record.dateMap;
+                    if (data.record && data.record.bins) allBins = data.record.bins;
                 }
-
             } catch (error) {
-                alert('❌ Error: ' + error.message);
+                console.log('Error loading bins:', error);
             }
         }
 
-        // ==================== DISPLAY QUESTIONS ====================
         function displayQuestions(questions) {
-            const questionsList = document.getElementById('questionsList');
             let html = '';
-
             questions.forEach((q, index) => {
                 html += `
                     <div class="question-item">
@@ -1129,17 +886,13 @@
                     </div>
                 `;
             });
-
-            questionsList.innerHTML = html;
+            document.getElementById('questionsList').innerHTML = html;
         }
 
-        // ==================== SELECT OPTION ====================
         function selectOption(questionIndex, optionIndex, correctIndex) {
             for (let i = 0; i < 4; i++) {
                 const opt = document.getElementById(`opt-${questionIndex}-${i}`);
-                if (opt) {
-                    opt.classList.remove('selected-correct', 'selected-wrong');
-                }
+                if (opt) opt.classList.remove('selected-correct', 'selected-wrong');
             }
 
             const selectedOpt = document.getElementById(`opt-${questionIndex}-${optionIndex}`);
@@ -1152,37 +905,150 @@
                 correctOpt.classList.add('selected-correct');
             }
 
-            const explanation = document.getElementById(`exp-${questionIndex}`);
-            if (explanation) {
-                explanation.classList.add('show');
+            document.getElementById(`exp-${questionIndex}`).classList.add('show');
+        }
+
+        // Admin Functions
+        function openAdminModal() {
+            document.getElementById('adminModal').classList.add('active');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.remove('active');
+        }
+
+        function verifyAdmin() {
+            const password = document.getElementById('modalPassword').value;
+            if (password === JSONBIN_CONFIG.adminPassword) {
+                isAdmin = true;
+                closeAdminModal();
+                document.getElementById('adminLoginForm').style.display = 'none';
+                document.getElementById('adminControls').style.display = 'block';
+                document.getElementById('modeDisplay').textContent = '🔑 एडमिन मोड';
+                alert('✅ एडमिन लॉगिन सफल!');
+            } else {
+                alert('❌ गलत पासवर्ड');
             }
         }
 
-        // ==================== LOAD SAMPLE JSON ====================
+        function logoutAdmin() {
+            isAdmin = false;
+            document.getElementById('adminLoginForm').style.display = 'flex';
+            document.getElementById('adminControls').style.display = 'none';
+            document.getElementById('generateSection').style.display = 'none';
+            document.getElementById('shareSection').style.display = 'none';
+            document.getElementById('modeDisplay').textContent = '👁️ व्यू मोड';
+        }
+
+        function showEditMode() {
+            document.getElementById('generateSection').style.display = 'block';
+            document.getElementById('quizDateInput').value = formatDate(selectedDate);
+        }
+
         function loadSampleJSON() {
             document.getElementById('jsonInput').value = JSON.stringify(defaultQuiz, null, 2);
         }
 
-        // ==================== COPY SHARE URL ====================
         function copyShareUrl() {
             const url = document.getElementById('shareUrl');
             url.select();
             document.execCommand('copy');
-
+            
             const msg = document.createElement('div');
             msg.className = 'copy-message';
-            msg.textContent = '✅ URL कॉपी हो गया! अब शेयर करें';
+            msg.textContent = '✅ URL कॉपी हो गया!';
             document.body.appendChild(msg);
             setTimeout(() => msg.remove(), 2000);
         }
 
-        // ==================== INITIALIZE ON LOAD ====================
+        // Save Quiz Function
+        async function saveQuizToJSONBin() {
+            if (!isAdmin) {
+                alert('❌ केवल एडमिन ही सेव कर सकते हैं!');
+                return;
+            }
+
+            try {
+                const jsonText = document.getElementById('jsonInput').value.trim();
+                const quizDate = document.getElementById('quizDateInput').value;
+                
+                if (!jsonText || !quizDate) {
+                    alert('❌ JSON और तारीख दोनों भरें!');
+                    return;
+                }
+
+                const quizData = JSON.parse(jsonText);
+                if (!quizData.quiz) {
+                    alert('❌ Invalid JSON format');
+                    return;
+                }
+
+                let binId = dateBinMap[quizDate];
+                let response;
+
+                if (binId) {
+                    response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${binId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Master-Key': JSONBIN_CONFIG.masterKey
+                        },
+                        body: JSON.stringify({
+                            quiz: quizData.quiz,
+                            updated: new Date().toISOString(),
+                            date: quizDate
+                        })
+                    });
+                } else {
+                    response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Master-Key': JSONBIN_CONFIG.masterKey
+                        },
+                        body: JSON.stringify({
+                            quiz: quizData.quiz,
+                            created: new Date().toISOString(),
+                            date: quizDate
+                        })
+                    });
+                }
+
+                const data = await response.json();
+                const newBinId = binId || data.metadata.id;
+
+                if (!binId) {
+                    allBins.push({ binId: newBinId, date: quizDate });
+                }
+                dateBinMap[quizDate] = newBinId;
+
+                await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.masterBinId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_CONFIG.masterKey
+                    },
+                    body: JSON.stringify({
+                        dateMap: dateBinMap,
+                        bins: allBins,
+                        lastUpdated: new Date().toISOString()
+                    })
+                });
+
+                document.getElementById('shareSection').style.display = 'block';
+                document.getElementById('quizId').textContent = newBinId;
+                document.getElementById('shareUrl').value = 
+                    window.location.origin + window.location.pathname + '?date=' + quizDate;
+                
+                alert('✅ क्विज सेव हो गया!');
+                renderModalCalendar();
+
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        }
+
         window.addEventListener('load', initialize);
-        
-        // Handle resize events
-        window.addEventListener('resize', function() {
-            // Optional: adjust anything on resize
-        });
     </script>
 </body>
 </html>
