@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>करंट अफेयर्स क्विज - GitHub + JSONBin</title>
+    <title>करंट अफेयर्स क्विज - दैनिक क्विज</title>
     <style>
         * {
             margin: 0;
@@ -12,7 +12,7 @@
             font-family: 'Segoe UI', 'Nirmala UI', sans-serif;
         }
         body {
-            background: linear-gradient(145deg, #0b1f33 0%, #1a374d 100%);
+            background: linear-gradient(145deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 15px;
         }
@@ -21,15 +21,19 @@
             margin: 0 auto;
         }
         .header {
-            background: linear-gradient(145deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
+            background: white;
+            color: #333;
             padding: 30px;
             border-radius: 25px 25px 0 0;
             text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
         .header h1 {
             font-size: 2.2rem;
             margin-bottom: 10px;
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         .mode-badge {
             display: inline-block;
@@ -47,10 +51,35 @@
             background: #ffc107;
             color: #000;
         }
+        .admin-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .admin-login {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .admin-login input {
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 40px;
+            font-size: 1rem;
+            width: 250px;
+        }
+        .admin-login .btn {
+            padding: 12px 30px;
+        }
         .generate-section {
             background: white;
             padding: 30px;
-            border-radius: 0 0 25px 25px;
+            border-radius: 25px;
             margin-bottom: 25px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
@@ -79,12 +108,12 @@
             margin: 5px;
         }
         .btn-primary {
-            background: #1e3c72;
+            background: linear-gradient(145deg, #667eea, #764ba2);
             color: white;
         }
         .btn-primary:hover {
-            background: #2a5298;
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
         .btn-success {
             background: #28a745;
@@ -92,33 +121,14 @@
         }
         .btn-success:hover {
             background: #218838;
+            transform: translateY(-2px);
         }
         .btn-info {
             background: #17a2b8;
             color: white;
         }
-        .btn-warning {
-            background: #ff9800;
-            color: white;
-        }
-        .btn-warning:hover {
-            background: #e68900;
-            transform: translateY(-2px);
-        }
-        .btn-edit {
-            background: #6f42c1;
-            color: white;
-        }
-        .btn-edit:hover {
-            background: #5a32a3;
-            transform: translateY(-2px);
-        }
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-        .btn-danger:hover {
-            background: #c82333;
+        .btn-info:hover {
+            background: #138496;
             transform: translateY(-2px);
         }
         .share-section {
@@ -126,7 +136,7 @@
             padding: 30px;
             border-radius: 25px;
             margin: 25px 0;
-            border: 3px dashed #1e3c72;
+            border: 3px dashed #667eea;
         }
         .share-box {
             display: flex;
@@ -144,7 +154,7 @@
             background: #f8f9fa;
         }
         .quiz-id-box {
-            background: #1e3c72;
+            background: linear-gradient(145deg, #667eea, #764ba2);
             color: white;
             padding: 10px 22px;
             border-radius: 40px;
@@ -175,81 +185,139 @@
             border-radius: 40px;
             font-weight: 600;
         }
-        .date-picker-section {
-            background: #f8f9fa;
-            padding: 20px 25px;
+        
+        /* Calendar Style Date Picker */
+        .calendar-section {
+            background: white;
             border-radius: 20px;
-            margin-bottom: 25px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+        .calendar-header h3 {
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .calendar-nav {
+            display: flex;
+            gap: 15px;
+        }
+        .calendar-nav button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            border: 2px solid #e9ecef;
-        }
-        .date-picker-section label {
-            font-weight: 600;
-            color: #1e3c72;
-            font-size: 1.1rem;
-        }
-        .date-picker-section input[type="date"] {
-            padding: 12px 20px;
-            border: 2px solid #dee2e6;
-            border-radius: 40px;
-            font-size: 1rem;
-            font-family: 'Segoe UI', sans-serif;
-            background: white;
-            min-width: 250px;
-        }
-        .date-picker-section .btn-load {
-            background: #1e3c72;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 40px;
-            font-weight: 600;
-            cursor: pointer;
             transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
+            color: #667eea;
         }
-        .date-picker-section .btn-load:hover {
-            background: #2a5298;
-            transform: translateY(-2px);
+        .calendar-nav button:hover {
+            background: #f0f0f0;
         }
-        .available-dates {
-            background: #e9ecef;
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 20px;
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
             text-align: center;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 10px;
+            padding: 10px 0;
         }
-        .date-chip {
-            display: inline-block;
-            background: white;
-            padding: 8px 16px;
-            border-radius: 30px;
-            margin: 5px;
+        .weekdays span {
+            padding: 10px;
+            font-size: 0.95rem;
+        }
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
             cursor: pointer;
-            border: 2px solid #1e3c72;
-            font-weight: 500;
             transition: 0.2s;
+            font-weight: 500;
+            position: relative;
+            background: #f8f9fa;
         }
-        .date-chip:hover {
-            background: #1e3c72;
+        .calendar-day:hover {
+            background: #e9ecef;
+            transform: scale(1.05);
+        }
+        .calendar-day.selected {
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        .calendar-day.has-quiz {
+            border: 2px solid #28a745;
+        }
+        .calendar-day.has-quiz.selected {
+            border: 2px solid white;
+        }
+        .calendar-day.empty {
+            background: none;
+            cursor: default;
+        }
+        .calendar-day.empty:hover {
+            background: none;
+            transform: none;
+        }
+        .day-number {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .quiz-indicator {
+            font-size: 0.7rem;
+            margin-top: 2px;
+            color: #28a745;
+        }
+        .calendar-day.selected .quiz-indicator {
             color: white;
         }
-        .date-chip.active {
-            background: #1e3c72;
-            color: white;
+        .selected-date-display {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
         }
+        .selected-date-display span {
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 25px;
+            border-radius: 40px;
+            margin-left: 10px;
+        }
+        
         .question-item {
             background: #f8f9fa;
             border-radius: 18px;
             padding: 22px;
             margin-bottom: 22px;
-            border-left: 6px solid #1e3c72;
+            border-left: 6px solid #667eea;
         }
         .category-tag {
             display: inline-block;
@@ -263,7 +331,7 @@
         .question-text {
             font-size: 1.2rem;
             font-weight: 600;
-            color: #1e3c72;
+            color: #333;
             margin-bottom: 18px;
         }
         .options {
@@ -282,7 +350,7 @@
         }
         .option:hover {
             background: #e9ecef;
-            border-color: #1e3c72;
+            border-color: #667eea;
         }
         .option.selected-correct {
             background: #d4edda;
@@ -310,7 +378,7 @@
             width: 60px;
             height: 60px;
             border: 6px solid #f3f3f3;
-            border-top: 6px solid #1e3c72;
+            border-top: 6px solid #667eea;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
@@ -355,87 +423,47 @@
             margin: 10px 0;
             text-align: center;
         }
-        .date-input-group {
-            background: #f0f4f8;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            display: flex;
+        
+        /* Admin Password Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
             align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
         }
-        .date-input-group label {
-            font-weight: 600;
-            color: #1e3c72;
-            font-size: 1.1rem;
+        .modal.active {
+            display: flex;
         }
-        .date-input-group input[type="date"] {
-            padding: 12px 20px;
-            border: 2px solid #dee2e6;
-            border-radius: 40px;
-            font-size: 1rem;
-            flex: 1;
-            min-width: 200px;
-        }
-        .bin-list {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .bin-item {
+        .modal-content {
             background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            border-left: 4px solid #1e3c72;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
+            padding: 30px;
+            border-radius: 25px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
         }
-        .bin-info {
-            flex: 1;
-        }
-        .bin-id {
-            font-family: monospace;
-            background: #e9ecef;
-            padding: 3px 8px;
-            border-radius: 5px;
-            font-size: 0.9rem;
-        }
-        .bin-actions {
-            display: flex;
-            gap: 10px;
-        }
-        .small-btn {
-            padding: 8px 15px;
-            font-size: 0.9rem;
-        }
-        .nav-tabs {
-            display: flex;
-            gap: 10px;
+        .modal-content h3 {
             margin-bottom: 20px;
-            border-bottom: 2px solid #dee2e6;
-            padding-bottom: 10px;
+            color: #333;
         }
-        .nav-tab {
-            padding: 10px 25px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.2s;
+        .modal-content input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 40px;
+            margin-bottom: 20px;
+            font-size: 1rem;
         }
-        .nav-tab.active {
-            background: #1e3c72;
-            color: white;
-        }
-        .nav-tab:hover {
-            background: #e9ecef;
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
         }
     </style>
 </head>
@@ -444,26 +472,29 @@
         <!-- Header -->
         <div class="header">
             <h1>📚 करंट अफेयर्स क्विज</h1>
-            <p>GitHub + JSONBin Permanent Storage | डेट वाइज आर्काइव</p>
-            <div id="modeDisplay" class="mode-badge">👁️ लोड हो रहा है...</div>
+            <p>दैनिक क्विज - हर दिन नया सवाल</p>
+            <div id="modeDisplay" class="mode-badge view">👁️ व्यू मोड</div>
         </div>
 
-        <!-- Navigation Tabs -->
-        <div class="nav-tabs" id="navTabs">
-            <span class="nav-tab active" onclick="switchMode('edit')" id="tabEdit">✏️ एडिट मोड</span>
-            <span class="nav-tab" onclick="switchMode('view')" id="tabView">👁️ व्यू मोड</span>
+        <!-- Admin Login Section (Only visible to admin) -->
+        <div class="admin-section" id="adminSection">
+            <div id="adminLoginForm" class="admin-login">
+                <input type="password" id="adminPassword" placeholder="एडमिन पासवर्ड डालें">
+                <button class="btn btn-primary" onclick="adminLogin()">🔑 एडमिन लॉगिन</button>
+            </div>
+            <div id="adminControls" style="display: none;">
+                <button class="btn btn-warning" onclick="showEditMode()">✏️ एडिट मोड में जाएं</button>
+                <button class="btn btn-info" onclick="logoutAdmin()">🚪 लॉगआउट</button>
+            </div>
         </div>
 
-        <!-- Generate Section (Edit Mode) -->
-        <div id="generateSection" class="generate-section">
-            <h3 style="color: #1e3c72; margin-bottom: 15px;">📝 नया क्विज बनाएं / एडिट करें</h3>
+        <!-- Generate Section (Edit Mode - Only for Admin) -->
+        <div id="generateSection" class="generate-section" style="display: none;">
+            <h3 style="color: #333; margin-bottom: 15px;">📝 नया क्विज बनाएं / एडिट करें</h3>
             
-            <div class="date-input-group">
-                <label for="quizDateInput">📅 क्विज की तारीख:</label>
-                <input type="date" id="quizDateInput" class="form-control">
-                <button class="btn btn-info" onclick="loadQuizForEdit()">
-                    📂 इस डेट का क्विज लोड करें
-                </button>
+            <div style="margin-bottom: 20px;">
+                <label style="font-weight: 600; color: #333;">📅 तारीख:</label>
+                <input type="date" id="quizDateInput" style="padding: 12px; border-radius: 10px; border: 2px solid #e0e0e0; margin-left: 10px;">
             </div>
             
             <textarea id="jsonInput" class="json-input" placeholder='यहाँ JSON पेस्ट करें...'></textarea>
@@ -475,25 +506,16 @@
                 <button class="btn btn-info" onclick="loadSampleJSON()">
                     📋 सैंपल JSON
                 </button>
-                <button class="btn btn-warning" onclick="showAllBins()">
-                    📚 सभी बिन दिखाएं
-                </button>
             </div>
             
             <div style="margin-top: 15px; color: #28a745; font-size: 0.9rem; text-align: center;" id="binStatus">
                 ✅ JSONBin Connected
             </div>
-
-            <!-- Bin List -->
-            <div id="binListSection" style="display: none;">
-                <h4 style="color: #1e3c72; margin: 20px 0 10px;">📦 उपलब्ध बिन (क्विज)</h4>
-                <div class="bin-list" id="binList"></div>
-            </div>
         </div>
 
-        <!-- Share Section -->
+        <!-- Share Section (Only for Admin) -->
         <div id="shareSection" class="share-section" style="display: none;">
-            <h3 style="color: #1e3c72;">🔗 यह लिंक शेयर करें</h3>
+            <h3 style="color: #333;">🔗 यह लिंक शेयर करें</h3>
             
             <div class="quiz-id-box" style="margin: 15px auto;">
                 Quiz ID: <span id="quizId"></span>
@@ -503,35 +525,44 @@
                 <input type="text" id="shareUrl" class="share-input" readonly>
                 <button class="btn btn-success" onclick="copyShareUrl()">📋 कॉपी करें</button>
             </div>
-            
-            <p style="color: #28a745; text-align: center;">
-                ✅ यह URL GitHub Pages पर है | JSONBin से data fetch होगा
-            </p>
         </div>
 
-        <!-- Quiz Container (View Mode) -->
-        <div class="quiz-container" id="quizContainer" style="display: none;">
+        <!-- Quiz Container (View Mode - For Everyone) -->
+        <div class="quiz-container" id="quizContainer">
             <div class="quiz-header">
                 <div>
-                    <span class="source-badge" id="sourceBadge">📅 डेट वाइज क्विज</span>
+                    <span class="source-badge" id="sourceBadge">📅 दैनिक क्विज</span>
                     <span id="quizDate" style="margin-left: 10px; color: #666;"></span>
                 </div>
                 <span class="question-count" id="questionCount">0 प्रश्न</span>
             </div>
 
-            <!-- Date Picker Section (View Mode) -->
-            <div id="datePickerSection" class="date-picker-section">
-                <label for="quizDatePicker">📅 तारीख चुनें:</label>
-                <input type="date" id="quizDatePicker">
-                <button class="btn-load" onclick="loadQuizByDate()">
-                    🔍 यह डेट लोड करें
-                </button>
-            </div>
-
-            <!-- Available Dates -->
-            <div id="availableDatesSection" class="available-dates" style="display: none;">
-                <strong>📌 उपलब्ध तारीखें:</strong>
-                <div id="dateChips"></div>
+            <!-- Calendar Style Date Picker -->
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <h3 id="calendarMonthYear">January 2025</h3>
+                    <div class="calendar-nav">
+                        <button onclick="changeMonth(-1)">←</button>
+                        <button onclick="changeMonth(1)">→</button>
+                    </div>
+                </div>
+                
+                <div class="weekdays">
+                    <span>सोम</span>
+                    <span>मंगल</span>
+                    <span>बुध</span>
+                    <span>गुरु</span>
+                    <span>शुक्र</span>
+                    <span>शनि</span>
+                    <span>रवि</span>
+                </div>
+                
+                <div class="calendar-days" id="calendarDays"></div>
+                
+                <div class="selected-date-display">
+                    चुनी गई तारीख: <span id="selectedDateDisplay">15 January 2025</span>
+                    <button class="btn btn-success" onclick="loadQuizForSelectedDate()" style="margin-left: 15px;">🔍 क्विज देखें</button>
+                </div>
             </div>
             
             <div id="questionsList">
@@ -543,7 +574,19 @@
         </div>
         
         <div class="footer">
-            <p>📌 JSONBin Master Bin: 6997e25cd0ea881f40c8983b | डेट वाइज क्विज के लिए अलग बिन</p>
+            <p>📌 रोजाना नया क्विज - हर दिन सीखें कुछ नया</p>
+        </div>
+    </div>
+
+    <!-- Admin Password Modal -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <h3>🔐 एडमिन पासवर्ड</h3>
+            <input type="password" id="modalPassword" placeholder="पासवर्ड डालें">
+            <div class="modal-buttons">
+                <button class="btn btn-primary" onclick="verifyAdmin()">लॉगिन</button>
+                <button class="btn btn-info" onclick="closeModal()">कैंसल</button>
+            </div>
         </div>
     </div>
 
@@ -552,7 +595,8 @@
         const JSONBIN_CONFIG = {
             masterKey: '$2a$10$XL4iuq0g8lswBdQN2KIhh.QodRh.0QEmO0nxno45VV3DR14ZVmzkK',
             masterBinId: '6997e25cd0ea881f40c8983b',
-            apiUrl: 'https://api.jsonbin.io/v3'
+            apiUrl: 'https://api.jsonbin.io/v3',
+            adminPassword: 'admin@123' // Change this to your password
         };
 
         // ==================== DEFAULT QUIZ DATA ====================
@@ -578,57 +622,167 @@
         // ==================== GLOBAL VARIABLES ====================
         let currentQuiz = [];
         let userAnswers = [];
-        let allBins = []; // सभी बिन की लिस्ट
-        let dateBinMap = {}; // डेट -> binId मैपिंग
+        let dateBinMap = {};
+        let allBins = [];
+        let currentDate = new Date();
+        let selectedDate = new Date();
+        let isAdmin = false;
 
         // ==================== INITIALIZE ====================
         async function initialize() {
-            // सभी बिन लोड करें
             await loadAllBins();
-            
-            // डिफॉल्ट एडिट मोड दिखाएं
-            switchMode('edit');
+            renderCalendar();
+            // Try to load today's quiz
+            const today = formatDate(new Date());
+            if (dateBinMap[today]) {
+                loadQuizByDate(today);
+            } else {
+                document.getElementById('questionsList').innerHTML = `
+                    <div style="text-align: center; padding: 50px; color: #666;">
+                        📭 आज के लिए कोई क्विज नहीं है
+                    </div>
+                `;
+            }
         }
 
-        // ==================== SWITCH MODE ====================
-        function switchMode(mode) {
-            const tabEdit = document.getElementById('tabEdit');
-            const tabView = document.getElementById('tabView');
-            const generateSection = document.getElementById('generateSection');
-            const quizContainer = document.getElementById('quizContainer');
-            const modeDisplay = document.getElementById('modeDisplay');
+        // ==================== FORMAT DATE ====================
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
 
-            if (mode === 'edit') {
-                tabEdit.classList.add('active');
-                tabView.classList.remove('active');
-                generateSection.style.display = 'block';
-                quizContainer.style.display = 'none';
-                modeDisplay.textContent = '✏️ Edit Mode - नया क्विज बनाएं';
-                modeDisplay.className = 'mode-badge edit';
+        // ==================== RENDER CALENDAR ====================
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            document.getElementById('calendarMonthYear').textContent = 
+                `${monthNames[month]} ${year}`;
+            
+            const firstDay = new Date(year, month, 1).getDay(); // 0 = Sunday
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // Adjust for Monday first (0 = Monday, 6 = Sunday)
+            const startDay = firstDay === 0 ? 6 : firstDay - 1;
+            
+            let calendarHTML = '';
+            
+            // Empty cells for days before month starts
+            for (let i = 0; i < startDay; i++) {
+                calendarHTML += '<div class="calendar-day empty"></div>';
+            }
+            
+            // Days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const hasQuiz = dateBinMap[dateStr] ? true : false;
+                const isSelected = selectedDate.getFullYear() === year && 
+                                  selectedDate.getMonth() === month && 
+                                  selectedDate.getDate() === day;
                 
-                // Set today's date
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('quizDateInput').value = today;
-                
-                // Show all bins
-                displayAllBins();
+                calendarHTML += `
+                    <div class="calendar-day ${hasQuiz ? 'has-quiz' : ''} ${isSelected ? 'selected' : ''}" 
+                         onclick="selectDate(${year}, ${month}, ${day})">
+                        <span class="day-number">${day}</span>
+                        ${hasQuiz ? '<span class="quiz-indicator">📝</span>' : ''}
+                    </div>
+                `;
+            }
+            
+            document.getElementById('calendarDays').innerHTML = calendarHTML;
+            
+            // Update selected date display
+            updateSelectedDateDisplay();
+        }
+
+        // ==================== SELECT DATE ====================
+        function selectDate(year, month, day) {
+            selectedDate = new Date(year, month, day);
+            renderCalendar();
+        }
+
+        // ==================== CHANGE MONTH ====================
+        function changeMonth(delta) {
+            currentDate.setMonth(currentDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        // ==================== UPDATE SELECTED DATE DISPLAY ====================
+        function updateSelectedDateDisplay() {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const displayDate = selectedDate.toLocaleDateString('hi-IN', options);
+            document.getElementById('selectedDateDisplay').textContent = displayDate;
+        }
+
+        // ==================== LOAD QUIZ FOR SELECTED DATE ====================
+        function loadQuizForSelectedDate() {
+            const dateStr = formatDate(selectedDate);
+            
+            if (dateBinMap[dateStr]) {
+                loadQuizByDate(dateStr);
             } else {
-                tabView.classList.add('active');
-                tabEdit.classList.remove('active');
-                generateSection.style.display = 'none';
-                quizContainer.style.display = 'block';
-                modeDisplay.textContent = '👁️ View Mode - डेट चुनें';
-                modeDisplay.className = 'mode-badge view';
-                
-                // Display available dates
-                displayAvailableDates();
+                document.getElementById('questionsList').innerHTML = `
+                    <div class="error-message">
+                        📅 ${selectedDate.toLocaleDateString('hi-IN', { year: 'numeric', month: 'long', day: 'numeric' })} के लिए कोई क्विज नहीं है।
+                    </div>
+                `;
+                document.getElementById('quizDate').textContent = '';
+                document.getElementById('questionCount').textContent = '0 प्रश्न';
+            }
+        }
+
+        // ==================== ADMIN LOGIN ====================
+        function adminLogin() {
+            document.getElementById('adminModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('adminModal').classList.remove('active');
+        }
+
+        function verifyAdmin() {
+            const password = document.getElementById('modalPassword').value;
+            if (password === JSONBIN_CONFIG.adminPassword) {
+                isAdmin = true;
+                document.getElementById('adminModal').classList.remove('active');
+                document.getElementById('adminLoginForm').style.display = 'none';
+                document.getElementById('adminControls').style.display = 'block';
+                document.getElementById('modeDisplay').textContent = '🔑 एडमिन मोड';
+                alert('✅ एडमिन लॉगिन सफल! अब आप एडिट कर सकते हैं।');
+            } else {
+                alert('❌ गलत पासवर्ड');
+            }
+        }
+
+        function logoutAdmin() {
+            isAdmin = false;
+            document.getElementById('adminLoginForm').style.display = 'flex';
+            document.getElementById('adminControls').style.display = 'none';
+            document.getElementById('generateSection').style.display = 'none';
+            document.getElementById('shareSection').style.display = 'none';
+            document.getElementById('modeDisplay').textContent = '👁️ व्यू मोड';
+            document.getElementById('modalPassword').value = '';
+        }
+
+        function showEditMode() {
+            document.getElementById('generateSection').style.display = 'block';
+            // Set selected date in edit mode
+            document.getElementById('quizDateInput').value = formatDate(selectedDate);
+            // Load quiz for editing if exists
+            const dateStr = formatDate(selectedDate);
+            if (dateBinMap[dateStr]) {
+                loadQuizForEdit();
             }
         }
 
         // ==================== LOAD ALL BINS ====================
         async function loadAllBins() {
             try {
-                // Master bin से डेटा लोड करें
                 const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.masterBinId}/latest`, {
                     headers: {
                         'X-Master-Key': JSONBIN_CONFIG.masterKey
@@ -643,102 +797,10 @@
                     if (data.record && data.record.bins) {
                         allBins = data.record.bins;
                     }
-                } else {
-                    // Master bin नहीं है तो नया बनाएं
-                    await createMasterBin();
                 }
             } catch (error) {
                 console.log('Error loading bins:', error);
-                await createMasterBin();
             }
-        }
-
-        // ==================== CREATE MASTER BIN ====================
-        async function createMasterBin() {
-            try {
-                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': JSONBIN_CONFIG.masterKey
-                    },
-                    body: JSON.stringify({
-                        dateMap: {},
-                        bins: [],
-                        created: new Date().toISOString(),
-                        title: 'मास्टर क्विज डायरेक्टरी'
-                    })
-                });
-
-                const data = await response.json();
-                console.log('New master bin created:', data.metadata.id);
-            } catch (error) {
-                console.error('Error creating master bin:', error);
-            }
-        }
-
-        // ==================== DISPLAY ALL BINS ====================
-        function displayAllBins() {
-            if (allBins.length === 0) {
-                document.getElementById('binListSection').style.display = 'none';
-                return;
-            }
-
-            const binList = document.getElementById('binList');
-            let html = '';
-
-            // Sort by date (newest first)
-            const sortedBins = [...allBins].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            sortedBins.forEach(bin => {
-                const displayDate = bin.date ? new Date(bin.date).toLocaleDateString('hi-IN') : 'कोई डेट नहीं';
-                html += `
-                    <div class="bin-item">
-                        <div class="bin-info">
-                            <div><strong>📅 ${displayDate}</strong></div>
-                            <div><span class="bin-id">${bin.binId}</span></div>
-                            <div><small>${bin.title || 'Untitled'}</small></div>
-                        </div>
-                        <div class="bin-actions">
-                            <button class="btn btn-info small-btn" onclick="loadBinForEdit('${bin.binId}', '${bin.date}')">📝 एडिट</button>
-                            <button class="btn btn-success small-btn" onclick="viewBin('${bin.binId}', '${bin.date}')">👁️ देखें</button>
-                        </div>
-                    </div>
-                `;
-            });
-
-            binList.innerHTML = html;
-            document.getElementById('binListSection').style.display = 'block';
-        }
-
-        // ==================== LOAD BIN FOR EDIT ====================
-        async function loadBinForEdit(binId, date) {
-            try {
-                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${binId}/latest`, {
-                    headers: {
-                        'X-Master-Key': JSONBIN_CONFIG.masterKey
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    document.getElementById('jsonInput').value = JSON.stringify({ quiz: data.record.quiz }, null, 2);
-                    document.getElementById('quizDateInput').value = date;
-                    
-                    const statusDiv = document.getElementById('binStatus');
-                    statusDiv.innerHTML = `✅ ${date} का क्विज लोड हो गया | Bin ID: ${binId}`;
-                    statusDiv.style.color = '#28a745';
-                }
-            } catch (error) {
-                alert('❌ क्विज लोड करने में समस्या: ' + error.message);
-            }
-        }
-
-        // ==================== VIEW BIN ====================
-        function viewBin(binId, date) {
-            switchMode('view');
-            document.getElementById('quizDatePicker').value = date;
-            loadQuizByBinId(binId, date);
         }
 
         // ==================== LOAD QUIZ FOR EDIT ====================
@@ -757,78 +819,43 @@
                 return;
             }
 
-            await loadBinForEdit(binId, date);
-        }
-
-        // ==================== DISPLAY AVAILABLE DATES ====================
-        function displayAvailableDates() {
-            const dates = Object.keys(dateBinMap).sort().reverse();
-            
-            if (dates.length === 0) {
-                document.getElementById('availableDatesSection').style.display = 'none';
-                document.getElementById('questionsList').innerHTML = `
-                    <div class="error-message">
-                        📭 अभी तक कोई क्विज नहीं बनाया गया है।
-                        <br><br>
-                        <button class="btn btn-primary" onclick="switchMode('edit')">
-                            ✏️ नया क्विज बनाएं
-                        </button>
-                    </div>
-                `;
-                return;
-            }
-
-            const dateChips = document.getElementById('dateChips');
-            let html = '';
-            
-            dates.forEach(date => {
-                const displayDate = new Date(date).toLocaleDateString('hi-IN', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
+            try {
+                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${binId}/latest`, {
+                    headers: {
+                        'X-Master-Key': JSONBIN_CONFIG.masterKey
+                    }
                 });
-                html += `<span class="date-chip" onclick="loadQuizByDate('${date}')">📅 ${displayDate}</span>`;
-            });
-            
-            dateChips.innerHTML = html;
-            document.getElementById('availableDatesSection').style.display = 'block';
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('jsonInput').value = JSON.stringify({ quiz: data.record.quiz }, null, 2);
+                    
+                    const statusDiv = document.getElementById('binStatus');
+                    statusDiv.innerHTML = `✅ ${date} का क्विज लोड हो गया | Bin ID: ${binId}`;
+                    statusDiv.style.color = '#28a745';
+                }
+            } catch (error) {
+                alert('❌ क्विज लोड करने में समस्या: ' + error.message);
+            }
         }
 
         // ==================== LOAD QUIZ BY DATE ====================
         async function loadQuizByDate(date) {
-            if (!date) {
-                date = document.getElementById('quizDatePicker').value;
-            }
-            
-            if (!date) {
-                alert('❌ कोई तारीख चुनें!');
-                return;
-            }
-
             const binId = dateBinMap[date];
             
             if (!binId) {
                 document.getElementById('questionsList').innerHTML = `
                     <div class="error-message">
-                        📅 ${date} के लिए कोई क्विज नहीं है।
-                        <br><br>
-                        <button class="btn btn-primary" onclick="switchMode('edit')">
-                            ✏️ इस डेट के लिए क्विज बनाएं
-                        </button>
+                        📅 ${new Date(date).toLocaleDateString('hi-IN', { year: 'numeric', month: 'long', day: 'numeric' })} के लिए कोई क्विज नहीं है।
                     </div>
                 `;
                 return;
             }
 
-            await loadQuizByBinId(binId, date);
-        }
-
-        // ==================== LOAD QUIZ BY BIN ID ====================
-        async function loadQuizByBinId(binId, date) {
             document.getElementById('questionsList').innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div>⏳ ${date} का क्विज लोड हो रहा है...</div>
+                    <div>⏳ क्विज लोड हो रहा है...</div>
                 </div>
             `;
 
@@ -859,17 +886,12 @@
                     
                     document.getElementById('questionCount').textContent = `${currentQuiz.length} प्रश्न`;
                     document.getElementById('quizDate').textContent = displayDate;
-                    document.getElementById('sourceBadge').textContent = '📆 डेट वाइज क्विज';
                 }
 
             } catch (error) {
                 document.getElementById('questionsList').innerHTML = `
                     <div class="error-message">
                         ❌ ${error.message}
-                        <br><br>
-                        <button class="btn btn-primary" onclick="switchMode('edit')">
-                            ✏️ नया क्विज बनाएं
-                        </button>
                     </div>
                 `;
             }
@@ -877,6 +899,11 @@
 
         // ==================== SAVE TO JSONBIN ====================
         async function saveQuizToJSONBin() {
+            if (!isAdmin) {
+                alert('❌ केवल एडमिन ही सेव कर सकते हैं!');
+                return;
+            }
+
             try {
                 const jsonText = document.getElementById('jsonInput').value.trim();
                 const quizDate = document.getElementById('quizDateInput').value;
@@ -900,7 +927,6 @@
                 let binId = dateBinMap[quizDate];
                 let response;
 
-                // अगर पहले से बिन है तो उसे अपडेट करें, वरना नया बनाएं
                 if (binId) {
                     // Update existing bin
                     response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${binId}`, {
@@ -938,7 +964,6 @@
 
                 // Update master bin
                 if (!binId) {
-                    // Add to bins array
                     allBins.push({
                         binId: newBinId,
                         date: quizDate,
@@ -947,7 +972,6 @@
                     });
                 }
 
-                // Update date map
                 dateBinMap[quizDate] = newBinId;
 
                 // Save to master bin
@@ -981,20 +1005,13 @@
                     
                     alert('✅ क्विज JSONBin में सेव हो गया!\nतारीख: ' + quizDate);
                     
-                    // Update displays
-                    displayAllBins();
-                    displayAvailableDates();
+                    // Refresh calendar
+                    renderCalendar();
                 }
 
             } catch (error) {
                 alert('❌ Error: ' + error.message);
             }
-        }
-
-        // ==================== SHOW ALL BINS ====================
-        function showAllBins() {
-            displayAllBins();
-            document.getElementById('binListSection').style.display = 'block';
         }
 
         // ==================== DISPLAY QUESTIONS ====================
@@ -1027,7 +1044,6 @@
 
         // ==================== SELECT OPTION ====================
         function selectOption(questionIndex, optionIndex, correctIndex) {
-            // Remove previous selections
             for (let i = 0; i < 4; i++) {
                 const opt = document.getElementById(`opt-${questionIndex}-${i}`);
                 if (opt) {
@@ -1045,7 +1061,6 @@
                 correctOpt.classList.add('selected-correct');
             }
 
-            // Show explanation
             const explanation = document.getElementById(`exp-${questionIndex}`);
             if (explanation) {
                 explanation.classList.add('show');
