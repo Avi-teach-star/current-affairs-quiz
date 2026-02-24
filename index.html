@@ -107,6 +107,10 @@
             background: #17a2b8;
             color: white;
         }
+        .btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
         .generate-section {
             background: white;
             padding: clamp(20px, 4vw, 30px);
@@ -538,6 +542,17 @@
             flex-wrap: wrap;
         }
 
+        /* JSON Editor Actions */
+        .json-editor-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
         @media (max-width: 480px) {
             .date-display-box {
                 flex-direction: column;
@@ -584,12 +599,18 @@
                 <label style="font-weight: 600; color: #333;">📅 तारीख:</label>
                 <input type="date" id="quizDateInput" style="padding: 12px; border-radius: 10px; border: 2px solid #e0e0e0; margin-left: 10px;">
             </div>
-            
-            <textarea id="jsonInput" class="json-input" placeholder='यहाँ JSON पेस्ट करें...'></textarea>
-            
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+
+            <!-- JSON Editor Actions -->
+            <div class="json-editor-actions">
                 <button class="btn btn-primary" onclick="saveQuizToJSONBin()">💾 सेव करें</button>
+                <button class="btn btn-warning" onclick="editJSON()">✏️ JSON एडिट करें</button>
                 <button class="btn btn-info" onclick="loadSampleJSON()">📋 सैंपल JSON</button>
+                <button class="btn btn-success" onclick="formatJSON()">🔧 JSON फॉर्मेट करें</button>
+            </div>
+            
+            <textarea id="jsonInput" class="json-input" placeholder='यहाँ JSON पेस्ट करें...' readonly></textarea>
+            <div style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                ℹ️ JSON एडिट करने के लिए पहले "JSON एडिट करें" बटन पर क्लिक करें
             </div>
         </div>
 
@@ -925,6 +946,7 @@
                 document.getElementById('adminLoginForm').style.display = 'none';
                 document.getElementById('adminControls').style.display = 'block';
                 document.getElementById('modeDisplay').textContent = '🔑 एडमिन मोड';
+                document.getElementById('modeDisplay').className = 'mode-badge edit';
                 alert('✅ एडमिन लॉगिन सफल!');
             } else {
                 alert('❌ गलत पासवर्ड');
@@ -938,15 +960,65 @@
             document.getElementById('generateSection').style.display = 'none';
             document.getElementById('shareSection').style.display = 'none';
             document.getElementById('modeDisplay').textContent = '👁️ व्यू मोड';
+            document.getElementById('modeDisplay').className = 'mode-badge view';
+            document.getElementById('jsonInput').readOnly = true;
         }
 
         function showEditMode() {
             document.getElementById('generateSection').style.display = 'block';
             document.getElementById('quizDateInput').value = formatDate(selectedDate);
+            
+            // Load current quiz if exists for selected date
+            const dateStr = formatDate(selectedDate);
+            if (dateBinMap[dateStr]) {
+                loadQuizJSONForEdit(dateStr);
+            } else {
+                document.getElementById('jsonInput').value = JSON.stringify(defaultQuiz, null, 2);
+            }
+        }
+
+        async function loadQuizJSONForEdit(date) {
+            const binId = dateBinMap[date];
+            if (!binId) return;
+
+            try {
+                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${binId}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
+                });
+
+                const data = await response.json();
+                document.getElementById('jsonInput').value = JSON.stringify(data.record, null, 2);
+            } catch (error) {
+                alert('❌ क्विज लोड करने में त्रुटि: ' + error.message);
+            }
+        }
+
+        function editJSON() {
+            if (!isAdmin) {
+                alert('❌ केवल एडमिन ही JSON एडिट कर सकते हैं!');
+                return;
+            }
+            document.getElementById('jsonInput').readOnly = false;
+            document.getElementById('jsonInput').focus();
+            document.getElementById('jsonInput').style.backgroundColor = '#fff';
+            alert('✏️ अब आप JSON एडिट कर सकते हैं');
+        }
+
+        function formatJSON() {
+            try {
+                const jsonText = document.getElementById('jsonInput').value.trim();
+                if (jsonText) {
+                    const jsonObj = JSON.parse(jsonText);
+                    document.getElementById('jsonInput').value = JSON.stringify(jsonObj, null, 2);
+                }
+            } catch (error) {
+                alert('❌ Invalid JSON: ' + error.message);
+            }
         }
 
         function loadSampleJSON() {
             document.getElementById('jsonInput').value = JSON.stringify(defaultQuiz, null, 2);
+            document.getElementById('jsonInput').readOnly = false;
         }
 
         function copyShareUrl() {
@@ -979,12 +1051,28 @@
 
                 const quizData = JSON.parse(jsonText);
                 if (!quizData.quiz) {
-                    alert('❌ Invalid JSON format');
+                    alert('❌ Invalid JSON format - "quiz" array missing');
                     return;
+                }
+
+                // Validate quiz structure
+                for (let i = 0; i < quizData.quiz.length; i++) {
+                    const q = quizData.quiz[i];
+                    if (!q.question || !q.options || !Array.isArray(q.options) || q.options.length < 2 || 
+                        q.correct === undefined || q.correct < 0 || q.correct >= q.options.length) {
+                        alert(`❌ प्रश्न ${i+1} में त्रुटि: सभी फ़ील्ड सही से भरें`);
+                        return;
+                    }
                 }
 
                 let binId = dateBinMap[quizDate];
                 let response;
+
+                const saveData = {
+                    quiz: quizData.quiz,
+                    updated: new Date().toISOString(),
+                    date: quizDate
+                };
 
                 if (binId) {
                     response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${binId}`, {
@@ -993,11 +1081,7 @@
                             'Content-Type': 'application/json',
                             'X-Master-Key': JSONBIN_CONFIG.masterKey
                         },
-                        body: JSON.stringify({
-                            quiz: quizData.quiz,
-                            updated: new Date().toISOString(),
-                            date: quizDate
-                        })
+                        body: JSON.stringify(saveData)
                     });
                 } else {
                     response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b`, {
@@ -1006,12 +1090,12 @@
                             'Content-Type': 'application/json',
                             'X-Master-Key': JSONBIN_CONFIG.masterKey
                         },
-                        body: JSON.stringify({
-                            quiz: quizData.quiz,
-                            created: new Date().toISOString(),
-                            date: quizDate
-                        })
+                        body: JSON.stringify(saveData)
                     });
+                }
+
+                if (!response.ok) {
+                    throw new Error('JSONBin API error: ' + response.status);
                 }
 
                 const data = await response.json();
@@ -1022,7 +1106,8 @@
                 }
                 dateBinMap[quizDate] = newBinId;
 
-                await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.masterBinId}`, {
+                // Update master bin
+                const masterResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.masterBinId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1035,6 +1120,10 @@
                     })
                 });
 
+                if (!masterResponse.ok) {
+                    throw new Error('Failed to update master bin');
+                }
+
                 document.getElementById('shareSection').style.display = 'block';
                 document.getElementById('quizId').textContent = newBinId;
                 document.getElementById('shareUrl').value = 
@@ -1042,6 +1131,11 @@
                 
                 alert('✅ क्विज सेव हो गया!');
                 renderModalCalendar();
+                
+                // Reload quiz if it's the selected date
+                if (quizDate === formatDate(selectedDate)) {
+                    loadQuizByDate(quizDate);
+                }
 
             } catch (error) {
                 alert('❌ Error: ' + error.message);
