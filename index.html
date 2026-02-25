@@ -217,10 +217,6 @@
             background: #ffc107;
             color: #000;
         }
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
         
         .generate-section {
             background: white;
@@ -593,14 +589,6 @@
             text-align: center;
             margin: 20px 0;
         }
-        .success-message {
-            background: #d4edda;
-            color: #155724;
-            padding: clamp(20px, 5vw, 30px);
-            border-radius: 15px;
-            text-align: center;
-            margin: 20px 0;
-        }
 
         /* Admin Modal */
         .admin-modal {
@@ -837,7 +825,7 @@
         const JSONBIN_CONFIG = {
             masterKey: '$2a$10$XL4iuq0g8lswBdQN2KIhh.QodRh.0QEmO0nxno45VV3DR14ZVmzkK',
             masterBinId: '6997e25cd0ea881f40c8983b',
-            sujasMasterBinId: '67df8a2b8a456b79667f1e97', // New bin for Sujas
+            sujasMasterBinId: '67df8a2b8a456b79667f1e97',
             apiUrl: 'https://api.jsonbin.io/v3',
             adminPassword: 'admin@123'
         };
@@ -1057,49 +1045,44 @@
 
         async function loadAllBins() {
             try {
-                // Try to load Dainik Quiz bins
-                try {
-                    const dainikResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.masterBinId}/latest`, {
-                        headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
-                    });
-
-                    if (dainikResponse.ok) {
-                        const data = await dainikResponse.json();
-                        if (data.record && data.record.dateMap) dateBinMap = data.record.dateMap;
-                        if (data.record && data.record.bins) allBins = data.record.bins;
-                    } else {
-                        // Create initial structure if bin doesn't exist
-                        await createInitialBin(JSONBIN_CONFIG.masterBinId, 'dainik');
-                    }
-                } catch (error) {
-                    console.log('Error loading dainik bins:', error);
-                    await createInitialBin(JSONBIN_CONFIG.masterBinId, 'dainik');
-                }
-
-                // Try to load Sujas Quiz bins
-                try {
-                    const sujasResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.sujasMasterBinId}/latest`, {
-                        headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
-                    });
-
-                    if (sujasResponse.ok) {
-                        const data = await sujasResponse.json();
-                        if (data.record && data.record.dateMap) sujasDateBinMap = data.record.dateMap;
-                        if (data.record && data.record.bins) sujasAllBins = data.record.bins;
-                    } else {
-                        // Create initial structure if bin doesn't exist
-                        await createInitialBin(JSONBIN_CONFIG.sujasMasterBinId, 'sujas');
-                    }
-                } catch (error) {
-                    console.log('Error loading sujas bins:', error);
-                    await createInitialBin(JSONBIN_CONFIG.sujasMasterBinId, 'sujas');
-                }
+                // Load Dainik Quiz bins
+                await loadMasterBin(JSONBIN_CONFIG.masterBinId, 'dainik');
+                
+                // Load Sujas Quiz bins
+                await loadMasterBin(JSONBIN_CONFIG.sujasMasterBinId, 'sujas');
+                
             } catch (error) {
                 console.log('Error loading bins:', error);
             }
         }
 
-        async function createInitialBin(binId, type) {
+        async function loadMasterBin(binId, type) {
+            try {
+                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${binId}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (type === 'dainik') {
+                        if (data.record && data.record.dateMap) dateBinMap = data.record.dateMap;
+                        if (data.record && data.record.bins) allBins = data.record.bins;
+                    } else {
+                        if (data.record && data.record.dateMap) sujasDateBinMap = data.record.dateMap;
+                        if (data.record && data.record.bins) sujasAllBins = data.record.bins;
+                    }
+                } else {
+                    // Create new master bin if it doesn't exist
+                    await createMasterBin(binId, type);
+                }
+            } catch (error) {
+                console.log(`Error loading ${type} master bin:`, error);
+                // Try to create it
+                await createMasterBin(binId, type);
+            }
+        }
+
+        async function createMasterBin(binId, type) {
             try {
                 const initialData = {
                     dateMap: {},
@@ -1118,7 +1101,7 @@
                 });
 
                 if (response.ok) {
-                    console.log(`Initial ${type} bin created successfully`);
+                    console.log(`Created ${type} master bin:`, binId);
                     if (type === 'dainik') {
                         dateBinMap = {};
                         allBins = [];
@@ -1128,7 +1111,7 @@
                     }
                 }
             } catch (error) {
-                console.log(`Error creating ${type} bin:`, error);
+                console.log(`Error creating ${type} master bin:`, error);
             }
         }
 
@@ -1394,46 +1377,83 @@
                 }
                 map[quizDate] = newBinId;
 
-                // Update master bin
-                const masterData = {
-                    dateMap: map,
-                    bins: bins,
-                    lastUpdated: new Date().toISOString(),
-                    type: quizType
-                };
+                // Update master bin with retry logic
+                let masterUpdated = false;
+                let retryCount = 0;
+                const maxRetries = 3;
 
-                const masterResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${masterBinId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': JSONBIN_CONFIG.masterKey
-                    },
-                    body: JSON.stringify(masterData)
-                });
+                while (!masterUpdated && retryCount < maxRetries) {
+                    try {
+                        const masterData = {
+                            dateMap: map,
+                            bins: bins,
+                            lastUpdated: new Date().toISOString(),
+                            type: quizType
+                        };
 
-                if (!masterResponse.ok) {
-                    // If master update fails, try to create it
-                    const createResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${masterBinId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Master-Key': JSONBIN_CONFIG.masterKey
-                        },
-                        body: JSON.stringify(masterData)
-                    });
-                    
-                    if (!createResponse.ok) {
-                        throw new Error('Failed to update master bin');
+                        const masterResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${masterBinId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Master-Key': JSONBIN_CONFIG.masterKey
+                            },
+                            body: JSON.stringify(masterData)
+                        });
+
+                        if (masterResponse.ok) {
+                            masterUpdated = true;
+                        } else {
+                            retryCount++;
+                            if (retryCount < maxRetries) {
+                                await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+                            }
+                        }
+                    } catch (error) {
+                        retryCount++;
+                        if (retryCount < maxRetries) {
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        }
                     }
                 }
 
-                // Show share section
+                if (!masterUpdated) {
+                    // If master update fails, try to create it
+                    try {
+                        const masterData = {
+                            dateMap: map,
+                            bins: bins,
+                            lastUpdated: new Date().toISOString(),
+                            type: quizType
+                        };
+
+                        const createResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${masterBinId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Master-Key': JSONBIN_CONFIG.masterKey
+                            },
+                            body: JSON.stringify(masterData)
+                        });
+
+                        if (createResponse.ok) {
+                            masterUpdated = true;
+                        }
+                    } catch (error) {
+                        console.log('Failed to create master bin:', error);
+                    }
+                }
+
+                // Show share section even if master update failed
                 document.getElementById('shareSection').style.display = 'block';
                 document.getElementById('quizId').textContent = newBinId;
                 document.getElementById('shareUrl').value = 
                     window.location.origin + window.location.pathname + '?type=' + quizType + '&date=' + quizDate;
                 
-                alert(`✅ ${quizType === 'dainik' ? 'दैनिक' : 'सुजस'} क्विज सेव हो गया!`);
+                if (masterUpdated) {
+                    alert(`✅ ${quizType === 'dainik' ? 'दैनिक' : 'सुजस'} क्विज सेव हो गया!`);
+                } else {
+                    alert(`⚠️ क्विज सेव हो गया लेकिन master bin update में समस्या हुई। Quiz ID: ${newBinId}`);
+                }
                 
                 // Refresh calendar
                 renderModalCalendar();
