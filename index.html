@@ -148,7 +148,7 @@
             gap: 10px;
             font-size: clamp(1rem, 2.8vw, 1.2rem);
             font-weight: 600;
-            padding: clamp(8px, 2vw, 8px) clamp(15px, 3vw, 20px);
+            padding: clamp(8px, 2vw, 10px) clamp(15px, 3vw, 20px);
             border-radius: 40px;
             cursor: pointer;
             transition: 0.2s;
@@ -156,7 +156,6 @@
         .quiz-type-badge.dainik {
             background: #28a745;
             color: white;
-            width: 100%;
         }
         .quiz-type-badge.sujas {
             background: #ffc107;
@@ -164,9 +163,6 @@
         }
         .quiz-type-badge:hover {
             transform: scale(1.05);
-        }
-        .quiz-type-badge:active {
-            transform: scale(0.95);
         }
 
         .admin-section {
@@ -220,6 +216,10 @@
         .btn-warning {
             background: #ffc107;
             color: #000;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
         }
         
         .generate-section {
@@ -315,7 +315,7 @@
             font-weight: 600;
             color: #333;
         }
-        .current-date span {
+        .current-date span:first-child {
             background: linear-gradient(145deg, #667eea, #764ba2);
             color: white;
             padding: clamp(8px, 1.5vw, 10px) clamp(15px, 3vw, 20px);
@@ -593,6 +593,14 @@
             text-align: center;
             margin: 20px 0;
         }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: clamp(20px, 5vw, 30px);
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+        }
 
         /* Admin Modal */
         .admin-modal {
@@ -671,19 +679,7 @@
             <p>दैनिक क्विज और सुजस क्विज</p>
             <div id="quizTypeBadge" class="mode-badge dainik">📅 दैनिक क्विज</div>
         </div>
-        <br>
 
-        <!-- Admin Login Section -->
-        <div class="admin-section" id="adminSection">
-            <div id="adminLoginForm" class="admin-login">
-                <input type="password" id="adminPassword" placeholder="एडमिन पासवर्ड डालें">
-                <button class="btn btn-primary" onclick="openAdminModal()">🔑 एडमिन लॉगिन</button>
-            </div>
-            <div id="adminControls" style="display: none;">
-                <button class="btn btn-primary" onclick="showEditMode()">✏️ एडिट मोड में जाएं</button>
-                <button class="btn btn-info" onclick="logoutAdmin()">🚪 लॉगआउट</button>
-            </div>
-        </div>
         <!-- Quiz Type Selector Popup -->
         <div class="quiz-type-popup" id="quizTypePopup">
             <div class="popup-content">
@@ -708,6 +704,18 @@
             </div>
             <div>
                 <span id="sourceBadge"></span>
+            </div>
+        </div>
+
+        <!-- Admin Login Section -->
+        <div class="admin-section" id="adminSection">
+            <div id="adminLoginForm" class="admin-login">
+                <input type="password" id="adminPassword" placeholder="एडमिन पासवर्ड डालें">
+                <button class="btn btn-primary" onclick="openAdminModal()">🔑 एडमिन लॉगिन</button>
+            </div>
+            <div id="adminControls" style="display: none;">
+                <button class="btn btn-primary" onclick="showEditMode()">✏️ एडिट मोड में जाएं</button>
+                <button class="btn btn-info" onclick="logoutAdmin()">🚪 लॉगआउट</button>
             </div>
         </div>
 
@@ -829,7 +837,7 @@
         const JSONBIN_CONFIG = {
             masterKey: '$2a$10$XL4iuq0g8lswBdQN2KIhh.QodRh.0QEmO0nxno45VV3DR14ZVmzkK',
             masterBinId: '6997e25cd0ea881f40c8983b',
-            sujasMasterBinId: '6997e25cd0ea881f40c8983c', // Different bin for Sujas
+            sujasMasterBinId: '67df8a2b8a456b79667f1e97', // New bin for Sujas
             apiUrl: 'https://api.jsonbin.io/v3',
             adminPassword: 'admin@123'
         };
@@ -867,7 +875,7 @@
         let currentModalDate = new Date();
         let selectedDate = new Date();
         let isAdmin = false;
-        let currentQuizType = 'dainik'; // 'dainik' or 'sujas'
+        let currentQuizType = 'dainik';
 
         async function initialize() {
             await loadAllBins();
@@ -908,22 +916,24 @@
             const badge = document.getElementById('quizTypeSelector');
             const badgeText = document.getElementById('quizTypeText');
             const mainBadge = document.getElementById('quizTypeBadge');
+            const dateLabel = document.getElementById('dateLabel');
             
             if (type === 'dainik') {
                 badge.className = 'quiz-type-badge dainik';
                 badgeText.innerHTML = '📅 दैनिक क्विज';
                 mainBadge.className = 'mode-badge dainik';
                 mainBadge.innerHTML = '📅 दैनिक क्विज';
-                document.getElementById('dateLabel').innerHTML = '📅 दैनिक क्विज तारीख';
+                dateLabel.innerHTML = '📅 दैनिक क्विज तारीख';
             } else {
                 badge.className = 'quiz-type-badge sujas';
                 badgeText.innerHTML = '✨ सुजस क्विज';
                 mainBadge.className = 'mode-badge sujas';
                 mainBadge.innerHTML = '✨ सुजस क्विज';
-                document.getElementById('dateLabel').innerHTML = '📅 सुजस क्विज तारीख';
+                dateLabel.innerHTML = '📅 सुजस क्विज तारीख';
             }
             
             closeQuizTypePopup();
+            renderModalCalendar();
             loadQuizForSelectedDate();
         }
 
@@ -959,7 +969,8 @@
             
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const hasQuiz = (currentQuizType === 'dainik' ? dateBinMap : sujasDateBinMap)[dateStr] ? true : false;
+                const map = currentQuizType === 'dainik' ? dateBinMap : sujasDateBinMap;
+                const hasQuiz = map[dateStr] ? true : false;
                 const isSelected = selectedDate.getFullYear() === year && 
                                   selectedDate.getMonth() === month && 
                                   selectedDate.getDate() === day;
@@ -1023,6 +1034,10 @@
                     headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
                 });
 
+                if (!response.ok) {
+                    throw new Error('क्विज लोड करने में त्रुटि');
+                }
+
                 const data = await response.json();
                 const quizData = data.record.quiz;
 
@@ -1042,29 +1057,78 @@
 
         async function loadAllBins() {
             try {
-                // Load Dainik Quiz bins
-                const dainikResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.masterBinId}/latest`, {
-                    headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
-                });
+                // Try to load Dainik Quiz bins
+                try {
+                    const dainikResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.masterBinId}/latest`, {
+                        headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
+                    });
 
-                if (dainikResponse.ok) {
-                    const data = await dainikResponse.json();
-                    if (data.record && data.record.dateMap) dateBinMap = data.record.dateMap;
-                    if (data.record && data.record.bins) allBins = data.record.bins;
+                    if (dainikResponse.ok) {
+                        const data = await dainikResponse.json();
+                        if (data.record && data.record.dateMap) dateBinMap = data.record.dateMap;
+                        if (data.record && data.record.bins) allBins = data.record.bins;
+                    } else {
+                        // Create initial structure if bin doesn't exist
+                        await createInitialBin(JSONBIN_CONFIG.masterBinId, 'dainik');
+                    }
+                } catch (error) {
+                    console.log('Error loading dainik bins:', error);
+                    await createInitialBin(JSONBIN_CONFIG.masterBinId, 'dainik');
                 }
 
-                // Load Sujas Quiz bins
-                const sujasResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.sujasMasterBinId}/latest`, {
-                    headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
-                });
+                // Try to load Sujas Quiz bins
+                try {
+                    const sujasResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.sujasMasterBinId}/latest`, {
+                        headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
+                    });
 
-                if (sujasResponse.ok) {
-                    const data = await sujasResponse.json();
-                    if (data.record && data.record.dateMap) sujasDateBinMap = data.record.dateMap;
-                    if (data.record && data.record.bins) sujasAllBins = data.record.bins;
+                    if (sujasResponse.ok) {
+                        const data = await sujasResponse.json();
+                        if (data.record && data.record.dateMap) sujasDateBinMap = data.record.dateMap;
+                        if (data.record && data.record.bins) sujasAllBins = data.record.bins;
+                    } else {
+                        // Create initial structure if bin doesn't exist
+                        await createInitialBin(JSONBIN_CONFIG.sujasMasterBinId, 'sujas');
+                    }
+                } catch (error) {
+                    console.log('Error loading sujas bins:', error);
+                    await createInitialBin(JSONBIN_CONFIG.sujasMasterBinId, 'sujas');
                 }
             } catch (error) {
                 console.log('Error loading bins:', error);
+            }
+        }
+
+        async function createInitialBin(binId, type) {
+            try {
+                const initialData = {
+                    dateMap: {},
+                    bins: [],
+                    lastUpdated: new Date().toISOString(),
+                    type: type
+                };
+
+                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${binId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_CONFIG.masterKey
+                    },
+                    body: JSON.stringify(initialData)
+                });
+
+                if (response.ok) {
+                    console.log(`Initial ${type} bin created successfully`);
+                    if (type === 'dainik') {
+                        dateBinMap = {};
+                        allBins = [];
+                    } else {
+                        sujasDateBinMap = {};
+                        sujasAllBins = [];
+                    }
+                }
+            } catch (error) {
+                console.log(`Error creating ${type} bin:`, error);
             }
         }
 
@@ -1094,22 +1158,33 @@
         }
 
         function selectOption(questionIndex, optionIndex, correctIndex) {
+            // Remove previous selections
             for (let i = 0; i < 4; i++) {
                 const opt = document.getElementById(`opt-${questionIndex}-${i}`);
-                if (opt) opt.classList.remove('selected-correct', 'selected-wrong');
+                if (opt) {
+                    opt.classList.remove('selected-correct', 'selected-wrong');
+                }
             }
 
             const selectedOpt = document.getElementById(`opt-${questionIndex}-${optionIndex}`);
             const correctOpt = document.getElementById(`opt-${questionIndex}-${correctIndex}`);
 
-            if (optionIndex === correctIndex) {
-                selectedOpt.classList.add('selected-correct');
-            } else {
-                selectedOpt.classList.add('selected-wrong');
-                correctOpt.classList.add('selected-correct');
+            if (selectedOpt) {
+                if (optionIndex === correctIndex) {
+                    selectedOpt.classList.add('selected-correct');
+                } else {
+                    selectedOpt.classList.add('selected-wrong');
+                    if (correctOpt) {
+                        correctOpt.classList.add('selected-correct');
+                    }
+                }
             }
 
-            document.getElementById(`exp-${questionIndex}`).classList.add('show');
+            // Show explanation
+            const explanation = document.getElementById(`exp-${questionIndex}`);
+            if (explanation) {
+                explanation.classList.add('show');
+            }
         }
 
         // Admin Functions
@@ -1171,6 +1246,10 @@
                 const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${binId}/latest`, {
                     headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
                 });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load quiz');
+                }
 
                 const data = await response.json();
                 document.getElementById('jsonInput').value = JSON.stringify(data.record, null, 2);
@@ -1240,18 +1319,29 @@
                     return;
                 }
 
-                const quizData = JSON.parse(jsonText);
-                if (!quizData.quiz) {
-                    alert('❌ Invalid JSON format - "quiz" array missing');
+                // Validate JSON
+                let quizData;
+                try {
+                    quizData = JSON.parse(jsonText);
+                } catch (e) {
+                    alert('❌ Invalid JSON format: ' + e.message);
+                    return;
+                }
+
+                if (!quizData.quiz || !Array.isArray(quizData.quiz)) {
+                    alert('❌ JSON में "quiz" array होना चाहिए');
                     return;
                 }
 
                 // Validate quiz structure
                 for (let i = 0; i < quizData.quiz.length; i++) {
                     const q = quizData.quiz[i];
-                    if (!q.question || !q.options || !Array.isArray(q.options) || q.options.length < 2 || 
-                        q.correct === undefined || q.correct < 0 || q.correct >= q.options.length) {
-                        alert(`❌ प्रश्न ${i+1} में त्रुटि: सभी फ़ील्ड सही से भरें`);
+                    if (!q.question || !q.options || !Array.isArray(q.options) || q.options.length < 2) {
+                        alert(`❌ प्रश्न ${i+1} में options सही से नहीं भरे हैं`);
+                        return;
+                    }
+                    if (q.correct === undefined || q.correct < 0 || q.correct >= q.options.length) {
+                        alert(`❌ प्रश्न ${i+1} में correct index सही नहीं है`);
                         return;
                     }
                 }
@@ -1271,6 +1361,7 @@
                 };
 
                 if (binId) {
+                    // Update existing quiz
                     response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${binId}`, {
                         method: 'PUT',
                         headers: {
@@ -1280,6 +1371,7 @@
                         body: JSON.stringify(saveData)
                     });
                 } else {
+                    // Create new quiz
                     response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b`, {
                         method: 'POST',
                         headers: {
@@ -1303,29 +1395,47 @@
                 map[quizDate] = newBinId;
 
                 // Update master bin
+                const masterData = {
+                    dateMap: map,
+                    bins: bins,
+                    lastUpdated: new Date().toISOString(),
+                    type: quizType
+                };
+
                 const masterResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${masterBinId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-Master-Key': JSONBIN_CONFIG.masterKey
                     },
-                    body: JSON.stringify({
-                        dateMap: map,
-                        bins: bins,
-                        lastUpdated: new Date().toISOString()
-                    })
+                    body: JSON.stringify(masterData)
                 });
 
                 if (!masterResponse.ok) {
-                    throw new Error('Failed to update master bin');
+                    // If master update fails, try to create it
+                    const createResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${masterBinId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Master-Key': JSONBIN_CONFIG.masterKey
+                        },
+                        body: JSON.stringify(masterData)
+                    });
+                    
+                    if (!createResponse.ok) {
+                        throw new Error('Failed to update master bin');
+                    }
                 }
 
+                // Show share section
                 document.getElementById('shareSection').style.display = 'block';
                 document.getElementById('quizId').textContent = newBinId;
                 document.getElementById('shareUrl').value = 
                     window.location.origin + window.location.pathname + '?type=' + quizType + '&date=' + quizDate;
                 
                 alert(`✅ ${quizType === 'dainik' ? 'दैनिक' : 'सुजस'} क्विज सेव हो गया!`);
+                
+                // Refresh calendar
                 renderModalCalendar();
                 
                 // Reload quiz if it's the selected date and type
