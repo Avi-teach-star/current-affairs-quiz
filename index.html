@@ -1020,6 +1020,7 @@
         let userAnswers = [];
         let dateBinMap = {};
         let sujasQuizzes = [];
+        let allBins = [];
         let currentModalDate = new Date();
         let selectedDate = new Date();
         let isAdmin = false;
@@ -1039,6 +1040,7 @@
         }
 
         async function initialize() {
+            showAlert('🔄 डेटा लोड हो रहा है...', 'info');
             await loadAllBins();
             
             // Set current date
@@ -1050,7 +1052,7 @@
             renderModalCalendar();
             
             // Load today's quiz based on current type
-            loadQuizForSelectedType();
+            await loadQuizForSelectedType();
         }
 
         function formatDate(date) {
@@ -1183,19 +1185,19 @@
             loadQuizForSelectedDate();
         }
 
-        function loadQuizForSelectedType() {
+        async function loadQuizForSelectedType() {
             if (currentQuizType === 'dainik') {
-                loadQuizForSelectedDate();
+                await loadQuizForSelectedDate();
             } else {
-                loadSujasQuizList();
+                await loadSujasQuizList();
             }
         }
 
-        function loadQuizForSelectedDate() {
+        async function loadQuizForSelectedDate() {
             const dateStr = formatDate(selectedDate);
             
             if (dateBinMap[dateStr]) {
-                loadQuizByDate(dateStr);
+                await loadQuizByDate(dateStr);
             } else {
                 document.getElementById('questionsList').innerHTML = `
                     <div style="text-align: center; padding: 40px; color: #666;">
@@ -1209,7 +1211,9 @@
             }
         }
 
-        function loadSujasQuizList() {
+        async function loadSujasQuizList() {
+            document.getElementById('sujasQuizList').innerHTML = '<div class="loading"><div class="spinner"></div><div>⏳ क्विज लिस्ट लोड हो रही है...</div></div>';
+            
             if (!sujasQuizzes || sujasQuizzes.length === 0) {
                 document.getElementById('sujasQuizList').innerHTML = '<div style="text-align: center; padding: 30px; color: #666;">कोई सुजस क्विज उपलब्ध नहीं है</div>';
                 document.getElementById('questionsList').innerHTML = '';
@@ -1235,21 +1239,46 @@
 
             // Auto select first quiz if none selected
             if (!selectedQuizId && sujasQuizzes.length > 0) {
-                selectSujasQuiz(sujasQuizzes[0].id);
+                await selectSujasQuiz(sujasQuizzes[0].id);
             }
         }
 
-        function selectSujasQuiz(quizId) {
+        async function selectSujasQuiz(quizId) {
             selectedQuizId = quizId;
-            const quiz = sujasQuizzes.find(q => q.id === quizId);
-            if (quiz) {
-                currentQuiz = quiz.quiz || [];
-                userAnswers = new Array(currentQuiz.length).fill(null);
-                displayQuestions(currentQuiz);
-                document.getElementById('quizTitle').textContent = `📌 ${quiz.title || ''}`;
-                document.getElementById('questionCount').textContent = `${currentQuiz.length} प्रश्न`;
-                document.getElementById('quizDate').textContent = '';
-                loadSujasQuizList(); // Refresh list to update selected state
+            document.getElementById('questionsList').innerHTML = '<div class="loading"><div class="spinner"></div><div>⏳ क्विज लोड हो रहा है...</div></div>';
+            
+            try {
+                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${quizId}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load quiz');
+                }
+
+                const data = await response.json();
+                const quizData = data.record;
+                
+                if (quizData && quizData.quiz) {
+                    currentQuiz = quizData.quiz || [];
+                    userAnswers = new Array(currentQuiz.length).fill(null);
+                    displayQuestions(currentQuiz);
+                    document.getElementById('quizTitle').textContent = `📌 ${quizData.title || ''}`;
+                    document.getElementById('questionCount').textContent = `${currentQuiz.length} प्रश्न`;
+                    document.getElementById('quizDate').textContent = '';
+                    
+                    // Update quiz in sujasQuizzes array
+                    const index = sujasQuizzes.findIndex(q => q.id === quizId);
+                    if (index !== -1) {
+                        sujasQuizzes[index].quiz = quizData.quiz;
+                        sujasQuizzes[index].title = quizData.title;
+                    }
+                    
+                    await loadSujasQuizList(); // Refresh list to update selected state
+                }
+            } catch (error) {
+                console.error('Error loading quiz:', error);
+                document.getElementById('questionsList').innerHTML = `<div style="text-align: center; padding: 30px; color: #dc3545;">❌ क्विज लोड करने में त्रुटि</div>`;
             }
         }
 
@@ -1263,6 +1292,10 @@
                 const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${binId}/latest`, {
                     headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
                 });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load quiz');
+                }
 
                 const data = await response.json();
                 const quizData = data.record.quiz;
@@ -1278,6 +1311,7 @@
                     document.getElementById('quizTitle').textContent = '';
                 }
             } catch (error) {
+                console.error('Error loading quiz:', error);
                 document.getElementById('questionsList').innerHTML = `<div style="text-align: center; padding: 30px; color: #dc3545;">❌ क्विज लोड करने में त्रुटि</div>`;
             }
         }
@@ -1292,6 +1326,7 @@
                 
             } catch (error) {
                 console.log('Error loading bins:', error);
+                showAlert('❌ डेटा लोड करने में त्रुटि', 'error');
             }
         }
 
@@ -1303,7 +1338,12 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.record && data.record.dateMap) dateBinMap = data.record.dateMap;
+                    if (data.record && data.record.dateMap) {
+                        dateBinMap = data.record.dateMap;
+                        console.log('✅ दैनिक मास्टर बिन लोड हो गया');
+                    }
+                } else {
+                    console.log('दैनिक मास्टर बिन नहीं मिला');
                 }
             } catch (error) {
                 console.log(`Error loading ${type} master bin:`, error);
@@ -1320,9 +1360,14 @@
                     const data = await response.json();
                     if (data.record && data.record.quizzes) {
                         sujasQuizzes = data.record.quizzes;
+                        console.log('✅ सुजस मास्टर बिन लोड हो गया, कुल क्विज:', sujasQuizzes.length);
+                        showAlert(`✅ ${sujasQuizzes.length} सुजस क्विज लोड हुए`, 'success');
+                    } else {
+                        console.log('सुजस मास्टर बिन में quizzes array नहीं है');
+                        sujasQuizzes = [];
                     }
                 } else {
-                    // Create new master bin if it doesn't exist
+                    console.log('सुजस मास्टर बिन नहीं मिला, नया बना रहे हैं...');
                     await createSujasMasterBin();
                 }
             } catch (error) {
@@ -1349,13 +1394,21 @@
 
                 if (response.ok) {
                     sujasQuizzes = [];
+                    console.log('✅ सुजस मास्टर बिन बन गया');
+                    showAlert('✅ सुजस मास्टर बिन बन गया', 'success');
                 }
             } catch (error) {
                 console.log('Error creating sujas master bin:', error);
+                showAlert('❌ सुजस मास्टर बिन बनाने में त्रुटि', 'error');
             }
         }
 
         function displayQuestions(questions) {
+            if (!questions || questions.length === 0) {
+                document.getElementById('questionsList').innerHTML = '<div style="text-align: center; padding: 30px;">कोई प्रश्न नहीं</div>';
+                return;
+            }
+
             let html = '';
             questions.forEach((q, index) => {
                 const questionClass = currentQuizType === 'sujas' ? 'question-item sujas' : 'question-item';
@@ -1480,6 +1533,10 @@
                 const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${binId}/latest`, {
                     headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
                 });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load quiz');
+                }
 
                 const data = await response.json();
                 document.getElementById('jsonInput').value = JSON.stringify(data.record, null, 2);
@@ -1622,6 +1679,10 @@
                 });
             }
 
+            if (!response.ok) {
+                throw new Error('Failed to save quiz');
+            }
+
             const data = await response.json();
             const newBinId = binId || data.metadata.id;
 
@@ -1656,7 +1717,7 @@
             
             // Reload quiz if it's the selected date and type
             if (quizDate === formatDate(selectedDate) && currentQuizType === 'dainik') {
-                loadQuizByDate(quizDate);
+                await loadQuizByDate(quizDate);
             }
         }
 
@@ -1688,6 +1749,10 @@
                 body: JSON.stringify(saveData)
             });
 
+            if (!response.ok) {
+                throw new Error('Failed to save quiz');
+            }
+
             const data = await response.json();
             const newBinId = data.metadata.id;
 
@@ -1707,7 +1772,7 @@
                 lastUpdated: new Date().toISOString()
             };
 
-            await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.sujasMasterBinId}`, {
+            const masterResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.sujasMasterBinId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1715,6 +1780,10 @@
                 },
                 body: JSON.stringify(masterData)
             });
+
+            if (!masterResponse.ok) {
+                console.log('मास्टर बिन अपडेट में समस्या, लेकिन क्विज सेव हो गया');
+            }
 
             document.getElementById('shareSection').style.display = 'block';
             document.getElementById('quizId').textContent = newBinId;
@@ -1724,10 +1793,10 @@
             showAlert('✅ सुजस क्विज सेव हो गया!', 'success');
             
             // Refresh quiz list
-            loadSujasQuizList();
+            await loadSujasQuizList();
             
             // Select the new quiz
-            selectSujasQuiz(newBinId);
+            await selectSujasQuiz(newBinId);
         }
 
         window.addEventListener('load', initialize);
