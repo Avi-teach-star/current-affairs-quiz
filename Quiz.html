@@ -1,0 +1,2543 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>दैनिक पोस्ट - करंट अफेयर्स रील्स</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Nirmala UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: #0f172a;
+            min-height: 100vh;
+            padding: clamp(10px, 3vw, 20px);
+        }
+
+        .container {
+            max-width: min(600px, 95%);
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            color: white;
+            padding: clamp(20px, 4vw, 25px);
+            border-radius: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .header h1 {
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            margin-bottom: 8px;
+            background: linear-gradient(145deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            background: #1e293b;
+            border-radius: 25px;
+            padding: clamp(20px, 4vw, 25px);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .admin-header h3 {
+            color: #60a5fa;
+            font-size: clamp(1.1rem, 3vw, 1.3rem);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-toggle {
+            background: #334155;
+            color: #94a3b8;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-toggle.active {
+            background: linear-gradient(145deg, #2563eb, #7c3aed);
+            color: white;
+        }
+
+        .admin-login {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .admin-login input {
+            flex: 1;
+            min-width: 200px;
+            padding: 14px 18px;
+            background: #0f172a;
+            border: 2px solid #334155;
+            border-radius: 40px;
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        .admin-login input:focus {
+            outline: none;
+            border-color: #60a5fa;
+        }
+
+        .admin-login button {
+            padding: 14px 30px;
+            background: linear-gradient(145deg, #2563eb, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .admin-login button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Add Post Form */
+        .add-post-form {
+            background: #0f172a;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #334155;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 14px 18px;
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 40px;
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        .form-group textarea {
+            border-radius: 20px;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #60a5fa;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(145deg, #059669, #10b981);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(5, 150, 105, 0.3);
+        }
+
+        /* URL List for Multiple Images */
+        .url-list {
+            margin-top: 15px;
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 15px;
+        }
+
+        .url-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .url-item input {
+            flex: 1;
+            padding: 10px 15px;
+            background: #0f172a;
+            border: 2px solid #334155;
+            border-radius: 30px;
+            color: white;
+        }
+
+        .url-item button {
+            background: #ef4444;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-url-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* Main Navigation Tabs (Post/Quiz) */
+        .main-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 50px;
+        }
+
+        .main-tab-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+            background: transparent;
+            color: #94a3b8;
+        }
+
+        .main-tab-btn.active {
+            background: linear-gradient(145deg, #2563eb, #7c3aed);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Secondary Section Tabs (Feed/Saved) */
+        .section-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 50px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+            background: transparent;
+            color: #94a3b8;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(145deg, #2563eb, #7c3aed);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Posts Container */
+        .posts-container {
+            max-height: 70vh;
+            overflow-y: auto;
+            scroll-snap-type: y mandatory;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 30px;
+            background: #1e293b;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .posts-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .posts-container::-webkit-scrollbar-track {
+            background: #334155;
+            border-radius: 10px;
+        }
+
+        .posts-container::-webkit-scrollbar-thumb {
+            background: #60a5fa;
+            border-radius: 10px;
+        }
+
+        /* Post Item */
+        .post-item {
+            scroll-snap-align: start;
+            background: #0f172a;
+            border-radius: 28px;
+            margin-bottom: 15px;
+            padding: 18px;
+            border: 1px solid #334155;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .post-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .post-avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(145deg, #2563eb, #7c3aed);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 600;
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .post-user-info h4 {
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .post-user-info p {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .post-user-info p span {
+            width: 4px;
+            height: 4px;
+            background: #94a3b8;
+            border-radius: 50%;
+        }
+
+        .post-image-container {
+            width: 100%;
+            aspect-ratio: auto;
+            background: #1e293b;
+            border-radius: 24px;
+            overflow: hidden;
+            margin-bottom: 18px;
+            border: 1px solid #334155;
+            cursor: pointer;
+        }
+
+        .post-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+            background: #0f172a;
+        }
+
+        .post-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5px;
+            margin-bottom: 18px;
+        }
+
+        .action-group {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 8px 14px;
+            border-radius: 40px;
+            transition: 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #334155;
+        }
+
+        .action-btn svg {
+            width: 22px;
+            height: 22px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .action-btn.save-btn.active svg {
+            fill: #2563eb;
+            stroke: #2563eb;
+        }
+
+        .action-btn.save-btn.active {
+            color: #2563eb;
+        }
+
+        .action-btn.share-btn {
+            color: #a78bfa;
+        }
+
+        .action-btn.comment-btn {
+            color: #34d399;
+        }
+
+        .action-count {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .post-caption {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            padding: 0 5px 15px 5px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .post-caption strong {
+            color: white;
+            margin-right: 8px;
+        }
+
+        /* Comments Section */
+        .comments-section {
+            padding: 20px 5px;
+        }
+
+        .comments-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .comments-header button {
+            background: none;
+            border: none;
+            color: #60a5fa;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .comment-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .comment-avatar {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(145deg, #f97316, #dc2626);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .comment-content {
+            flex: 1;
+            background: #1e293b;
+            padding: 12px 16px;
+            border-radius: 18px;
+        }
+
+        .comment-username {
+            color: white;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+
+        .comment-text {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .comment-time {
+            color: #64748b;
+            font-size: 0.7rem;
+            margin-top: 6px;
+        }
+
+        .comment-input {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+        }
+
+        .comment-input input {
+            flex: 1;
+            padding: 14px 18px;
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 40px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .comment-input input:focus {
+            outline: none;
+            border-color: #60a5fa;
+        }
+
+        .comment-input button {
+            padding: 14px 28px;
+            background: linear-gradient(145deg, #2563eb, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .comment-input button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Saved Posts Section */
+        .saved-posts {
+            background: #1e293b;
+            border-radius: 25px;
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .saved-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #334155;
+            color: white;
+        }
+
+        .saved-header svg {
+            width: 24px;
+            height: 24px;
+            stroke: #2563eb;
+        }
+
+        .saved-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #0f172a;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            border: 1px solid #334155;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .saved-item:hover {
+            transform: translateX(5px);
+            background: #1a2635;
+        }
+
+        .saved-thumb {
+            width: 70px;
+            height: 70px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #1e293b;
+            flex-shrink: 0;
+        }
+
+        .saved-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .saved-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .saved-info h4 {
+            color: white;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .saved-info p {
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+
+        .unsave-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: 0.2s;
+        }
+
+        .unsave-btn:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-state svg {
+            width: 70px;
+            height: 70px;
+            stroke: #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        /* Quiz Container */
+        .quiz-main-container {
+            background: #1e293b;
+            border-radius: 30px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .quiz-header h2 {
+            color: #60a5fa;
+            font-size: 1.3rem;
+        }
+
+        .quiz-type-badge {
+            background: linear-gradient(145deg, #2563eb, #7c3aed);
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .date-display-box {
+            background: #0f172a;
+            border-radius: 60px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #334155;
+            cursor: pointer;
+        }
+
+        .current-date {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #94a3b8;
+        }
+
+        .current-date span:first-child {
+            background: #2563eb;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 40px;
+        }
+
+        .quiz-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .quiz-list-item {
+            background: #0f172a;
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #334155;
+            cursor: pointer;
+        }
+
+        .quiz-list-item.selected {
+            background: linear-gradient(145deg, #2563eb, #7c3aed);
+        }
+
+        .quiz-item-title {
+            font-weight: 600;
+        }
+
+        .quiz-item-badge {
+            background: #059669;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        .question-item {
+            background: #0f172a;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .category-tag {
+            background: #2563eb;
+            color: white;
+            padding: 4px 15px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .options {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .option {
+            background: #1e293b;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            cursor: pointer;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .option:hover {
+            background: #334155;
+        }
+
+        .option.selected-correct {
+            background: #059669;
+            color: white;
+        }
+
+        .option.selected-wrong {
+            background: #dc2626;
+            color: white;
+        }
+
+        .option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #2563eb;
+        }
+
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background: #1e293b;
+            border-radius: 12px;
+            display: none;
+            color: #94a3b8;
+        }
+
+        .explanation.show {
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #334155;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Custom Alert */
+        .custom-alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .custom-alert.success { background: #059669; }
+        .custom-alert.error { background: #dc2626; }
+        .custom-alert.info { background: #2563eb; }
+        .custom-alert.warning { background: #d97706; }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border-radius: 30px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 25px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        /* Image Gallery Modal */
+        .image-gallery-modal .modal-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            padding: 10px;
+        }
+
+        .gallery-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .gallery-image {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+
+        .gallery-nav {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .gallery-nav button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .gallery-nav button:disabled {
+            background: #334155;
+            cursor: not-allowed;
+        }
+
+        /* Calendar Styles */
+        .calendar-improved {
+            background: #0f172a;
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-header button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .calendar-month {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #1e293b;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 1px solid #334155;
+            color: white;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .calendar-day.selected {
+            background: #2563eb;
+            border-color: #60a5fa;
+        }
+
+        .calendar-day.has-quiz {
+            background: #059669;
+            border-color: #10b981;
+        }
+
+        .calendar-day.has-quiz.selected {
+            background: #2563eb;
+            border: 2px solid #fbbf24;
+        }
+
+        .calendar-day .day-number {
+            font-size: 1rem;
+        }
+
+        .calendar-day .quiz-indicator {
+            font-size: 0.7rem;
+            color: #fbbf24;
+            margin-top: 2px;
+        }
+
+        .calendar-day.empty {
+            background: transparent;
+            border: none;
+            cursor: default;
+        }
+
+        .calendar-footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .calendar-footer button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .calendar-footer .cancel-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .calendar-footer .select-btn {
+            background: #059669;
+            color: white;
+        }
+
+        .quiz-date-indicator {
+            font-size: 0.7rem;
+            color: #fbbf24;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 id="mainHeaderTitle">📸 करंट अफेयर्स रील्स</h1>
+            <p id="mainHeaderSubtitle">दैनिक पोस्ट - ताजा अपडेट्स</p>
+        </div>
+
+        <!-- Admin Panel -->
+        <div class="admin-panel">
+            <div class="admin-header">
+                <h3>🔐 एडमिन पैनल</h3>
+                <button class="admin-toggle" onclick="toggleAdminPanel()" id="adminToggleBtn">
+                    <span>🔓</span> लॉगिन
+                </button>
+            </div>
+
+            <div id="adminLoginSection" style="display: block;">
+                <div class="admin-login">
+                    <input type="password" id="adminPassword" placeholder="एडमिन पासवर्ड डालें">
+                    <button onclick="verifyAdmin()">लॉगिन</button>
+                </div>
+            </div>
+
+            <div id="adminAddPostSection" style="display: none;">
+                <div class="admin-login" style="justify-content: space-between;">
+                    <span style="color: #60a5fa;">✅ एडमिन लॉगिन सफल</span>
+                    <button onclick="logoutAdmin()" style="background: #dc2626;">लॉगआउट</button>
+                </div>
+
+                <div class="add-post-form" id="adminPostForm">
+                    <h4 style="color: white; margin-bottom: 20px;">➕ नई पोस्ट अपलोड करें</h4>
+                    
+                    <div class="form-group">
+                        <label>🖼️ इमेज URLs (एक से अधिक डाल सकते हैं)</label>
+                        <div id="urlList" class="url-list">
+                            <div class="url-item">
+                                <input type="url" class="image-url" placeholder="https://example.com/image1.jpg">
+                                <button onclick="removeUrlField(this)" style="display: none;">✕</button>
+                            </div>
+                        </div>
+                        <button type="button" class="add-url-btn" onclick="addUrlField()">➕ और URL जोड़ें</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>📝 कैप्शन (वैकल्पिक)</label>
+                        <textarea id="caption" placeholder="पोस्ट के बारे में कुछ लिखें..."></textarea>
+                    </div>
+
+                    <button class="submit-btn" onclick="addNewPost()">
+                        <span>📤</span> पोस्ट अपलोड करें
+                    </button>
+                </div>
+                
+                <!-- Quiz Admin Form -->
+                <div class="add-post-form" id="adminQuizForm" style="display: none; margin-top: 20px;">
+                    <h4 style="color: white; margin-bottom: 20px;">📝 नया क्विज बनाएं</h4>
+                    
+                    <div class="form-group">
+                        <label>📅 तारीख (दैनिक क्विज के लिए)</label>
+                        <input type="date" id="quizDateInput">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>📝 क्विज टाइटल (सुजस क्विज के लिए)</label>
+                        <input type="text" id="quizTitleInput" placeholder="क्विज का टाइटल">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>📋 क्विज प्रकार</label>
+                        <select id="editQuizType">
+                            <option value="dainik">दैनिक क्विज</option>
+                            <option value="sujas">सुजस क्विज</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>📝 JSON डेटा</label>
+                        <textarea id="jsonInput" placeholder='{ "quiz": [...] }' style="height: 150px; font-family: monospace;"></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                        <button class="submit-btn" onclick="saveQuiz()" style="flex: 1; background: linear-gradient(145deg, #2563eb, #7c3aed);">💾 सेव करें</button>
+                        <button class="submit-btn" onclick="loadSampleJSON()" style="flex: 1; background: linear-gradient(145deg, #f97316, #dc2626);">📋 सैंपल JSON</button>
+                    </div>
+                    
+                    <p style="color: #94a3b8; font-size: 0.8rem; text-align: center;">JSON एडिट करने के लिए सीधे टेक्स्ट बदलें</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Navigation Tabs -->
+        <div class="main-tabs">
+            <button class="main-tab-btn" onclick="switchMainTab('post')" id="postMainTab">📸 पोस्ट</button>
+            <button class="main-tab-btn active" onclick="switchMainTab('quiz')" id="quizMainTab">📝 क्विज</button>
+        </div>
+
+        <!-- Post Section -->
+        <div id="postSection">
+            <div class="section-tabs">
+                <button class="tab-btn active" onclick="switchPostTab('feed')" id="feedTab">📱 फीड</button>
+                <button class="tab-btn" onclick="switchPostTab('saved')" id="savedTab">💾 सेव की गई पोस्ट</button>
+            </div>
+
+            <div id="feedSection">
+                <div class="posts-container" id="postsContainer">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <div style="color: #94a3b8;">पोस्ट लोड हो रही हैं...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="savedSection" style="display: none;">
+                <div class="saved-posts" id="savedPostsContainer">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <div style="color: #94a3b8;">सेव की गई पोस्ट लोड हो रही हैं...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div id="quizSection" style="display: none;">
+            <div class="quiz-main-container">
+                <div class="quiz-header">
+                    <h2>📚 क्विज प्लेटफॉर्म</h2>
+                    <span class="quiz-type-badge" id="quizTypeBadge">📅 दैनिक क्विज</span>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="display: flex; gap: 10px; background: #0f172a; padding: 10px; border-radius: 50px;">
+                        <button class="tab-btn active" onclick="selectQuizType('dainik')" id="dainikQuizBtn" style="flex: 1;">📅 दैनिक क्विज</button>
+                        <button class="tab-btn" onclick="selectQuizType('sujas')" id="sujasQuizBtn" style="flex: 1;">✨ सुजस क्विज</button>
+                    </div>
+                </div>
+
+                <div id="dainikDateBox" class="date-display-box" onclick="openCalendarModal()">
+                    <div class="current-date">
+                        <span>📅 आज की तारीख</span>
+                        <span id="selectedDateDisplay">25 February 2026</span>
+                    </div>
+                    <div style="color: #60a5fa;">📆</div>
+                </div>
+
+                <div id="sujasQuizList" style="display: none;" class="quiz-list"></div>
+
+                <div id="questionsList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <div>⏳ क्विज लोड हो रहा है...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer" style="text-align: center; color: #64748b; margin-top: 20px;">
+            <p id="footerText">📌 रोजाना नई पोस्ट - करंट अफेयर्स अपडेट्स</p>
+        </div>
+    </div>
+
+    <!-- Calendar Modal -->
+    <div class="modal-overlay" id="calendarModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeCalendarModal()">✕</button>
+            <h3 style="color: white; margin-bottom: 20px;">📅 तारीख चुनें</h3>
+            <div id="calendarDays" style="min-height: 300px;"></div>
+            <div class="calendar-footer">
+                <button class="cancel-btn" onclick="closeCalendarModal()">रद्द करें</button>
+                <button class="select-btn" onclick="closeCalendarModal()">ठीक है</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Gallery Modal -->
+    <div class="modal-overlay image-gallery-modal" id="imageGalleryModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeImageGallery()">✕</button>
+            <div class="gallery-container" id="imageGalleryContainer">
+                <img id="galleryImage" class="gallery-image" src="" alt="Gallery Image">
+                <div class="gallery-nav">
+                    <button id="prevImageBtn" onclick="navigateGallery(-1)">◀ पिछली</button>
+                    <span id="imageCounter" style="color: white; align-self: center;">1/1</span>
+                    <button id="nextImageBtn" onclick="navigateGallery(1)">अगली ▶</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const JSONBIN_CONFIG = {
+            masterKey: '$2a$10$XL4iuq0g8lswBdQN2KIhh.QodRh.0QEmO0nxno45VV3DR14ZVmzkK',
+            postsBinId: '67cfd795ad19ca34f811c5f1',
+            savedBinId: '67cfd7c4ad19ca34f811c620',
+            quizMasterBinId: '6997e25cd0ea881f40c8983b',
+            sujasMasterBinId: '69aab5acd0ea881f40f4e862',
+            apiUrl: 'https://api.jsonbin.io/v3',
+            adminPassword: 'admin@123'
+        };
+
+        // Global Variables
+        let isAdmin = false;
+        let allPosts = [];
+        let savedPosts = [];
+        let currentUser = null;
+        let currentMainTab = 'post';
+        let currentPostTab = 'feed';
+        
+        // Quiz Variables
+        let currentQuizType = 'dainik';
+        let dateBinMap = {};
+        let quizMap = {};
+        let quizDetails = {};
+        let sujasQuizzes = [];
+        let currentQuiz = [];
+        let selectedDate = new Date();
+        let selectedQuizId = null;
+        let currentModalDate = new Date();
+        
+        // Gallery Variables
+        let currentGalleryImages = [];
+        let currentGalleryIndex = 0;
+
+        // Initialize on load
+        window.addEventListener('load', initialize);
+
+        async function initialize() {
+            await initializeUser();
+            await Promise.all([
+                loadPosts(),
+                loadSavedPosts(),
+                loadQuizBins()
+            ]);
+            renderFeed();
+            renderSavedPosts();
+            updateSelectedDateDisplay();
+            await loadQuizForSelectedType();
+        }
+
+        async function initializeUser() {
+            let userId = localStorage.getItem('deviceUserId');
+            if (!userId) {
+                userId = 'device_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+                localStorage.setItem('deviceUserId', userId);
+            }
+            currentUser = userId;
+        }
+
+        function showAlert(message, type = 'success') {
+            const alert = document.createElement('div');
+            alert.className = `custom-alert ${type}`;
+            alert.textContent = message;
+            document.body.appendChild(alert);
+            setTimeout(() => alert.remove(), 3000);
+        }
+
+        // Tab Switching Functions
+        function switchMainTab(tab) {
+            currentMainTab = tab;
+            const postSection = document.getElementById('postSection');
+            const quizSection = document.getElementById('quizSection');
+            const postMainTab = document.getElementById('postMainTab');
+            const quizMainTab = document.getElementById('quizMainTab');
+            const headerTitle = document.getElementById('mainHeaderTitle');
+            const headerSubtitle = document.getElementById('mainHeaderSubtitle');
+            const footerText = document.getElementById('footerText');
+            const adminPostForm = document.getElementById('adminPostForm');
+            const adminQuizForm = document.getElementById('adminQuizForm');
+
+            if (tab === 'post') {
+                postSection.style.display = 'block';
+                quizSection.style.display = 'none';
+                postMainTab.classList.add('active');
+                quizMainTab.classList.remove('active');
+                headerTitle.innerHTML = '📸 करंट अफेयर्स रील्स';
+                headerSubtitle.innerHTML = 'दैनिक पोस्ट - ताजा अपडेट्स';
+                footerText.innerHTML = '📌 रोजाना नई पोस्ट - करंट अफेयर्स अपडेट्स';
+                
+                if (isAdmin) {
+                    adminPostForm.style.display = 'block';
+                    adminQuizForm.style.display = 'none';
+                }
+            } else {
+                postSection.style.display = 'none';
+                quizSection.style.display = 'block';
+                postMainTab.classList.remove('active');
+                quizMainTab.classList.add('active');
+                headerTitle.innerHTML = '📚 क्विज प्लेटफॉर्म';
+                headerSubtitle.innerHTML = 'दैनिक क्विज और सुजस क्विज';
+                footerText.innerHTML = '📌 रोजाना नया क्विज - हर दिन सीखें कुछ नया';
+                
+                if (isAdmin) {
+                    adminPostForm.style.display = 'none';
+                    adminQuizForm.style.display = 'block';
+                }
+            }
+        }
+
+        function switchPostTab(tab) {
+            currentPostTab = tab;
+            const feedSection = document.getElementById('feedSection');
+            const savedSection = document.getElementById('savedSection');
+            const feedTab = document.getElementById('feedTab');
+            const savedTab = document.getElementById('savedTab');
+
+            if (tab === 'feed') {
+                feedSection.style.display = 'block';
+                savedSection.style.display = 'none';
+                feedTab.classList.add('active');
+                savedTab.classList.remove('active');
+            } else {
+                feedSection.style.display = 'none';
+                savedSection.style.display = 'block';
+                feedTab.classList.remove('active');
+                savedTab.classList.add('active');
+                renderSavedPosts();
+            }
+        }
+
+        // Admin Functions
+        function toggleAdminPanel() {
+            const loginSection = document.getElementById('adminLoginSection');
+            const addPostSection = document.getElementById('adminAddPostSection');
+            
+            if (loginSection.style.display === 'none') {
+                loginSection.style.display = 'block';
+                addPostSection.style.display = 'none';
+                document.getElementById('adminToggleBtn').innerHTML = '<span>🔓</span> लॉगिन';
+            } else {
+                if (isAdmin) {
+                    loginSection.style.display = 'none';
+                    addPostSection.style.display = 'block';
+                    document.getElementById('adminToggleBtn').innerHTML = '<span>🔒</span> एडमिन';
+                    
+                    if (currentMainTab === 'post') {
+                        document.getElementById('adminPostForm').style.display = 'block';
+                        document.getElementById('adminQuizForm').style.display = 'none';
+                    } else {
+                        document.getElementById('adminPostForm').style.display = 'none';
+                        document.getElementById('adminQuizForm').style.display = 'block';
+                    }
+                }
+            }
+        }
+
+        function verifyAdmin() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === JSONBIN_CONFIG.adminPassword) {
+                isAdmin = true;
+                document.getElementById('adminLoginSection').style.display = 'none';
+                document.getElementById('adminAddPostSection').style.display = 'block';
+                document.getElementById('adminToggleBtn').innerHTML = '<span>🔒</span> एडमिन';
+                
+                if (currentMainTab === 'post') {
+                    document.getElementById('adminPostForm').style.display = 'block';
+                    document.getElementById('adminQuizForm').style.display = 'none';
+                } else {
+                    document.getElementById('adminPostForm').style.display = 'none';
+                    document.getElementById('adminQuizForm').style.display = 'block';
+                }
+                
+                showAlert('✅ एडमिन लॉगिन सफल!', 'success');
+            } else {
+                showAlert('❌ गलत पासवर्ड', 'error');
+            }
+        }
+
+        function logoutAdmin() {
+            isAdmin = false;
+            document.getElementById('adminLoginSection').style.display = 'block';
+            document.getElementById('adminAddPostSection').style.display = 'none';
+            document.getElementById('adminToggleBtn').innerHTML = '<span>🔓</span> लॉगिन';
+            showAlert('✅ लॉगआउट सफल', 'info');
+        }
+
+        // URL Field Management for Multiple Images
+        function addUrlField() {
+            const urlList = document.getElementById('urlList');
+            const urlItem = document.createElement('div');
+            urlItem.className = 'url-item';
+            urlItem.innerHTML = `
+                <input type="url" class="image-url" placeholder="https://example.com/image${urlList.children.length + 1}.jpg">
+                <button onclick="removeUrlField(this)">✕</button>
+            `;
+            urlList.appendChild(urlItem);
+        }
+
+        function removeUrlField(button) {
+            const urlList = document.getElementById('urlList');
+            if (urlList.children.length > 1) {
+                button.parentElement.remove();
+            }
+        }
+
+        // Post Functions
+        async function loadPosts() {
+            try {
+                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.postsBinId}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    allPosts = data.record.posts || [];
+                    allPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                } else {
+                    allPosts = [];
+                    await savePosts();
+                }
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                allPosts = [];
+            }
+        }
+
+        async function savePosts() {
+            try {
+                await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.postsBinId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_CONFIG.masterKey
+                    },
+                    body: JSON.stringify({ 
+                        posts: allPosts,
+                        lastUpdated: new Date().toISOString()
+                    })
+                });
+            } catch (error) {
+                console.error('Error saving posts:', error);
+            }
+        }
+
+        async function loadSavedPosts() {
+            try {
+                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.savedBinId}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const savedData = data.record || {};
+                    savedPosts = savedData[currentUser] || [];
+                } else {
+                    savedPosts = [];
+                }
+            } catch (error) {
+                console.error('Error loading saved posts:', error);
+                savedPosts = [];
+            }
+        }
+
+        async function saveSavedPosts() {
+            try {
+                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.savedBinId}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
+                });
+
+                let savedData = {};
+                if (response.ok) {
+                    const data = await response.json();
+                    savedData = data.record || {};
+                }
+
+                savedData[currentUser] = savedPosts;
+
+                await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.savedBinId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_CONFIG.masterKey
+                    },
+                    body: JSON.stringify(savedData)
+                });
+            } catch (error) {
+                console.error('Error saving saved posts:', error);
+            }
+        }
+
+        async function addNewPost() {
+            if (!isAdmin) {
+                showAlert('❌ केवल एडमिन ही पोस्ट कर सकते हैं!', 'error');
+                return;
+            }
+
+            const urlInputs = document.querySelectorAll('.image-url');
+            const imageUrls = [];
+            
+            for (let input of urlInputs) {
+                const url = input.value.trim();
+                if (url) {
+                    try {
+                        new URL(url);
+                        imageUrls.push(url);
+                    } catch {
+                        showAlert(`❌ वैलिड URL डालें: ${url}`, 'error');
+                        return;
+                    }
+                }
+            }
+
+            if (imageUrls.length === 0) {
+                showAlert('❌ कम से कम एक इमेज URL डालें!', 'error');
+                return;
+            }
+
+            const caption = document.getElementById('caption').value.trim();
+
+            const newPost = {
+                id: Date.now().toString() + '_' + Math.random().toString(36).substr(2, 5),
+                images: imageUrls,
+                caption: caption || 'करंट अफेयर्स अपडेट',
+                username: 'करंट अफेयर्स डेली',
+                handle: '@currentaffairs',
+                time: 'अभी',
+                saves: '0',
+                shares: '0',
+                comments: [],
+                commentCount: 0,
+                createdAt: new Date().toISOString()
+            };
+
+            allPosts.unshift(newPost);
+            await savePosts();
+            
+            // Reset form
+            document.getElementById('urlList').innerHTML = `
+                <div class="url-item">
+                    <input type="url" class="image-url" placeholder="https://example.com/image1.jpg">
+                    <button onclick="removeUrlField(this)" style="display: none;">✕</button>
+                </div>
+            `;
+            document.getElementById('caption').value = '';
+            
+            renderFeed();
+            showAlert('✅ पोस्ट अपलोड हो गई!', 'success');
+        }
+
+        function renderFeed() {
+            const container = document.getElementById('postsContainer');
+            
+            if (!allPosts || allPosts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                            <rect x="2" y="2" width="20" height="20" rx="2" ry="2"/>
+                            <line x1="8" y1="2" x2="8" y2="22"/>
+                            <line x1="16" y1="2" x2="16" y2="22"/>
+                        </svg>
+                        <p>कोई पोस्ट नहीं है</p>
+                        <p style="font-size: 0.9rem; margin-top: 10px;">एडमिन लॉगिन करके पोस्ट अपलोड करें</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let postsHTML = '';
+            allPosts.forEach(post => {
+                const isSaved = savedPosts.includes(post.id);
+                const firstImage = post.images && post.images.length > 0 ? post.images[0] : 'https://via.placeholder.com/400?text=No+Image';
+                const imageCount = post.images ? post.images.length : 1;
+                
+                postsHTML += `
+                    <div class="post-item">
+                        <div class="post-header">
+                            <div class="post-avatar">📰</div>
+                            <div class="post-user-info">
+                                <h4>${post.username}</h4>
+                                <p>${post.handle} <span></span> ${post.time}</p>
+                            </div>
+                        </div>
+
+                        <div class="post-image-container" onclick="openImageGallery('${post.id}', 0)">
+                            <img src="${firstImage}" alt="Post" class="post-image" onerror="this.src='https://via.placeholder.com/400?text=Image+Not+Found'">
+                            ${imageCount > 1 ? '<span style="position: absolute; bottom: 10px; right: 10px; background: #2563eb; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem;">1/' + imageCount + '</span>' : ''}
+                        </div>
+
+                        <div class="post-actions" onclick="event.stopPropagation()">
+                            <div class="action-group">
+                                <button class="action-btn save-btn ${isSaved ? 'active' : ''}" onclick="toggleSave('${post.id}')" id="saveBtn-${post.id}">
+                                    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                    <span class="action-count" id="saveCount-${post.id}">${post.saves}</span>
+                                </button>
+                                <button class="action-btn share-btn" onclick="sharePost('${post.id}')">
+                                    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                        <polyline points="16 6 12 2 8 6"></polyline>
+                                        <line x1="12" y1="2" x2="12" y2="15"></line>
+                                    </svg>
+                                    <span class="action-count" id="shareCount-${post.id}">${post.shares}</span>
+                                </button>
+                                <button class="action-btn comment-btn" onclick="toggleComments('${post.id}')">
+                                    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                    <span class="action-count">${post.commentCount}</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="post-caption">
+                            <strong>${post.username}</strong> ${post.caption}
+                        </div>
+
+                        <div class="comments-section" id="comments-${post.id}" style="display: none;" onclick="event.stopPropagation()">
+                            <div class="comments-header">
+                                <span>कमेंट्स (${post.commentCount})</span>
+                                <button onclick="toggleComments('${post.id}')">✕</button>
+                            </div>
+                            
+                            <div id="commentsList-${post.id}">
+                                ${renderComments(post.comments)}
+                            </div>
+                            
+                            <div class="comment-input">
+                                <input type="text" placeholder="कमेंट लिखें..." id="commentInput-${post.id}">
+                                <button onclick="addComment('${post.id}')">भेजें</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = postsHTML;
+        }
+
+        function renderComments(comments) {
+            if (!comments || comments.length === 0) {
+                return '<p style="color: #64748b; text-align: center; padding: 20px;">कोई कमेंट नहीं</p>';
+            }
+
+            return comments.map(comment => `
+                <div class="comment-item">
+                    <div class="comment-avatar">${comment.user ? comment.user.charAt(0) : '?'}</div>
+                    <div class="comment-content">
+                        <div class="comment-username">${comment.user || 'Anonymous'}</div>
+                        <div class="comment-text">${comment.text}</div>
+                        <div class="comment-time">${comment.time}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function renderSavedPosts() {
+            const container = document.getElementById('savedPostsContainer');
+            
+            if (!savedPosts || savedPosts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <p>कोई सेव की गई पोस्ट नहीं है</p>
+                        <p style="font-size: 0.9rem; margin-top: 10px;">पोस्ट पर सेव बटन दबाकर सेव करें</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const savedPostsData = allPosts.filter(post => savedPosts.includes(post.id));
+
+            if (savedPostsData.length === 0) {
+                savedPosts = [];
+                await saveSavedPosts();
+                
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>सेव की गई पोस्ट उपलब्ध नहीं हैं</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let savedHTML = '';
+            savedPostsData.forEach(post => {
+                const firstImage = post.images && post.images.length > 0 ? post.images[0] : 'https://via.placeholder.com/70?text=No+Image';
+                
+                savedHTML += `
+                    <div class="saved-item" onclick="openImageGallery('${post.id}', 0)">
+                        <div class="saved-thumb">
+                            <img src="${firstImage}" alt="Post" onerror="this.src='https://via.placeholder.com/70?text=No+Image'">
+                        </div>
+                        <div class="saved-info">
+                            <h4>${post.caption.substring(0, 50)}${post.caption.length > 50 ? '...' : ''}</h4>
+                            <p>${post.username} • ${post.time}</p>
+                        </div>
+                        <button class="unsave-btn" onclick="event.stopPropagation(); unsavePost('${post.id}')">हटाएं</button>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = savedHTML;
+        }
+
+        function openImageGallery(postId, startIndex = 0) {
+            const post = allPosts.find(p => p.id === postId);
+            if (!post || !post.images || post.images.length === 0) return;
+            
+            currentGalleryImages = post.images;
+            currentGalleryIndex = startIndex;
+            
+            updateGalleryDisplay();
+            document.getElementById('imageGalleryModal').classList.add('active');
+        }
+
+        function updateGalleryDisplay() {
+            const imgElement = document.getElementById('galleryImage');
+            const counterElement = document.getElementById('imageCounter');
+            const prevBtn = document.getElementById('prevImageBtn');
+            const nextBtn = document.getElementById('nextImageBtn');
+            
+            imgElement.src = currentGalleryImages[currentGalleryIndex];
+            counterElement.textContent = `${currentGalleryIndex + 1}/${currentGalleryImages.length}`;
+            
+            prevBtn.disabled = currentGalleryIndex === 0;
+            nextBtn.disabled = currentGalleryIndex === currentGalleryImages.length - 1;
+        }
+
+        function navigateGallery(direction) {
+            const newIndex = currentGalleryIndex + direction;
+            if (newIndex >= 0 && newIndex < currentGalleryImages.length) {
+                currentGalleryIndex = newIndex;
+                updateGalleryDisplay();
+            }
+        }
+
+        function closeImageGallery() {
+            document.getElementById('imageGalleryModal').classList.remove('active');
+            currentGalleryImages = [];
+            currentGalleryIndex = 0;
+        }
+
+        async function toggleSave(postId) {
+            const index = savedPosts.indexOf(postId);
+            const post = allPosts.find(p => p.id === postId);
+            
+            if (!post) return;
+
+            if (index === -1) {
+                savedPosts.push(postId);
+                post.saves = (parseInt(post.saves || '0') + 1).toString();
+                showAlert('✅ पोस्ट सेव हो गई!', 'success');
+            } else {
+                savedPosts.splice(index, 1);
+                post.saves = (Math.max(0, parseInt(post.saves || '0') - 1)).toString();
+                showAlert('✅ पोस्ट अनसेव हो गई!', 'success');
+            }
+
+            const feedSaveBtn = document.getElementById(`saveBtn-${postId}`);
+            const feedSaveCount = document.getElementById(`saveCount-${postId}`);
+            
+            if (feedSaveBtn) {
+                if (savedPosts.includes(postId)) {
+                    feedSaveBtn.classList.add('active');
+                } else {
+                    feedSaveBtn.classList.remove('active');
+                }
+            }
+            
+            if (feedSaveCount) {
+                feedSaveCount.textContent = post.saves;
+            }
+
+            await savePosts();
+            await saveSavedPosts();
+            
+            if (currentPostTab === 'saved') {
+                renderSavedPosts();
+            }
+        }
+
+        async function unsavePost(postId) {
+            const index = savedPosts.indexOf(postId);
+            if (index !== -1) {
+                savedPosts.splice(index, 1);
+                
+                const post = allPosts.find(p => p.id === postId);
+                if (post) {
+                    post.saves = (Math.max(0, parseInt(post.saves || '0') - 1)).toString();
+                }
+
+                await savePosts();
+                await saveSavedPosts();
+                
+                renderSavedPosts();
+                renderFeed();
+                showAlert('✅ पोस्ट सेव से हटा दी गई', 'success');
+            }
+        }
+
+        async function sharePost(postId) {
+            const post = allPosts.find(p => p.id === postId);
+            if (!post) return;
+
+            post.shares = (parseInt(post.shares || '0') + 1).toString();
+            
+            const feedShareCount = document.getElementById(`shareCount-${postId}`);
+            if (feedShareCount) {
+                feedShareCount.textContent = post.shares;
+            }
+
+            const dummy = document.createElement('textarea');
+            dummy.value = `${window.location.origin}/post/${postId}`;
+            document.body.appendChild(dummy);
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+
+            await savePosts();
+            showAlert('📤 लिंक कॉपी हो गया!', 'success');
+        }
+
+        function toggleComments(postId) {
+            const commentsSection = document.getElementById(`comments-${postId}`);
+            if (commentsSection) {
+                commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        async function addComment(postId, inputElement = null) {
+            const input = inputElement || document.getElementById(`commentInput-${postId}`);
+            if (!input) return;
+            
+            const commentText = input.value.trim();
+            if (!commentText) return;
+
+            const post = allPosts.find(p => p.id === postId);
+            if (!post) return;
+
+            const newComment = {
+                user: 'आप',
+                text: commentText,
+                time: 'अभी',
+                userId: currentUser,
+                timestamp: new Date().toISOString()
+            };
+
+            if (!post.comments) {
+                post.comments = [];
+            }
+
+            post.comments.push(newComment);
+            post.commentCount = (post.commentCount || 0) + 1;
+
+            const feedCommentsList = document.getElementById(`commentsList-${postId}`);
+            if (feedCommentsList) {
+                feedCommentsList.innerHTML = renderComments(post.comments);
+            }
+
+            const feedCommentCount = document.querySelector(`#comments-${postId} .comments-header span`);
+            if (feedCommentCount) {
+                feedCommentCount.textContent = `कमेंट्स (${post.commentCount})`;
+            }
+
+            input.value = '';
+            await savePosts();
+            showAlert('💬 कमेंट जोड़ दिया गया!', 'success');
+        }
+
+        // Quiz Functions
+        async function loadQuizBins() {
+            try {
+                const dainikResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.quizMasterBinId}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
+                });
+
+                if (dainikResponse.ok) {
+                    const data = await dainikResponse.json();
+                    if (data.record && data.record.dateMap) {
+                        dateBinMap = data.record.dateMap;
+                    }
+                }
+
+                const sujasResponse = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.sujasMasterBinId}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
+                });
+
+                if (sujasResponse.ok) {
+                    const data = await sujasResponse.json();
+                    const record = data.record || {};
+                    quizMap = record.quizMap || {};
+                    quizDetails = record.quizDetails || {};
+                    
+                    sujasQuizzes = [];
+                    for (const [key, binId] of Object.entries(quizMap)) {
+                        const details = quizDetails[binId] || {};
+                        sujasQuizzes.push({
+                            id: binId,
+                            key: key,
+                            title: details.title || 'बिना टाइटल',
+                            order: details.order || 0,
+                            created: details.created || new Date().toISOString()
+                        });
+                    }
+                    sujasQuizzes.sort((a, b) => (a.order || 0) - (b.order || 0));
+                }
+            } catch (error) {
+                console.error('Error loading quiz bins:', error);
+            }
+        }
+
+        function selectQuizType(type) {
+            currentQuizType = type;
+            document.getElementById('quizTypeBadge').innerHTML = type === 'dainik' ? '📅 दैनिक क्विज' : '✨ सुजस क्विज';
+            
+            const dainikBtn = document.getElementById('dainikQuizBtn');
+            const sujasBtn = document.getElementById('sujasQuizBtn');
+            
+            if (type === 'dainik') {
+                dainikBtn.classList.add('active');
+                sujasBtn.classList.remove('active');
+                document.getElementById('dainikDateBox').style.display = 'flex';
+                document.getElementById('sujasQuizList').style.display = 'none';
+                loadQuizForSelectedDate();
+            } else {
+                dainikBtn.classList.remove('active');
+                sujasBtn.classList.add('active');
+                document.getElementById('dainikDateBox').style.display = 'none';
+                document.getElementById('sujasQuizList').style.display = 'block';
+                renderSujasQuizList();
+            }
+        }
+
+        async function loadQuizForSelectedType() {
+            if (currentQuizType === 'dainik') {
+                await loadQuizForSelectedDate();
+            } else {
+                await renderSujasQuizList();
+            }
+        }
+
+        async function loadQuizForSelectedDate() {
+            const dateStr = formatDate(selectedDate);
+            
+            if (dateBinMap[dateStr]) {
+                await loadQuizByDate(dateStr);
+            } else {
+                document.getElementById('questionsList').innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                        📅 ${selectedDate.toLocaleDateString('hi-IN', { year: 'numeric', month: 'long', day: 'numeric' })} के लिए 
+                        दैनिक क्विज नहीं है।
+                    </div>
+                `;
+            }
+        }
+
+        async function loadQuizByDate(date) {
+            const binId = dateBinMap[date];
+            if (!binId) return;
+
+            document.getElementById('questionsList').innerHTML = '<div class="loading"><div class="spinner"></div><div>⏳ क्विज लोड हो रहा है...</div></div>';
+
+            try {
+                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${binId}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
+                });
+
+                if (!response.ok) throw new Error('Failed to load quiz');
+
+                const data = await response.json();
+                const quizData = data.record.quiz;
+
+                if (quizData && quizData.length > 0) {
+                    currentQuiz = quizData;
+                    displayQuestions(currentQuiz);
+                }
+            } catch (error) {
+                console.error('Error loading quiz:', error);
+                document.getElementById('questionsList').innerHTML = `<div style="text-align: center; padding: 30px; color: #dc2626;">❌ क्विज लोड करने में त्रुटि</div>`;
+            }
+        }
+
+        async function renderSujasQuizList() {
+            const listElement = document.getElementById('sujasQuizList');
+            
+            if (!sujasQuizzes || sujasQuizzes.length === 0) {
+                listElement.innerHTML = '<div style="text-align: center; padding: 30px; color: #94a3b8;">कोई सुजस क्विज उपलब्ध नहीं है</div>';
+                document.getElementById('questionsList').innerHTML = '';
+                return;
+            }
+
+            let listHTML = '';
+            sujasQuizzes.forEach(quiz => {
+                const isSelected = selectedQuizId === quiz.id;
+                const quizDate = new Date(quiz.created).toLocaleDateString('hi-IN', {
+                    year: 'numeric', month: 'short', day: 'numeric'
+                });
+                
+                listHTML += `
+                    <div class="quiz-list-item ${isSelected ? 'selected' : ''}" onclick="selectSujasQuiz('${quiz.id}')">
+                        <div class="quiz-item-title">
+                            <span>📝 ${quiz.title || 'बिना टाइटल'}</span>
+                        </div>
+                        <div style="color: #94a3b8; font-size: 0.8rem;">📅 ${quizDate}</div>
+                    </div>
+                `;
+            });
+            
+            listElement.innerHTML = listHTML;
+
+            if (!selectedQuizId && sujasQuizzes.length > 0) {
+                await selectSujasQuiz(sujasQuizzes[0].id);
+            }
+        }
+
+        async function selectSujasQuiz(quizId) {
+            selectedQuizId = quizId;
+            document.getElementById('questionsList').innerHTML = '<div class="loading"><div class="spinner"></div><div>⏳ क्विज लोड हो रहा है...</div></div>';
+            
+            try {
+                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${quizId}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
+                });
+
+                if (!response.ok) throw new Error('Failed to load quiz');
+
+                const data = await response.json();
+                const quizData = data.record;
+                
+                if (quizData && quizData.quiz) {
+                    currentQuiz = quizData.quiz || [];
+                    displayQuestions(currentQuiz);
+                }
+                
+                await renderSujasQuizList();
+            } catch (error) {
+                console.error('Error loading quiz:', error);
+                document.getElementById('questionsList').innerHTML = `<div style="text-align: center; padding: 30px; color: #dc2626;">❌ क्विज लोड करने में त्रुटि</div>`;
+            }
+        }
+
+        function displayQuestions(questions) {
+            if (!questions || questions.length === 0) {
+                document.getElementById('questionsList').innerHTML = '<div style="text-align: center; padding: 30px; color: #94a3b8;">कोई प्रश्न नहीं</div>';
+                return;
+            }
+
+            let html = '';
+            questions.forEach((q, index) => {
+                const savedAnswer = localStorage.getItem(`quiz_${q.id || index}_answer`);
+                
+                html += `
+                    <div class="question-item">
+                        <span class="category-tag">${q.category || (currentQuizType === 'dainik' ? 'करंट अफेयर्स' : 'सुजस स्पेशल')}</span>
+                        <div class="question-text">${index + 1}. ${q.question}</div>
+                        <div class="options">
+                            ${q.options.map((opt, i) => {
+                                const isChecked = savedAnswer && parseInt(savedAnswer) === i;
+                                return `
+                                    <div class="option ${isChecked ? (i === q.correct ? 'selected-correct' : 'selected-wrong') : ''}" onclick="selectQuizOption(${index}, ${i}, ${q.correct})">
+                                        <input type="radio" name="q${index}" value="${i}" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation()">
+                                        ${String.fromCharCode(65 + i)}. ${opt}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        <div class="explanation ${savedAnswer ? 'show' : ''}" id="quiz-exp-${index}">
+                            <strong>✓ सही उत्तर:</strong> ${String.fromCharCode(65 + q.correct)}. ${q.options[q.correct]}<br>
+                            <strong>📌 व्याख्या:</strong> ${q.explanation || 'कोई व्याख्या नहीं'}
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('questionsList').innerHTML = html;
+        }
+
+        function selectQuizOption(questionIndex, optionIndex, correctIndex) {
+            const radioName = `q${questionIndex}`;
+            const radios = document.getElementsByName(radioName);
+            
+            for (let i = 0; i < radios.length; i++) {
+                radios[i].checked = false;
+                const optionDiv = radios[i].closest('.option');
+                if (optionDiv) {
+                    optionDiv.classList.remove('selected-correct', 'selected-wrong');
+                }
+            }
+            
+            radios[optionIndex].checked = true;
+            
+            const selectedOption = radios[optionIndex].closest('.option');
+            const correctOption = radios[correctIndex].closest('.option');
+            
+            if (selectedOption) {
+                if (optionIndex === correctIndex) {
+                    selectedOption.classList.add('selected-correct');
+                } else {
+                    selectedOption.classList.add('selected-wrong');
+                    if (correctOption) {
+                        correctOption.classList.add('selected-correct');
+                    }
+                }
+            }
+            
+            localStorage.setItem(`quiz_${questionIndex}_answer`, optionIndex);
+            
+            const explanation = document.getElementById(`quiz-exp-${questionIndex}`);
+            if (explanation) {
+                explanation.classList.add('show');
+            }
+        }
+
+        function formatDate(date) {
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
+
+        function updateSelectedDateDisplay() {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('selectedDateDisplay').textContent = 
+                selectedDate.toLocaleDateString('hi-IN', options);
+        }
+
+        function openCalendarModal() {
+            document.getElementById('calendarModal').classList.add('active');
+            renderCalendar();
+        }
+
+        function closeCalendarModal() {
+            document.getElementById('calendarModal').classList.remove('active');
+        }
+
+        function renderCalendar() {
+            const year = currentModalDate.getFullYear();
+            const month = currentModalDate.getMonth();
+            
+            const monthNames = ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून',
+                'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            const weekdays = ['सोम', 'मंगल', 'बुध', 'गुरु', 'गुरु', 'शुक्र', 'शनि', 'रवि'];
+            
+            let calendarHTML = `
+                <div class="calendar-improved">
+                    <div class="calendar-header">
+                        <button onclick="changeMonth(-1)">◀</button>
+                        <span class="calendar-month">${monthNames[month]} ${year}</span>
+                        <button onclick="changeMonth(1)">▶</button>
+                    </div>
+                    
+                    <div class="calendar-weekdays">
+                        ${weekdays.map(day => `<div>${day}</div>`).join('')}
+                    </div>
+                    
+                    <div class="calendar-days">
+            `;
+            
+            const startDay = firstDay === 0 ? 6 : firstDay - 1;
+            
+            for (let i = 0; i < startDay; i++) {
+                calendarHTML += '<div class="calendar-day empty"></div>';
+            }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const isSelected = selectedDate.getFullYear() === year && 
+                                  selectedDate.getMonth() === month && 
+                                  selectedDate.getDate() === day;
+                const hasQuiz = dateBinMap[dateStr] ? true : false;
+                
+                calendarHTML += `
+                    <div class="calendar-day ${isSelected ? 'selected' : ''} ${hasQuiz ? 'has-quiz' : ''}" onclick="selectCalendarDate(${year}, ${month}, ${day})">
+                        <span class="day-number">${day}</span>
+                        ${hasQuiz ? '<span class="quiz-indicator">📝</span>' : ''}
+                    </div>
+                `;
+            }
+            
+            calendarHTML += `
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('calendarDays').innerHTML = calendarHTML;
+        }
+
+        function changeMonth(delta) {
+            currentModalDate.setMonth(currentModalDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        function selectCalendarDate(year, month, day) {
+            selectedDate = new Date(year, month, day);
+            updateSelectedDateDisplay();
+            closeCalendarModal();
+            loadQuizForSelectedDate();
+        }
+
+        // Quiz Admin Functions
+        async function saveQuiz() {
+            if (!isAdmin) {
+                showAlert('❌ केवल एडमिन ही सेव कर सकते हैं!', 'error');
+                return;
+            }
+
+            try {
+                const jsonText = document.getElementById('jsonInput').value.trim();
+                const quizType = document.getElementById('editQuizType').value;
+                
+                if (!jsonText) {
+                    showAlert('❌ JSON भरें!', 'error');
+                    return;
+                }
+
+                let quizData;
+                try {
+                    quizData = JSON.parse(jsonText);
+                } catch (e) {
+                    showAlert('❌ Invalid JSON format', 'error');
+                    return;
+                }
+
+                if (!quizData.quiz || !Array.isArray(quizData.quiz)) {
+                    showAlert('❌ JSON में "quiz" array होना चाहिए', 'error');
+                    return;
+                }
+
+                if (quizType === 'dainik') {
+                    await saveDainikQuiz(quizData);
+                } else {
+                    await saveSujasQuiz(quizData);
+                }
+
+            } catch (error) {
+                showAlert('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        async function saveDainikQuiz(quizData) {
+            const quizDate = document.getElementById('quizDateInput').value;
+            if (!quizDate) {
+                showAlert('❌ तारीख भरें!', 'error');
+                return;
+            }
+
+            let binId = dateBinMap[quizDate];
+            let response;
+
+            const saveData = {
+                quiz: quizData.quiz,
+                updated: new Date().toISOString(),
+                date: quizDate,
+                quizType: 'dainik'
+            };
+
+            if (binId) {
+                response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${binId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_CONFIG.masterKey
+                    },
+                    body: JSON.stringify(saveData)
+                });
+            } else {
+                response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_CONFIG.masterKey
+                    },
+                    body: JSON.stringify(saveData)
+                });
+            }
+
+            if (!response.ok) throw new Error('Failed to save quiz');
+
+            const data = await response.json();
+            const newBinId = binId || data.metadata.id;
+
+            if (!binId) {
+                dateBinMap[quizDate] = newBinId;
+            }
+
+            const masterData = {
+                dateMap: dateBinMap,
+                lastUpdated: new Date().toISOString()
+            };
+
+            await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.quizMasterBinId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': JSONBIN_CONFIG.masterKey
+                },
+                body: JSON.stringify(masterData)
+            });
+
+            showAlert('✅ दैनिक क्विज सेव हो गया!', 'success');
+            
+            if (quizDate === formatDate(selectedDate) && currentQuizType === 'dainik') {
+                await loadQuizByDate(quizDate);
+            }
+        }
+
+        async function saveSujasQuiz(quizData) {
+            const quizTitle = document.getElementById('quizTitleInput').value.trim();
+            if (!quizTitle) {
+                showAlert('❌ क्विज टाइटल भरें!', 'error');
+                return;
+            }
+            
+            try {
+                const saveData = {
+                    title: quizTitle,
+                    quiz: quizData.quiz,
+                    updated: new Date().toISOString(),
+                    created: new Date().toISOString(),
+                    quizType: 'sujas'
+                };
+
+                const response = await fetch(`${JSONBIN_CONFIG.apiUrl}/b`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_CONFIG.masterKey
+                    },
+                    body: JSON.stringify(saveData)
+                });
+
+                if (!response.ok) throw new Error('Failed to create quiz bin');
+
+                const data = await response.json();
+                const newBinId = data.metadata.id;
+
+                const quizKey = `quiz${Object.keys(quizMap).length + 1}`;
+                
+                quizMap[quizKey] = newBinId;
+                
+                quizDetails[newBinId] = {
+                    title: quizTitle,
+                    created: new Date().toISOString(),
+                    order: Object.keys(quizMap).length,
+                    key: quizKey
+                };
+
+                sujasQuizzes.push({
+                    id: newBinId,
+                    key: quizKey,
+                    title: quizTitle,
+                    order: Object.keys(quizMap).length,
+                    created: new Date().toISOString()
+                });
+
+                const masterData = {
+                    quizMap: quizMap,
+                    quizDetails: quizDetails,
+                    lastUpdated: new Date().toISOString()
+                };
+
+                await fetch(`${JSONBIN_CONFIG.apiUrl}/b/${JSONBIN_CONFIG.sujasMasterBinId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_CONFIG.masterKey
+                    },
+                    body: JSON.stringify(masterData)
+                });
+
+                showAlert('✅ सुजस क्विज सेव हो गया!', 'success');
+                
+                await renderSujasQuizList();
+                await selectSujasQuiz(newBinId);
+                
+            } catch (error) {
+                console.error('Error saving quiz:', error);
+                showAlert('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        function loadSampleJSON() {
+            const sampleQuiz = {
+                quiz: [
+                    {
+                        question: "हाल ही में राजस्थान सरकार द्वारा शुरू की गई 'मुख्यमंत्री अन्नपूर्णा योजना' के तहत भोजन की कीमत कितनी है?",
+                        options: ["₹8", "₹10", "₹12", "₹15"],
+                        correct: 0,
+                        explanation: "मुख्यमंत्री अन्नपूर्णा योजना के तहत राजस्थान सरकार गरीबों को ₹8 में भोजन उपलब्ध करा रही है।",
+                        category: "राजस्थान योजनाएं"
+                    }
+                ]
+            };
+            document.getElementById('jsonInput').value = JSON.stringify(sampleQuiz, null, 2);
+            showAlert('📋 सैंपल JSON लोड हो गया', 'info');
+        }
+
+        // Auto-refresh
+        setInterval(async () => {
+            if (currentMainTab === 'post') {
+                await loadPosts();
+                await loadSavedPosts();
+                
+                if (!document.getElementById('imageGalleryModal').classList.contains('active')) {
+                    renderFeed();
+                }
+                
+                if (currentPostTab === 'saved') {
+                    renderSavedPosts();
+                }
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
