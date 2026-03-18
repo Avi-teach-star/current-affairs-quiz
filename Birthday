@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a0a16">
+    <!-- Google Material Icons और Font Awesome -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>💝 आपके लिए एक सरप्राइज</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+
+        body, html {
+            height: 100%;
+            width: 100%;
+            background: #1a0a16;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        #surpriseFrame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none;
+            z-index: 1;
+            pointer-events: auto;
+            touch-action: auto;
+            -webkit-overflow-scrolling: touch;
+            overflow: auto;
+        }
+
+        .curtain-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            display: flex;
+            pointer-events: none;
+        }
+
+        .curtain {
+            width: 50%;
+            height: 100%;
+            background: #a10000;
+            background-image: 
+                linear-gradient(90deg, 
+                    rgba(0,0,0,0.3) 0%, 
+                    transparent 10%, 
+                    rgba(255,255,255,0.1) 20%, 
+                    transparent 30%, 
+                    rgba(0,0,0,0.3) 40%, 
+                    transparent 50%, 
+                    rgba(255,255,255,0.1) 60%, 
+                    transparent 70%, 
+                    rgba(0,0,0,0.3) 80%, 
+                    transparent 90%, 
+                    rgba(0,0,0,0.4) 100%);
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.7);
+            transition: transform 1.8s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+            position: relative;
+        }
+
+        .curtain::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 15px;
+            background: linear-gradient(90deg, #d4af37, #f9e272, #d4af37);
+            border-top: 2px solid rgba(0,0,0,0.2);
+        }
+
+        .left-curtain { transform: translateX(-100%); }
+        .right-curtain { transform: translateX(100%); }
+
+        .curtain-container.closed .left-curtain,
+        .curtain-container.closed .right-curtain {
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .curtain-container.open .left-curtain { transform: translateX(-100%); }
+        .curtain-container.open .right-curtain { transform: translateX(100%); }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+            padding: 0px;
+        }
+
+        .countdown-card {
+            background: rgba(40, 10, 30, 0.6);
+            backdrop-filter: blur(15px);
+            padding: 1rem 1rem;
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 192, 203, 0.2);
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            pointer-events: none;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .time-box {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 15px 5px;
+            border-radius: 12px;
+            min-width: 70px;
+        }
+
+        .time-value { 
+            font-size: 2rem; 
+            font-weight: bold; 
+            color: #fff; 
+            display: block; 
+        }
+        
+        .time-label { 
+            font-size: 0.7rem; 
+            color: #ffb6c1; 
+            text-transform: uppercase; 
+        }
+
+        h1 { 
+            margin-bottom: 10px; 
+            font-size: 1.5rem; 
+            color: #ffdaf0; 
+        }
+        
+        /* छोटा फुलस्क्रीन बटन - ऑनलाइन आइकन के साथ */
+        .fullscreen-btn {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            z-index: 200;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: none;
+            pointer-events: auto;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+            padding: 0;
+            line-height: 1;
+            border: none;
+            outline: none;
+        }
+
+        .fullscreen-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.05);
+        }
+
+        .fullscreen-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Material Icons स्टाइल */
+        .fullscreen-btn .material-icons {
+            font-size: 28px;
+            color: white;
+        }
+
+        /* Font Awesome स्टाइल (बैकअप के लिए) */
+        .fullscreen-btn .fas {
+            font-size: 24px;
+            color: white;
+        }
+
+        /* दोनों आइकन को सेंटर में रखें */
+        .fullscreen-btn i, .fullscreen-btn span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <button class="fullscreen-btn" id="fullscreenBtn">
+        <!-- Material Icons - प्राथमिक -->
+        <span class="material-icons" id="fsIcon">fullscreen</span>
+        <!-- Font Awesome - बैकअप (छिपा हुआ) -->
+        <i class="fas fa-expand" id="fsIconFA" style="display: none;"></i>
+    </button>
+
+    <iframe 
+        id="surpriseFrame" 
+        src="" 
+        allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; pointer-lock; fullscreen"
+        allowfullscreen 
+        scrolling="yes"
+        sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-pointer-lock allow-orientation-lock allow-presentation allow-top-navigation"
+        style="pointer-events: auto; touch-action: auto;">
+    </iframe>
+
+    <div class="curtain-container" id="curtainWrapper">
+        <div class="curtain left-curtain"></div>
+        <div class="curtain right-curtain"></div>
+    </div>
+
+    <div class="content-wrapper" id="uiWrapper">
+        <div class="countdown-card">
+            <h1>💕 कुछ ही समय का इंतजार...</h1>
+            <div class="countdown-grid">
+                <div class="time-box"><span class="time-value" id="days">00</span><span class="time-label">दिन</span></div>
+                <div class="time-box"><span class="time-value" id="hours">00</span><span class="time-label">घंटे</span></div>
+                <div class="time-box"><span class="time-value" id="minutes">00</span><span class="time-label">मिनट</span></div>
+                <div class="time-box"><span class="time-value" id="seconds">00</span><span class="time-label">सेकंड</span></div>
+            </div>
+            <p style="color: #ffb6c1; font-style: italic;">💖 कुछ खास आने वाला है</p>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const surpriseURL = "https://avi-teach-star.github.io/current-affairs-quiz/Happy-Birthday"; 
+            const target = new Date(2026, 3, 26, 8, 00, 00).getTime();
+            const curtainWrapper = document.getElementById('curtainWrapper');
+            const uiWrapper = document.getElementById('uiWrapper');
+            const frame = document.getElementById('surpriseFrame');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const fsIcon = document.getElementById('fsIcon');
+            const fsIconFA = document.getElementById('fsIconFA');
+            let showPerformed = false;
+            let isFullscreen = false;
+
+            // चेक करें कि कौन सा आइकन ठीक से लोड हुआ
+            function checkIcons() {
+                // Material Icons चेक करें
+                const materialIcon = document.querySelector('.material-icons');
+                const materialStyle = window.getComputedStyle(materialIcon);
+                
+                // अगर Material Icons लोड नहीं हुआ तो Font Awesome दिखाएं
+                if (materialStyle.fontFamily.includes('Material Icons')) {
+                    console.log('Material Icons लोड हुआ');
+                } else {
+                    console.log('Material Icons लोड नहीं हुआ, Font Awesome का उपयोग कर रहे हैं');
+                    fsIcon.style.display = 'none';
+                    fsIconFA.style.display = 'flex';
+                }
+            }
+
+            // फुलस्क्रीन टॉगल फंक्शन
+            window.toggleFullScreen = function() {
+                if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                    // फुलस्क्रीन ऑन करें
+                    const element = document.documentElement;
+                    if (element.requestFullscreen) {
+                        element.requestFullscreen();
+                    } else if (element.webkitRequestFullscreen) {
+                        element.webkitRequestFullscreen();
+                    } else if (element.msRequestFullscreen) {
+                        element.msRequestFullscreen();
+                    }
+                    // आइकन बदलें
+                    if (fsIcon.style.display !== 'none') {
+                        fsIcon.textContent = 'fullscreen_exit';
+                    } else {
+                        fsIconFA.className = 'fas fa-compress';
+                    }
+                } else {
+                    // फुलस्क्रीन ऑफ करें
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        document.msExitFullscreen();
+                    }
+                    // आइकन बदलें
+                    if (fsIcon.style.display !== 'none') {
+                        fsIcon.textContent = 'fullscreen';
+                    } else {
+                        fsIconFA.className = 'fas fa-expand';
+                    }
+                }
+            };
+
+            // फुलस्क्रीन चेंज इवेंट लिसनर
+            document.addEventListener('fullscreenchange', updateFullscreenStatus);
+            document.addEventListener('webkitfullscreenchange', updateFullscreenStatus);
+            document.addEventListener('mozfullscreenchange', updateFullscreenStatus);
+            document.addEventListener('MSFullscreenChange', updateFullscreenStatus);
+
+            function updateFullscreenStatus() {
+                if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+                    isFullscreen = true;
+                    if (fsIcon.style.display !== 'none') {
+                        fsIcon.textContent = 'fullscreen_exit';
+                    } else {
+                        fsIconFA.className = 'fas fa-compress';
+                    }
+                } else {
+                    isFullscreen = false;
+                    if (fsIcon.style.display !== 'none') {
+                        fsIcon.textContent = 'fullscreen';
+                    } else {
+                        fsIconFA.className = 'fas fa-expand';
+                    }
+                }
+            }
+
+            // बटन पर क्लिक इवेंट
+            fullscreenBtn.onclick = toggleFullScreen;
+
+            // सभी डिवाइस पर बटन दिखाएं
+            fullscreenBtn.style.display = 'flex';
+            
+            // आइकन चेक करें
+            setTimeout(checkIcons, 500);
+
+            function startGrandOpening() {
+                if (showPerformed) return;
+                showPerformed = true;
+                
+                curtainWrapper.classList.add('closed');
+                curtainWrapper.classList.remove('open');
+                
+                setTimeout(() => {
+                    uiWrapper.style.opacity = '0';
+                    frame.src = surpriseURL;
+                    frame.style.display = 'block';
+                    console.log('Iframe URL लोड हुआ:', surpriseURL);
+                }, 1600);
+                
+                setTimeout(() => {
+                    curtainWrapper.classList.remove('closed');
+                    curtainWrapper.classList.add('open');
+                }, 2500);
+            }
+
+            function update() {
+                if (showPerformed) return;
+                
+                const now = new Date().getTime();
+                const diff = target - now;
+
+                if (diff <= 0) {
+                    document.getElementById('days').textContent = "00";
+                    document.getElementById('hours').textContent = "00";
+                    document.getElementById('minutes').textContent = "00";
+                    document.getElementById('seconds').textContent = "00";
+                    startGrandOpening();
+                    return;
+                }
+
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('days').textContent = String(d).padStart(2, '0');
+                document.getElementById('hours').textContent = String(h).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(m).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(s).padStart(2, '0');
+                
+                requestAnimationFrame(update);
+            }
+
+            update();
+        })();
+    </script>
+</body>
+</html>
