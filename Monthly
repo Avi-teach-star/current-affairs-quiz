@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>मासिक क्विज मैनेजर</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Nirmala UI', sans-serif;
+        }
+
+        body {
+            background: #0a0c14;
+            min-height: 100vh;
+            padding: 15px;
+            position: relative;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            position: relative;
+            min-height: calc(100vh - 30px);
+        }
+
+        /* Header with User Icon */
+        .header {
+            background: linear-gradient(165deg, #141b2b, #0d1220);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 30px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.03);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-left h2 {
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 3px;
+        }
+
+        .header-left p {
+            color: #94a3b8;
+            font-size: 0.75rem;
+        }
+
+        /* User Icon Button */
+        .user-icon-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #1e2a3a, #0f172a);
+            color: #94a3b8;
+            border: 1px solid #2d3a4a;
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .user-icon-btn:hover {
+            background: linear-gradient(145deg, #2563eb, #7c3aed);
+            color: white;
+            border-color: transparent;
+        }
+
+        .user-icon-btn.logged-in {
+            background: linear-gradient(145deg, #059669, #10b981);
+            color: white;
+        }
+
+        /* Dropdown Menu */
+        .user-dropdown {
+            position: absolute;
+            top: 70px;
+            right: 15px;
+            background: #131b2c;
+            border-radius: 20px;
+            padding: 10px;
+            border: 1px solid #2d3a4a;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: none;
+            min-width: 180px;
+        }
+
+        .user-dropdown.active {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            color: #cbd5e1;
+            cursor: pointer;
+            border-radius: 15px;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dropdown-item:hover {
+            background: #1e2a3a;
+            color: white;
+        }
+
+        .dropdown-item.logout {
+            color: #ef4444;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #dc2626;
+            color: white;
+        }
+
+        /* PIN Modal - IFrame के अंदर ही show होगा */
+        .pin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .pin-modal.active {
+            display: flex;
+        }
+
+        .pin-card {
+            background: #131b2c;
+            border-radius: 30px;
+            max-width: 350px;
+            width: 100%;
+            padding: 30px 25px;
+            border: 1px solid #2d3a4a;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+            animation: slideUp 0.3s ease;
+        }
+
+        .pin-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .pin-header .icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(145deg, #2563eb, #7c3aed);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.8rem;
+        }
+
+        .pin-header h3 {
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .pin-header p {
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+
+        .pin-input-container {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .pin-input {
+            width: 50px;
+            height: 55px;
+            background: #0f172a;
+            border: 2px solid #1e2a3a;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.5rem;
+            text-align: center;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .pin-input:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96,165,250,0.2);
+        }
+
+        .pin-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .pin-actions button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .pin-submit {
+            background: linear-gradient(145deg, #059669, #10b981);
+            color: white;
+        }
+
+        .pin-cancel {
+            background: #1e2a3a;
+            color: #94a3b8;
+        }
+
+        /* Quiz Popup Modal - IFrame के अंदर */
+        .quiz-popup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .quiz-popup-modal.active {
+            display: flex;
+        }
+
+        .quiz-popup-card {
+            background: #131b2c;
+            border-radius: 30px;
+            max-width: 450px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid #2d3a4a;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+            animation: slideUp 0.3s ease;
+        }
+
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 20px 15px;
+            border-bottom: 1px solid #1e2a3a;
+            position: sticky;
+            top: 0;
+            background: #131b2c;
+            z-index: 1;
+        }
+
+        .popup-header h3 {
+            color: white;
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .popup-close {
+            background: #ef4444;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .popup-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            background: #0f172a;
+            border: 2px solid #1e2a3a;
+            border-radius: 40px;
+            color: white;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96,165,250,0.2);
+        }
+
+        .form-group select option {
+            background: #0f172a;
+            color: white;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(145deg, #059669, #10b981);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Quiz List Section */
+        .quiz-list-section {
+            margin-top: 10px;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quiz-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .quiz-item {
+            background: #0f172a;
+            border-radius: 18px;
+            padding: 14px;
+            border: 1px solid #1e2a3a;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .quiz-item:hover {
+            background: #1a2637;
+            border-color: #2d3a4a;
+        }
+
+        .quiz-item.active {
+            background: linear-gradient(145deg, #2563eb, #7c3aed);
+            border-color: transparent;
+        }
+
+        .quiz-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .quiz-title {
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .quiz-month {
+            color: #60a5fa;
+            font-size: 0.7rem;
+            background: #1e2a3a;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .quiz-item.active .quiz-month {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .quiz-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            color: #94a3b8;
+            font-size: 0.7rem;
+        }
+
+        .quiz-item.active .quiz-meta {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .delete-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-left: auto;
+        }
+
+        /* Questions Container */
+        .questions-container {
+            margin-top: 15px;
+            background: #131b2c;
+            border-radius: 25px;
+            padding: 18px;
+            border: 1px solid #1e2a3a;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .questions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .close-questions-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .question-item {
+            background: #0f172a;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid #1e2a3a;
+        }
+
+        .question-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .question-text {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: grid;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .option {
+            background: #1e2a3a;
+            padding: 10px 12px;
+            border-radius: 12px;
+            color: #cbd5e1;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .option.selected-correct {
+            background: #059669;
+            color: white;
+        }
+
+        .option.selected-wrong {
+            background: #dc2626;
+            color: white;
+        }
+
+        .explanation {
+            margin-top: 10px;
+            padding: 10px;
+            background: #1e2a3a;
+            border-radius: 10px;
+            display: none;
+            color: #cbd5e1;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .explanation.show {
+            display: block;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-state svg {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #94a3b8;
+        }
+
+        .spinner {
+            width: 35px;
+            height: 35px;
+            border: 3px solid #1e2a3a;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 50px;
+            color: white;
+            font-weight: 500;
+            z-index: 10001;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            font-size: 0.85rem;
+        }
+
+        .toast.success { background: rgba(5,150,105,0.95); }
+        .toast.error { background: rgba(220,38,38,0.95); }
+        .toast.info { background: rgba(37,99,235,0.95); }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .question-count {
+            background: #2563eb;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            color: #64748b;
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 0.75rem;
+        }
+
+        /* Add Quiz Button (जब logged in हो) */
+        .add-quiz-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #2563eb, #7c3aed);
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(37,99,235,0.4);
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .add-quiz-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .add-quiz-btn.visible {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with User Icon -->
+        <div class="header">
+            <div class="header-left">
+                <h2>📊 मासिक क्विज</h2>
+                <p>करंट अफेयर्स</p>
+            </div>
+            <button class="user-icon-btn" id="userIconBtn" onclick="toggleDropdown()">
+                <span>👤</span>
+            </button>
+        </div>
+
+        <!-- User Dropdown Menu -->
+        <div class="user-dropdown" id="userDropdown">
+            <div class="dropdown-item" onclick="showPinModal()">
+                <span>🔐</span> लॉगिन
+            </div>
+            <div class="dropdown-item logout" onclick="logout()" id="logoutBtn" style="display: none;">
+                <span>🚪</span> लॉगआउट
+            </div>
+        </div>
+
+        <!-- Quiz List Section -->
+        <div class="quiz-list-section">
+            <div class="section-title">
+                <span>📚 सेव किए गए क्विज</span>
+                <span class="question-count" id="totalQuizCount">0</span>
+            </div>
+            <div class="quiz-list" id="quizListContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>लोड हो रहा है...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions Display -->
+        <div class="questions-container" id="questionsContainer" style="display: none;">
+            <div class="questions-header">
+                <span id="selectedQuizTitle">क्विज</span>
+                <button class="close-questions-btn" onclick="closeQuestions()">✕ बंद करें</button>
+            </div>
+            <div id="questionsList"></div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>📌 मासिक करंट अफेयर्स क्विज</p>
+        </div>
+    </div>
+
+    <!-- Add Quiz Button -->
+    <button class="add-quiz-btn" id="addQuizBtn" onclick="openQuizPopup()">✚</button>
+
+    <!-- PIN Modal -->
+    <div class="pin-modal" id="pinModal">
+        <div class="pin-card">
+            <div class="pin-header">
+                <div class="icon">🔐</div>
+                <h3>PIN दर्ज करें</h3>
+                <p>एडमिन एक्सेस के लिए 4-अंकीय PIN डालें</p>
+            </div>
+            <div class="pin-input-container">
+                <input type="password" maxlength="1" class="pin-input" id="pin1" oninput="moveToNext(this, 'pin2')">
+                <input type="password" maxlength="1" class="pin-input" id="pin2" oninput="moveToNext(this, 'pin3')">
+                <input type="password" maxlength="1" class="pin-input" id="pin3" oninput="moveToNext(this, 'pin4')">
+                <input type="password" maxlength="1" class="pin-input" id="pin4" oninput="moveToNext(this, null)">
+            </div>
+            <div class="pin-actions">
+                <button class="pin-cancel" onclick="closePinModal()">रद्द करें</button>
+                <button class="pin-submit" onclick="verifyPin()">लॉगिन</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Popup Modal -->
+    <div class="quiz-popup-modal" id="quizPopup">
+        <div class="quiz-popup-card">
+            <div class="popup-header">
+                <h3>✚ नया क्विज जोड़ें</h3>
+                <button class="popup-close" onclick="closeQuizPopup()">✕</button>
+            </div>
+            <div class="popup-body">
+                <div class="form-group">
+                    <label>🔗 JSON URL पेस्ट करें</label>
+                    <input type="text" id="quizUrlInput" placeholder="https://example.com/quiz.json">
+                </div>
+                <div class="form-group">
+                    <label>📅 महीना चुनें</label>
+                    <select id="monthSelect">
+                        <option value="जनवरी">जनवरी</option>
+                        <option value="फरवरी">फरवरी</option>
+                        <option value="मार्च">मार्च</option>
+                        <option value="अप्रैल">अप्रैल</option>
+                        <option value="मई">मई</option>
+                        <option value="जून">जून</option>
+                        <option value="जुलाई">जुलाई</option>
+                        <option value="अगस्त">अगस्त</option>
+                        <option value="सितंबर">सितंबर</option>
+                        <option value="अक्टूबर">अक्टूबर</option>
+                        <option value="नवंबर">नवंबर</option>
+                        <option value="दिसंबर">दिसंबर</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📅 वर्ष</label>
+                    <select id="yearSelect">
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026" selected>2026</option>
+                        <option value="2027">2027</option>
+                    </select>
+                </div>
+                <button class="submit-btn" onclick="submitQuiz()" id="submitBtn">
+                    <span>📤</span> क्विज सेव करें
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Configuration
+    const CONFIG = {
+        masterKey: '$2a$10$XL4iuq0g8lswBdQN2KIhh.QodRh.0QEmO0nxno45VV3DR14ZVmzkK',
+        apiUrl: 'https://api.jsonbin.io/v3',
+        monthlyQuizBinId: '69e5fc5e856a682189525e49',
+        adminPin: '4885'  // Updated PIN
+    };
+
+    // Global Variables
+    let monthlyQuizzes = [];
+    let selectedQuizId = null;
+    let currentQuizData = null;
+    let isLoggedIn = false;
+
+    // Initialize
+    window.addEventListener('load', initialize);
+
+    async function initialize() {
+        await loadQuizzes();
+        setDefaultMonthYear();
+        checkLoginStatus();
+    }
+
+    function checkLoginStatus() {
+        const loggedIn = sessionStorage.getItem('quizManagerLoggedIn');
+        if (loggedIn === 'true') {
+            isLoggedIn = true;
+            updateUIForLogin();
+        }
+    }
+
+    function updateUIForLogin() {
+        const userIcon = document.getElementById('userIconBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const loginItem = document.querySelector('.dropdown-item:first-child');
+        const addQuizBtn = document.getElementById('addQuizBtn');
+
+        if (isLoggedIn) {
+            userIcon.classList.add('logged-in');
+            logoutBtn.style.display = 'flex';
+            loginItem.style.display = 'none';
+            addQuizBtn.classList.add('visible');
+            sessionStorage.setItem('quizManagerLoggedIn', 'true');
+        } else {
+            userIcon.classList.remove('logged-in');
+            logoutBtn.style.display = 'none';
+            loginItem.style.display = 'flex';
+            addQuizBtn.classList.remove('visible');
+            sessionStorage.removeItem('quizManagerLoggedIn');
+        }
+        
+        // Re-render list to show/hide delete buttons
+        renderQuizList();
+    }
+
+    function setDefaultMonthYear() {
+        const now = new Date();
+        const monthNames = ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 
+                           'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
+        document.getElementById('monthSelect').value = monthNames[now.getMonth()];
+        document.getElementById('yearSelect').value = now.getFullYear().toString();
+    }
+
+    // Toast Notification
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Dropdown Toggle
+    function toggleDropdown() {
+        const dropdown = document.getElementById('userDropdown');
+        dropdown.classList.toggle('active');
+        
+        setTimeout(() => {
+            document.addEventListener('click', closeDropdownOutside);
+        }, 100);
+    }
+
+    function closeDropdownOutside(e) {
+        const dropdown = document.getElementById('userDropdown');
+        const userBtn = document.getElementById('userIconBtn');
+        
+        if (!dropdown.contains(e.target) && !userBtn.contains(e.target)) {
+            dropdown.classList.remove('active');
+            document.removeEventListener('click', closeDropdownOutside);
+        }
+    }
+
+    // PIN Modal
+    function showPinModal() {
+        document.getElementById('userDropdown').classList.remove('active');
+        document.getElementById('pinModal').classList.add('active');
+        document.getElementById('pin1').focus();
+        
+        ['pin1', 'pin2', 'pin3', 'pin4'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+    }
+
+    function closePinModal() {
+        document.getElementById('pinModal').classList.remove('active');
+    }
+
+    function moveToNext(current, nextId) {
+        if (current.value.length === 1 && nextId) {
+            document.getElementById(nextId).focus();
+        }
+    }
+
+    function verifyPin() {
+        const pin1 = document.getElementById('pin1').value;
+        const pin2 = document.getElementById('pin2').value;
+        const pin3 = document.getElementById('pin3').value;
+        const pin4 = document.getElementById('pin4').value;
+        
+        const enteredPin = pin1 + pin2 + pin3 + pin4;
+        
+        if (enteredPin === CONFIG.adminPin) {
+            isLoggedIn = true;
+            updateUIForLogin();
+            closePinModal();
+            showToast('✅ लॉगिन सफल!', 'success');
+        } else {
+            showToast('❌ गलत PIN!', 'error');
+            ['pin1', 'pin2', 'pin3', 'pin4'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('pin1').focus();
+        }
+    }
+
+    function logout() {
+        isLoggedIn = false;
+        updateUIForLogin();
+        document.getElementById('userDropdown').classList.remove('active');
+        showToast('✅ लॉगआउट सफल', 'info');
+    }
+
+    // Quiz Popup
+    function openQuizPopup() {
+        if (!isLoggedIn) {
+            showToast('❌ पहले लॉगिन करें!', 'error');
+            showPinModal();
+            return;
+        }
+        document.getElementById('quizPopup').classList.add('active');
+        document.getElementById('quizUrlInput').value = '';
+    }
+
+    function closeQuizPopup() {
+        document.getElementById('quizPopup').classList.remove('active');
+    }
+
+    // Load Quizzes
+    async function loadQuizzes() {
+        try {
+            const response = await fetch(`${CONFIG.apiUrl}/b/${CONFIG.monthlyQuizBinId}/latest`, {
+                headers: { 'X-Master-Key': CONFIG.masterKey }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                monthlyQuizzes = data.record?.quizzes || [];
+            } else {
+                monthlyQuizzes = [];
+                await initializeQuizBin();
+            }
+            
+            monthlyQuizzes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            renderQuizList();
+            updateTotalCount();
+        } catch (error) {
+            console.error('Error loading quizzes:', error);
+            monthlyQuizzes = [];
+            renderQuizList();
+            updateTotalCount();
+        }
+    }
+
+    async function initializeQuizBin() {
+        try {
+            await fetch(`${CONFIG.apiUrl}/b/${CONFIG.monthlyQuizBinId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': CONFIG.masterKey
+                },
+                body: JSON.stringify({ 
+                    quizzes: [],
+                    lastUpdated: new Date().toISOString()
+                })
+            });
+        } catch (error) {
+            console.error('Error initializing bin:', error);
+        }
+    }
+
+    // Save Quizzes
+    async function saveQuizzes() {
+        try {
+            await fetch(`${CONFIG.apiUrl}/b/${CONFIG.monthlyQuizBinId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': CONFIG.masterKey
+                },
+                body: JSON.stringify({ 
+                    quizzes: monthlyQuizzes,
+                    lastUpdated: new Date().toISOString()
+                })
+            });
+            return true;
+        } catch (error) {
+            console.error('Error saving quizzes:', error);
+            return false;
+        }
+    }
+
+    // Submit Quiz - Updated: Same month me replace hoga
+    async function submitQuiz() {
+        if (!isLoggedIn) {
+            showToast('❌ पहले लॉगिन करें!', 'error');
+            return;
+        }
+
+        const url = document.getElementById('quizUrlInput').value.trim();
+        const month = document.getElementById('monthSelect').value;
+        const year = document.getElementById('yearSelect').value;
+
+        if (!url) {
+            showToast('❌ कृपया URL डालें!', 'error');
+            return;
+        }
+
+        try {
+            new URL(url);
+        } catch {
+            showToast('❌ वैलिड URL डालें!', 'error');
+            return;
+        }
+
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner" style="width: 20px; height: 20px; margin: 0;"></span> लोड हो रहा है...';
+
+        showToast('⏳ डेटा फेच हो रहा है...', 'info');
+
+        try {
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP Error: ${response.status}`);
+            }
+
+            const fetchedData = await response.json();
+
+            if (!fetchedData.quiz || !Array.isArray(fetchedData.quiz)) {
+                throw new Error('Invalid JSON structure: "quiz" array required');
+            }
+
+            // Check if same month/year already exists
+            const existingIndex = monthlyQuizzes.findIndex(q => 
+                q.month === month && q.year === year
+            );
+
+            const newQuiz = {
+                id: existingIndex !== -1 ? monthlyQuizzes[existingIndex].id : ('quiz_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)),
+                title: fetchedData.title || `मासिक क्विज - ${month} ${year}`,
+                month: month,
+                year: year,
+                url: url,
+                quiz: fetchedData.quiz,
+                questionCount: fetchedData.quiz.length,
+                createdAt: existingIndex !== -1 ? monthlyQuizzes[existingIndex].createdAt : new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            let message = '';
+            
+            if (existingIndex !== -1) {
+                // Replace existing quiz
+                monthlyQuizzes[existingIndex] = newQuiz;
+                message = `✅ क्विज अपडेट हो गया! (${newQuiz.questionCount} प्रश्न)`;
+            } else {
+                // Add new quiz
+                monthlyQuizzes.unshift(newQuiz);
+                message = `✅ नया क्विज सेव हो गया! (${newQuiz.questionCount} प्रश्न)`;
+            }
+
+            const saved = await saveQuizzes();
+            
+            if (saved) {
+                closeQuizPopup();
+                renderQuizList();
+                updateTotalCount();
+                showToast(message, 'success');
+            } else {
+                throw new Error('Failed to save quiz');
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+            showToast(`❌ त्रुटि: ${error.message}`, 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span>📤</span> क्विज सेव करें';
+        }
+    }
+
+    // Render Quiz List - Delete button only when logged in
+    function renderQuizList() {
+        const container = document.getElementById('quizListContainer');
+        
+        if (monthlyQuizzes.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" stroke="#94a3b8" fill="none">
+                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <p>कोई क्विज नहीं है</p>
+                    ${isLoggedIn ? '<p style="font-size: 0.8rem; margin-top: 8px;">✚ बटन पर क्लिक करें</p>' : '<p style="font-size: 0.8rem; margin-top: 8px;">👤 आइकॉन से लॉगिन करें</p>'}
+                </div>
+            `;
+            return;
+        }
+
+        let html = '';
+        monthlyQuizzes.forEach(quiz => {
+            const isActive = selectedQuizId === quiz.id;
+            const createdDate = new Date(quiz.createdAt).toLocaleDateString('hi-IN', {
+                year: 'numeric', month: 'short', day: 'numeric'
+            });
+            const updatedDate = quiz.updatedAt ? new Date(quiz.updatedAt).toLocaleDateString('hi-IN', {
+                year: 'numeric', month: 'short', day: 'numeric'
+            }) : null;
+            
+            html += `
+                <div class="quiz-item ${isActive ? 'active' : ''}" onclick="selectQuiz('${quiz.id}')">
+                    <div class="quiz-item-header">
+                        <span class="quiz-title">📝 ${quiz.title}</span>
+                        <span class="quiz-month">${quiz.month} ${quiz.year}</span>
+                    </div>
+                    <div class="quiz-meta">
+                        <span>📋 ${quiz.questionCount} प्रश्न</span>
+                        <span>📅 ${createdDate}</span>
+                        ${updatedDate && updatedDate !== createdDate ? `<span style="color: #60a5fa;">🔄 अपडेट: ${updatedDate}</span>` : ''}
+                        ${isLoggedIn ? `<button class="delete-btn" onclick="event.stopPropagation(); deleteQuiz('${quiz.id}')">🗑️</button>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+
+    function updateTotalCount() {
+        document.getElementById('totalQuizCount').textContent = monthlyQuizzes.length;
+    }
+
+    // Select Quiz
+    function selectQuiz(quizId) {
+        const quiz = monthlyQuizzes.find(q => q.id === quizId);
+        if (!quiz) return;
+
+        selectedQuizId = quizId;
+        currentQuizData = quiz;
+        
+        renderQuizList();
+        displayQuestions(quiz);
+        
+        document.getElementById('questionsContainer').style.display = 'block';
+        document.getElementById('selectedQuizTitle').textContent = `${quiz.title} (${quiz.month} ${quiz.year})`;
+    }
+
+    // Display Questions
+    function displayQuestions(quiz) {
+        const container = document.getElementById('questionsList');
+        
+        if (!quiz.quiz || quiz.quiz.length === 0) {
+            container.innerHTML = '<div class="empty-state">कोई प्रश्न नहीं</div>';
+            return;
+        }
+
+        let html = '';
+        quiz.quiz.forEach((q, index) => {
+            html += `
+                <div class="question-item">
+                    <div class="question-text">${index + 1}. ${q.question}</div>
+                    <div class="options">
+                        ${q.options.map((opt, i) => `
+                            <div class="option" onclick="selectOption(${index}, ${i}, ${q.correct})">
+                                ${String.fromCharCode(65 + i)}. ${opt}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="explanation" id="exp-${quiz.id}-${index}">
+                        <strong>✓ सही उत्तर:</strong> ${String.fromCharCode(65 + q.correct)}. ${q.options[q.correct]}<br>
+                        <strong>📌 व्याख्या:</strong> ${q.explanation || 'कोई व्याख्या नहीं'}
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+
+    // Select Option
+    function selectOption(questionIndex, optionIndex, correctIndex) {
+        const quiz = currentQuizData;
+        if (!quiz) return;
+
+        const questionDiv = document.querySelectorAll('.question-item')[questionIndex];
+        if (!questionDiv) return;
+
+        const options = questionDiv.querySelectorAll('.option');
+        
+        options.forEach(opt => {
+            opt.classList.remove('selected-correct', 'selected-wrong');
+        });
+
+        if (optionIndex === correctIndex) {
+            options[optionIndex].classList.add('selected-correct');
+        } else {
+            options[optionIndex].classList.add('selected-wrong');
+            options[correctIndex].classList.add('selected-correct');
+        }
+
+        const exp = document.getElementById(`exp-${quiz.id}-${questionIndex}`);
+        if (exp) {
+            exp.classList.add('show');
+        }
+    }
+
+    function closeQuestions() {
+        document.getElementById('questionsContainer').style.display = 'none';
+        selectedQuizId = null;
+        currentQuizData = null;
+        renderQuizList();
+    }
+
+    // Delete Quiz - Only when logged in
+    async function deleteQuiz(quizId) {
+        if (!isLoggedIn) {
+            showToast('❌ पहले लॉगिन करें!', 'error');
+            return;
+        }
+
+        if (!confirm('क्या आप वाकई इस क्विज को हटाना चाहते हैं?')) {
+            return;
+        }
+
+        const index = monthlyQuizzes.findIndex(q => q.id === quizId);
+        if (index !== -1) {
+            monthlyQuizzes.splice(index, 1);
+            
+            const saved = await saveQuizzes();
+            
+            if (saved) {
+                if (selectedQuizId === quizId) {
+                    closeQuestions();
+                }
+                
+                renderQuizList();
+                updateTotalCount();
+                showToast('✅ क्विज हटा दिया गया', 'success');
+            } else {
+                showToast('❌ हटाने में त्रुटि', 'error');
+            }
+        }
+    }
+
+    // Keyboard support
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closePinModal();
+            closeQuizPopup();
+            document.getElementById('userDropdown').classList.remove('active');
+        }
+        
+        if (e.key === 'Backspace') {
+            const activeElement = document.activeElement;
+            if (activeElement.classList.contains('pin-input')) {
+                const currentId = activeElement.id;
+                const pinNumber = parseInt(currentId.replace('pin', ''));
+                
+                if (activeElement.value === '' && pinNumber > 1) {
+                    const prevInput = document.getElementById(`pin${pinNumber - 1}`);
+                    prevInput.focus();
+                    prevInput.value = '';
+                }
+            }
+        }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        const modal = document.getElementById('pinModal');
+        const card = document.querySelector('.pin-card');
+        const quizModal = document.getElementById('quizPopup');
+        const quizCard = document.querySelector('.quiz-popup-card');
+        
+        if (modal.classList.contains('active') && !card.contains(e.target) && 
+            !e.target.classList.contains('dropdown-item')) {
+            closePinModal();
+        }
+        
+        if (quizModal.classList.contains('active') && !quizCard.contains(e.target) && 
+            !e.target.classList.contains('add-quiz-btn')) {
+            closeQuizPopup();
+        }
+    });
+</script>
+</body>
+</html>
