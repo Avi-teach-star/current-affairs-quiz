@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LDC Quiz Pro - Live Test</title>
+  <style>
+    :root {
+      --primary: #4338ca;
+      --primary-hover: #3730a3;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --success: #22c55e;
+      --error: #ef4444;
+      --border: #e2e8f0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body { 
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+      background: var(--bg); 
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    /* Sticky Header */
+    .header {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    #quizTitle { 
+      font-size: 1rem; 
+      color: var(--primary); 
+      font-weight: 700;
+      max-width: 60%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .timer { 
+      font-family: 'Courier New', monospace; 
+      font-size: 1.1rem; 
+      font-weight: 800; 
+      color: var(--primary);
+      background: #eef2ff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid #c7d2fe;
+    }
+
+    .container { max-width: 760px; margin: 20px auto; padding: 0 15px; }
+
+    /* Question Cards */
+    .q-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .q-text { 
+      font-size: 1.1rem; 
+      font-weight: 700; 
+      margin-bottom: 18px; 
+      color: var(--text-main);
+    }
+
+    .diagram-box {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: #f1f5f9;
+      border-radius: 12px;
+    }
+
+    /* Options */
+    .option {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .option:hover:not(.disabled) {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    .option input { 
+      margin-right: 12px; 
+      transform: scale(1.2);
+    }
+
+    /* Correct/Wrong Logic */
+    .correct { background: #f0fdf4 !important; border-color: var(--success) !important; color: #166534 !important; font-weight: 600; }
+    .wrong { background: #fef2f2 !important; border-color: var(--error) !important; color: #991b1b !important; }
+
+    /* Result UI */
+    .result-panel {
+      display: none;
+      background: #1e293b;
+      color: white;
+      border-radius: 20px;
+      padding: 30px 20px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .score-circle {
+      width: 120px; height: 120px;
+      border: 5px solid #4ade80;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 20px auto;
+    }
+
+    /* Buttons */
+    .actions { display: flex; gap: 12px; margin-top: 25px; }
+    
+    .btn {
+      flex: 1; padding: 14px; border: none; border-radius: 12px;
+      font-weight: 700; font-size: 0.95rem; cursor: pointer;
+      display: flex; justify-content: center; align-items: center; gap: 8px;
+    }
+
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-outline { background: white; border: 2px solid var(--border); color: var(--text-main); }
+    
+    .loading { text-align: center; padding: 50px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div id="quizTitle">लोड हो रहा है...</div>
+  <div class="timer" id="timer">00:00</div>
+</div>
+
+<div class="container">
+  <div class="result-panel" id="resultPanel">
+    <h2>परीक्षा परिणाम</h2>
+    <div class="score-circle">
+      <div id="scoreDisplay" style="font-size: 1.5rem; font-weight: 800;">0/0</div>
+      <div style="font-size: 0.7rem; opacity: 0.8;">कुल सही</div>
+    </div>
+    <p id="negScore" style="margin-bottom: 15px; color: #f87171;"></p>
+    <div class="actions">
+      <button class="btn btn-outline" onclick="goHome()">🏠 होम</button>
+      <button class="btn btn-primary" onclick="location.reload()">🔄 फिर से दें</button>
+    </div>
+  </div>
+
+  <div id="loadingMessage" class="loading">⏳ प्रश्न लोड किए जा रहे हैं...</div>
+  
+  <form id="quizForm">
+    <div id="questionsContainer"></div>
+  </form>
+  
+  <div class="actions" id="quizActions" style="margin-bottom: 50px;">
+    <button type="button" class="btn btn-outline" onclick="goHome()">🏠 बाहर निकलें</button>
+    <button type="button" class="btn btn-primary" onclick="submitQuiz()">✅ सबमिट करें</button>
+  </div>
+</div>
+
+<script>
+let questions = [];
+let timer = 0;
+let quizData = null;
+let interval = setInterval(() => { timer++; updateTimer(); }, 1000);
+
+function updateTimer() {
+  const m = Math.floor(timer/60).toString().padStart(2,'0');
+  const s = (timer%60).toString().padStart(2,'0');
+  document.getElementById('timer').textContent = `${m}:${s}`;
+}
+
+async function loadQuiz() {
+  const saved = sessionStorage.getItem('currentQuiz');
+  if (!saved) { goHome(); return; }
+  
+  quizData = JSON.parse(saved);
+  document.getElementById('quizTitle').textContent = quizData.name;
+  
+  try {
+    const res = await fetch(quizData.dataUrl);
+    const data = await res.json();
+    // Handling JSONBin v3 structure
+    questions = data.record || (Array.isArray(data) ? data : []);
+    renderQuiz();
+  } catch(e) {
+    document.getElementById('loadingMessage').innerHTML = "❌ डेटा लोड करने में त्रुटि।";
+  }
+}
+
+function renderQuiz() {
+  document.getElementById('loadingMessage').style.display = 'none';
+  const container = document.getElementById('questionsContainer');
+  
+  container.innerHTML = questions.map((q, i) => `
+    <div class="q-card" id="card-${i}">
+      <div class="q-text">${i+1}. ${q.q || q.question}</div>
+      ${q.diagram ? `<div class="diagram-box">${q.diagram}</div>` : ''}
+      <div class="options-list">
+        ${q.options.map((opt, oi) => `
+          <label class="option" id="opt-${i}-${oi}">
+            <input type="radio" name="q${i}" value="${oi}">
+            <span>${String.fromCharCode(65+oi)}. ${opt}</span>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function submitQuiz() {
+  if(!confirm("क्या आप वाकई टेस्ट सबमिट करना चाहते हैं?")) return;
+  
+  clearInterval(interval);
+  let correctCount = 0;
+  let wrongCount = 0;
+  
+  questions.forEach((q, i) => {
+    const correctAns = parseInt(q.correct);
+    const selected = document.querySelector(`input[name="q${i}"]:checked`);
+    
+    // सही उत्तर को हमेशा ग्रीन करें
+    document.getElementById(`opt-${i}-${correctAns}`).classList.add('correct');
+    
+    if (selected) {
+      const val = parseInt(selected.value);
+      if (val === correctAns) {
+        correctCount++;
+      } else {
+        wrongCount++;
+        document.getElementById(`opt-${i}-${val}`).classList.add('wrong');
+      }
+    }
+    // रेडियो बटन्स डिसेबल करें
+    document.querySelectorAll(`input[name="q${i}"]`).forEach(input => input.disabled = true);
+  });
+  
+  // परिणाम दिखाएं
+  const total = questions.length;
+  const negativeMarking = (wrongCount * 0.33).toFixed(2);
+  const finalScore = (correctCount - negativeMarking).toFixed(2);
+
+  document.getElementById('scoreDisplay').textContent = `${correctCount}/${total}`;
+  document.getElementById('negScore').textContent = `गलत उत्तर: ${wrongCount} | नेगेटिव अंक: -${negativeMarking}`;
+  document.getElementById('resultPanel').style.display = 'block';
+  document.getElementById('quizActions').style.display = 'none';
+  
+  // ऊपर स्क्रॉल करें
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // स्थानीय रूप से 'Completed' मार्क करें ताकि होम पेज पर टिक आ सके
+  let completed = JSON.parse(localStorage.getItem('completedQuizzes') || '[]');
+  if (!completed.includes(quizData.id)) {
+    completed.push(quizData.id);
+    localStorage.setItem('completedQuizzes', JSON.stringify(completed));
+  }
+}
+
+// होम बटन जो ldc-index.html पर ले जाएगा
+function goHome() { 
+  window.location.href = 'ldc-index.html'; 
+}
+
+loadQuiz();
+</script>
+</body>
+</html>
