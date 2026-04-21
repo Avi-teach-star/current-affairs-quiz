@@ -40,99 +40,48 @@
     }
 
     #quizTitle { 
-      font-size: 1rem; 
-      color: var(--primary); 
-      font-weight: 700;
-      max-width: 60%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size: 1rem; color: var(--primary); font-weight: 700;
+      max-width: 60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
     .timer { 
-      font-family: 'Courier New', monospace; 
-      font-size: 1.1rem; 
-      font-weight: 800; 
-      color: var(--primary);
-      background: #eef2ff;
-      padding: 4px 12px;
-      border-radius: 20px;
-      border: 1px solid #c7d2fe;
+      font-family: 'Courier New', monospace; font-size: 1.1rem; font-weight: 800; 
+      color: var(--primary); background: #eef2ff; padding: 4px 12px;
+      border-radius: 20px; border: 1px solid #c7d2fe;
     }
 
     .container { max-width: 760px; margin: 20px auto; padding: 0 15px; }
 
     .q-card {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
-      border: 1px solid var(--border);
+      background: var(--card-bg); border-radius: 16px; padding: 20px;
+      margin-bottom: 20px; border: 1px solid var(--border);
       box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
 
-    .q-text { 
-      font-size: 1.1rem; 
-      font-weight: 700; 
-      margin-bottom: 18px; 
-      color: var(--text-main);
-    }
-
-    .diagram-box {
-      text-align: center;
-      margin-bottom: 20px;
-      padding: 15px;
-      background: #f1f5f9;
-      border-radius: 12px;
-    }
+    .q-text { font-size: 1.1rem; font-weight: 700; margin-bottom: 18px; color: var(--text-main); }
 
     .option {
-      display: flex;
-      align-items: center;
-      padding: 12px 16px;
-      margin-bottom: 10px;
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      display: flex; align-items: center; padding: 12px 16px; margin-bottom: 10px;
+      border: 2px solid var(--border); border-radius: 10px; cursor: pointer; transition: all 0.2s ease;
     }
 
-    .option:hover:not(.disabled) {
-      background: #f8fafc;
-      border-color: #cbd5e1;
-    }
-
-    .option input { 
-      margin-right: 12px; 
-      transform: scale(1.2);
-    }
+    .option:hover:not(.disabled) { background: #f8fafc; border-color: #cbd5e1; }
+    .option input { margin-right: 12px; transform: scale(1.2); }
 
     .correct { background: #f0fdf4 !important; border-color: var(--success) !important; color: #166534 !important; font-weight: 600; }
     .wrong { background: #fef2f2 !important; border-color: var(--error) !important; color: #991b1b !important; }
 
     .result-panel {
-      display: none;
-      background: #1e293b;
-      color: white;
-      border-radius: 20px;
-      padding: 30px 20px;
-      text-align: center;
-      margin-bottom: 30px;
+      display: none; background: #1e293b; color: white; border-radius: 20px;
+      padding: 30px 20px; text-align: center; margin-bottom: 30px;
     }
 
     .score-circle {
-      width: 120px; height: 120px;
-      border: 5px solid #4ade80;
-      border-radius: 50%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      margin: 20px auto;
+      width: 120px; height: 120px; border: 5px solid #4ade80; border-radius: 50%;
+      display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 20px auto;
     }
 
     .actions { display: flex; gap: 12px; margin-top: 25px; }
-    
     .btn {
       flex: 1; padding: 14px; border: none; border-radius: 12px;
       font-weight: 700; font-size: 0.95rem; cursor: pointer;
@@ -141,7 +90,6 @@
 
     .btn-primary { background: var(--primary); color: white; }
     .btn-outline { background: white; border: 2px solid var(--border); color: var(--text-main); }
-    
     .loading { text-align: center; padding: 50px; color: var(--text-muted); }
   </style>
 </head>
@@ -172,7 +120,7 @@
     <div id="questionsContainer"></div>
   </form>
   
-  <div class="actions" id="quizActions" style="margin-bottom: 50px; display: none;">
+  <div class="actions" id="quizActions" style="display: none; margin-bottom: 50px;">
     <button type="button" class="btn btn-outline" onclick="goHome()">🏠 बाहर निकलें</button>
     <button type="button" class="btn btn-primary" onclick="submitQuiz()">✅ सबमिट करें</button>
   </div>
@@ -193,7 +141,7 @@ function updateTimer() {
 async function loadQuiz() {
   const saved = sessionStorage.getItem('currentQuiz');
   if (!saved) { 
-    document.getElementById('loadingMessage').innerHTML = "❌ कोई क्विज नहीं मिली। कृपया पीछे जाकर फिर से चुनें।";
+    document.getElementById('loadingMessage').innerHTML = "❌ कोई डेटा नहीं मिला। ldc-index.html से टेस्ट शुरू करें।";
     return; 
   }
   
@@ -202,23 +150,28 @@ async function loadQuiz() {
   
   try {
     const res = await fetch(quizData.dataUrl);
+    if (!res.ok) throw new Error("Network error");
     const data = await res.json();
-    
-    // JSONBin या साधारण Array दोनों के लिए सुरक्षित डेटा एक्सट्रैक्शन
-    if (data.record) {
-        questions = Array.isArray(data.record) ? data.record : (data.record.questions || []);
-    } else {
-        questions = Array.isArray(data) ? data : (data.questions || []);
+
+    // --- JSON structure parsing logic ---
+    if (data.questions && Array.isArray(data.questions)) {
+      questions = data.questions; // अगर 'questions' की के अंदर ऐरे है
+    } else if (Array.isArray(data)) {
+      questions = data; // अगर डायरेक्ट ऐरे है
+    } else if (data.record && data.record.questions) {
+      questions = data.record.questions; // JSONBin format
+    } else if (data.record && Array.isArray(data.record)) {
+      questions = data.record; 
     }
 
     if (questions.length > 0) {
-        renderQuiz();
+      renderQuiz();
     } else {
-        throw new Error("Empty Data");
+      document.getElementById('loadingMessage').innerHTML = "❌ डेटा में कोई सवाल नहीं मिला।";
     }
   } catch(e) {
-    console.error(e);
-    document.getElementById('loadingMessage').innerHTML = "❌ डेटा लोड करने में त्रुटि। URL चेक करें।";
+    document.getElementById('loadingMessage').innerHTML = "❌ डेटा लोड करने में त्रुटि। इंटरनेट या URL चेक करें।";
+    console.error("Error:", e);
   }
 }
 
@@ -229,13 +182,12 @@ function renderQuiz() {
   
   container.innerHTML = questions.map((q, i) => {
     // Flexible keys for question and options
-    const qText = q.question || q.q || "प्रश्न उपलब्ध नहीं है";
+    const qText = q.q || q.question || "Question Text Missing";
     const qOpts = q.options || q.opts || [];
-    
+
     return `
-    <div class="q-card" id="card-${i}">
+    <div class="q-card">
       <div class="q-text">${i+1}. ${qText}</div>
-      ${q.diagram ? `<div class="diagram-box">${q.diagram}</div>` : ''}
       <div class="options-list">
         ${qOpts.map((opt, oi) => `
           <label class="option" id="opt-${i}-${oi}">
@@ -256,12 +208,12 @@ function submitQuiz() {
   let wrongCount = 0;
   
   questions.forEach((q, i) => {
-    const correctAns = parseInt(q.correct || q.answer); // 'correct' या 'answer' दोनों चेक करेगा
+    const correctAns = parseInt(q.correct);
     const selected = document.querySelector(`input[name="q${i}"]:checked`);
     
-    // सही उत्तर को ग्रीन करें
+    // Show correct answer in green
     const correctLabel = document.getElementById(`opt-${i}-${correctAns}`);
-    if(correctLabel) correctLabel.classList.add('correct');
+    if (correctLabel) correctLabel.classList.add('correct');
     
     if (selected) {
       const val = parseInt(selected.value);
@@ -272,20 +224,21 @@ function submitQuiz() {
         document.getElementById(`opt-${i}-${val}`).classList.add('wrong');
       }
     }
+    // Disable inputs
     document.querySelectorAll(`input[name="q${i}"]`).forEach(input => input.disabled = true);
   });
   
   const total = questions.length;
   const negativeMarking = (wrongCount * 0.33).toFixed(2);
-  const finalScore = (correctCount - negativeMarking).toFixed(2);
-
+  
   document.getElementById('scoreDisplay').textContent = `${correctCount}/${total}`;
-  document.getElementById('negScore').textContent = `गलत उत्तर: ${wrongCount} | नेगेटिव अंक: -${negativeMarking}`;
+  document.getElementById('negScore').textContent = `गलत उत्तर: ${wrongCount} | नेगेटिव: -${negativeMarking}`;
   document.getElementById('resultPanel').style.display = 'block';
   document.getElementById('quizActions').style.display = 'none';
   
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
+  // Mark as completed
   let completed = JSON.parse(localStorage.getItem('completedQuizzes') || '[]');
   if (!completed.includes(quizData.id)) {
     completed.push(quizData.id);
@@ -293,9 +246,7 @@ function submitQuiz() {
   }
 }
 
-function goHome() { 
-  window.location.href = 'ldc-index.html'; 
-}
+function goHome() { window.location.href = 'ldc-index.html'; }
 
 loadQuiz();
 </script>
