@@ -60,15 +60,21 @@
 
     .q-text { font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; color: var(--text-main); }
 
-    /* Diagram Styling */
-    .q-image {
-      width: 100%;
-      max-width: 500px;
+    /* Diagram/Image Styling */
+    .diagram-container {
+      margin: 15px 0;
+      padding: 10px;
+      background: #fdfdfd;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      display: inline-block;
+      max-width: 100%;
+    }
+    
+    .diagram-container svg, .diagram-container img {
+      max-width: 100%;
       height: auto;
       display: block;
-      margin: 15px 0;
-      border-radius: 8px;
-      border: 1px solid var(--border);
     }
 
     .option {
@@ -166,12 +172,10 @@ async function loadQuiz() {
 
     if (data.questions && Array.isArray(data.questions)) {
       questions = data.questions;
-    } else if (Array.isArray(data)) {
-      questions = data;
-    } else if (data.record && data.record.questions) {
-      questions = data.record.questions;
     } else if (data.record && Array.isArray(data.record)) {
       questions = data.record; 
+    } else if (Array.isArray(data)) {
+      questions = data;
     }
 
     if (questions.length > 0) {
@@ -180,7 +184,7 @@ async function loadQuiz() {
       document.getElementById('loadingMessage').innerHTML = "❌ डेटा में कोई सवाल नहीं मिला।";
     }
   } catch(e) {
-    document.getElementById('loadingMessage').innerHTML = "❌ डेटा लोड करने में त्रुटि। इंटरनेट या URL चेक करें।";
+    document.getElementById('loadingMessage').innerHTML = "❌ डेटा लोड करने में त्रुटि।";
     console.error("Error:", e);
   }
 }
@@ -191,17 +195,24 @@ function renderQuiz() {
   const container = document.getElementById('questionsContainer');
   
   container.innerHTML = questions.map((q, i) => {
-    const qText = q.q || q.question || "Question Text Missing";
+    const qText = q.q || q.question || "";
     const qOpts = q.options || q.opts || [];
-    // डायग्राम/इमेज के लिए चेक करें
-    const qImg = q.image || q.img || null; 
+    const diagram = q.diagram || q.image || q.img || null; 
+
+    // चेक करें कि डायग्राम SVG है या इमेज URL
+    let diagramHTML = '';
+    if (diagram) {
+      if (diagram.includes('<svg')) {
+        diagramHTML = `<div class="diagram-container">${diagram}</div>`;
+      } else {
+        diagramHTML = `<div class="diagram-container"><img src="${diagram}" alt="Question Diagram"></div>`;
+      }
+    }
 
     return `
     <div class="q-card">
-      <div class="q-text">${i+1}. ${qText}</div>
-      
-      ${qImg ? `<img src="${qImg}" class="q-image" alt="Question Diagram">` : ''}
-      
+      <div class="q-text">${qText}</div>
+      ${diagramHTML}
       <div class="options-list">
         ${qOpts.map((opt, oi) => `
           <label class="option" id="opt-${i}-${oi}">
@@ -234,7 +245,8 @@ function submitQuiz() {
         correctCount++;
       } else {
         wrongCount++;
-        document.getElementById(`opt-${i}-${val}`).classList.add('wrong');
+        const wrongLabel = document.getElementById(`opt-${i}-${val}`);
+        if(wrongLabel) wrongLabel.classList.add('wrong');
       }
     }
     document.querySelectorAll(`input[name="q${i}"]`).forEach(input => input.disabled = true);
@@ -247,7 +259,6 @@ function submitQuiz() {
   document.getElementById('negScore').textContent = `गलत उत्तर: ${wrongCount} | नेगेटिव: -${negativeMarking}`;
   document.getElementById('resultPanel').style.display = 'block';
   document.getElementById('quizActions').style.display = 'none';
-  
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
   let completed = JSON.parse(localStorage.getItem('completedQuizzes') || '[]');
@@ -258,7 +269,6 @@ function submitQuiz() {
 }
 
 function goHome() { window.location.href = 'ldc-index.html'; }
-
 loadQuiz();
 </script>
 </body>
