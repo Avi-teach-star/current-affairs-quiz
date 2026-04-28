@@ -2,101 +2,431 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>LDC Test Series - Admin Panel</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    /* ... (स्टाइलिंग वही है जो पहले थी) ... */
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #1e5a9c;
+      --primary-dark: #0f2b4d;
+      --accent: #4f46e5;
+      --success: #15803d;
+      --danger: #dc2626;
+      --bg: #eef2ff;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --hover: #f1f5f9;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+      --shadow-lg: 0 20px 40px rgba(0,0,0,0.12);
+    }
+
     body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 50%, #f0f4ff 100%);
       min-height: 100vh;
-      color: #1e293b;
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
     }
+
+    /* ========== HEADER ========== */
     .app-header {
-      background: white; padding: 12px 24px; display: flex;
-      justify-content: space-between; align-items: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      background: linear-gradient(135deg, #0f2b4d, #1a4a7a);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 3px solid rgba(255,255,255,0.1);
     }
-    .logo h2 { font-size: 1.2rem; color: #4338ca; }
-    .logo span { font-size: 0.7rem; color: #64748b; }
+    .logo {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .logo h2 {
+      font-size: 1.4rem;
+      color: white;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo h2 span.emoji {
+      font-size: 1.6rem;
+    }
+    .logo span {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.7);
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
     .user-icon {
-      width: 40px; height: 40px; background: #f1f5f9; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
-      transition: 0.3s;
+      width: 44px;
+      height: 44px;
+      background: rgba(255,255,255,0.15);
+      border: 2px solid rgba(255,255,255,0.25);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: white;
+      backdrop-filter: blur(10px);
     }
-    .user-icon:hover { background: #4338ca; color: white; }
-    
-    .home-container { max-width: 600px; margin: 20px auto; padding: 0 15px; }
+    .user-icon:hover {
+      background: rgba(255,255,255,0.25);
+      border-color: rgba(255,255,255,0.5);
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(255,255,255,0.2);
+    }
+
+    /* ========== CONTAINER ========== */
+    .home-container {
+      max-width: 680px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    /* ========== WELCOME CARD ========== */
     .welcome-card {
-      background: white; border-radius: 16px; padding: 16px 20px;
-      margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      background: white;
+      border-radius: 24px;
+      padding: 24px 24px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
     }
+    .welcome-card::before {
+      content: '';
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, rgba(30,90,156,0.08), rgba(79,70,229,0.08));
+      border-radius: 50%;
+    }
+    .welcome-card h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 4px;
+      position: relative;
+    }
+    .welcome-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      position: relative;
+    }
+
+    /* ========== SECTION TITLE ========== */
     .section-title {
-      font-size: 1.1rem; font-weight: 600; margin: 20px 0 12px;
-      color: white; display: flex; align-items: center; justify-content: space-between;
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 28px 0 14px;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px;
     }
-    .section-title .count-badge {
-      font-size: 0.75rem; background: rgba(255,255,255,0.2);
-      padding: 2px 10px; border-radius: 12px;
+    .section-title span:first-child {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    
-    .quiz-list { display: flex; flex-direction: column; gap: 10px; }
+    .count-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: white;
+      color: var(--primary);
+      padding: 4px 12px;
+      border-radius: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ========== QUIZ LIST ========== */
+    .quiz-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
     .quiz-item {
-      background: white; border-radius: 12px; padding: 14px 16px;
-      display: flex; align-items: center; justify-content: space-between;
-      cursor: pointer; transition: transform 0.2s;
+      background: white;
+      border-radius: 16px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: var(--shadow-sm);
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
     }
-    .quiz-item:active { transform: scale(0.98); }
-    .quiz-info { display: flex; align-items: center; gap: 12px; flex: 1; }
+    .quiz-item:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .quiz-item:active {
+      transform: scale(0.98);
+      box-shadow: var(--shadow-sm);
+    }
+    .quiz-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: 1;
+      min-width: 0;
+    }
     .quiz-badge {
-      width: 36px; height: 36px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 0.85rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
-    .badge-p1 { background: #dbeafe; color: #1e40af; }
-    .badge-p2 { background: #dcfce7; color: #166534; }
-    .quiz-details h4 { font-size: 0.95rem; margin-bottom: 2px; color: #1e293b; }
-    .quiz-details p { font-size: 0.7rem; color: #64748b; }
-    
-    .quiz-actions { display: flex; align-items: center; gap: 12px; }
-    .delete-btn { background: none; border: none; color: #94a3b8; cursor: pointer; padding: 5px; }
-    .delete-btn:hover { color: #ef4444; }
-    
-    /* Modal Styles */
+    .badge-p1 {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      color: #1e40af;
+    }
+    .badge-p2 {
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      color: #166534;
+    }
+    .quiz-details {
+      min-width: 0;
+    }
+    .quiz-details h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .quiz-details p {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .quiz-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .completed-icon {
+      font-size: 1.1rem;
+      animation: popIn 0.3s ease;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0); }
+      80% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .delete-btn {
+      background: rgba(239,68,68,0.08);
+      border: 2px solid transparent;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+    .delete-btn:hover {
+      color: var(--danger);
+      background: rgba(239,68,68,0.12);
+      border-color: rgba(239,68,68,0.3);
+    }
+
+    .empty-state {
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 28px 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: 2px dashed var(--border);
+    }
+
+    /* ========== MODAL ========== */
     .modal-overlay {
-      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100;
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15,23,42,0.7);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
     .modal-card {
-      background: white; border-radius: 20px; padding: 24px;
-      width: 90%; max-width: 400px;
+      background: white;
+      border-radius: 24px;
+      padding: 28px 24px;
+      width: 92%;
+      max-width: 420px;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.3s ease;
     }
-    .input-group { margin-bottom: 16px; }
-    .input-group label { display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 500; }
-    .input-group input, .input-group select {
-      width: 100%; padding: 12px; border: 1px solid #e2e8f0;
-      border-radius: 10px; font-size: 0.9rem; outline: none;
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-card h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .input-group {
+      margin-bottom: 16px;
+    }
+    .input-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .input-group input,
+    .input-group select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.2s ease;
+      background: #fafbfc;
+      color: var(--text-main);
+    }
+    .input-group input:focus,
+    .input-group select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(30,90,156,0.1);
+      background: white;
+    }
+    .input-group input::placeholder {
+      color: #cbd5e1;
     }
     .btn {
-      width: 100%; padding: 12px; border: none; border-radius: 10px;
-      font-weight: 600; cursor: pointer; margin-top: 8px;
+      width: 100%;
+      padding: 13px 20px;
+      border: none;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-top: 8px;
+      font-family: inherit;
+      transition: all 0.2s ease;
+      letter-spacing: 0.3px;
     }
-    .btn-primary { background: #4338ca; color: white; }
-    .btn-secondary { background: #f1f5f9; color: #475569; }
-    .error-msg { color: #ef4444; font-size: 0.75rem; margin-top: 4px; display: none; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      box-shadow: 0 4px 12px rgba(30,90,156,0.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(30,90,156,0.4);
+    }
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+    .btn-secondary {
+      background: #f1f5f9;
+      color: var(--text-muted);
+      border: 2px solid var(--border);
+    }
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      color: var(--text-main);
+    }
+    .error-msg {
+      color: var(--danger);
+      font-size: 0.75rem;
+      margin-top: 6px;
+      display: none;
+      font-weight: 600;
+      animation: fadeIn 0.2s ease;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 480px) {
+      .app-header {
+        padding: 12px 16px;
+      }
+      .logo h2 {
+        font-size: 1.1rem;
+      }
+      .home-container {
+        padding: 0 12px;
+        margin: 16px auto;
+      }
+      .quiz-item {
+        padding: 12px 14px;
+      }
+      .quiz-badge {
+        width: 38px;
+        height: 38px;
+        font-size: 0.75rem;
+      }
+      .modal-card {
+        padding: 22px 18px;
+      }
+    }
   </style>
 </head>
 <body>
 
 <header class="app-header">
   <div class="logo">
-    <h2>📚 LDC Test Series</h2>
+    <h2><span class="emoji">📚</span> LDC Test Series</h2>
     <span>राजस्थान कर्मचारी चयन बोर्ड</span>
   </div>
-  <div class="user-icon" onclick="openLoginModal()">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <div class="user-icon" onclick="openLoginModal()" title="एडमिन लॉगिन">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
     </svg>
   </div>
@@ -104,48 +434,50 @@
 
 <div class="home-container">
   <div class="welcome-card">
-    <h3>नमस्ते, अभ्यर्थी! 👋</h3>
+    <h3>👋 नमस्ते, अभ्यर्थी!</h3>
     <p>अपनी तैयारी को परखने के लिए पेपर चुनें।</p>
   </div>
 
   <div class="section-title">
-    <span>📄 पेपर 1 (GK & Science)</span>
+    <span>📄 पेपर 1 <span style="font-weight:400;color:var(--text-muted);">(GK & Science)</span></span>
     <span class="count-badge" id="paper1Count">0</span>
   </div>
   <div id="paper1Quizzes" class="quiz-list"></div>
 
   <div class="section-title" style="margin-top: 24px;">
-    <span>📑 पेपर 2 (Hindi & English)</span>
+    <span>📑 पेपर 2 <span style="font-weight:400;color:var(--text-muted);">(Hindi & English)</span></span>
     <span class="count-badge" id="paper2Count">0</span>
   </div>
   <div id="paper2Quizzes" class="quiz-list"></div>
 </div>
 
+<!-- LOGIN / ADD QUIZ MODAL -->
 <div class="modal-overlay" id="loginModal">
   <div class="modal-card">
     <h3 id="modalTitle">🔐 एडमिन लॉगिन</h3>
+    
     <div id="loginSection">
       <div class="input-group">
-        <label>पिन (PIN)</label>
-        <input type="password" id="pinInput" placeholder="****" maxlength="4">
-        <div class="error-msg" id="pinError">गलत पिन! फिर से कोशिश करें।</div>
+        <label>सुरक्षा पिन (PIN)</label>
+        <input type="password" id="pinInput" placeholder="4 अंकों का पिन दर्ज करें" maxlength="4" inputmode="numeric">
+        <div class="error-msg" id="pinError">❌ गलत पिन! कृपया पुनः प्रयास करें।</div>
       </div>
     </div>
 
     <div id="addQuizForm" style="display: none;">
       <div class="input-group">
         <label>क्विज़ का नाम</label>
-        <input type="text" id="quizNameInput" placeholder="उदा: Mock Test 05">
+        <input type="text" id="quizNameInput" placeholder="उदाहरण: RPSC Mock Test 05">
       </div>
       <div class="input-group">
-        <label>JSON URL (डेटा लिंक)</label>
-        <input type="url" id="jsonUrlInput" placeholder="https://api.jsonbin.io/...">
+        <label>JSON डेटा URL</label>
+        <input type="url" id="jsonUrlInput" placeholder="https://api.jsonbin.io/v3/b/...">
       </div>
       <div class="input-group">
         <label>पेपर प्रकार</label>
         <select id="paperTypeSelect">
-          <option value="1">पेपर 1</option>
-          <option value="2">पेपर 2</option>
+          <option value="1">📄 पेपर 1 (GK & Science)</option>
+          <option value="2">📑 पेपर 2 (Hindi & English)</option>
         </select>
       </div>
     </div>
@@ -222,7 +554,7 @@ function renderHomePage() {
 function renderList(items, containerId) {
   const container = document.getElementById(containerId);
   if (items.length === 0) {
-    container.innerHTML = '<div style="color:white; opacity:0.7; text-align:center; padding:20px;">कोई पेपर उपलब्ध नहीं है।</div>';
+    container.innerHTML = '<div class="empty-state">📭 अभी तक कोई पेपर उपलब्ध नहीं है।<br><span style="font-size:0.7rem;">एडमिन पैनल से नया टेस्ट जोड़ें।</span></div>';
     return;
   }
   
@@ -236,8 +568,8 @@ function renderList(items, containerId) {
         </div>
       </div>
       <div class="quiz-actions">
-        ${completedQuizzes.includes(q.id) ? '<span>✅</span>' : ''}
-        ${!q.isDefault ? `<button class="delete-btn" onclick="deleteQuiz('${q.id}')">🗑️</button>` : ''}
+        ${completedQuizzes.includes(q.id) ? '<span class="completed-icon" title="पूर्ण हुआ">✅</span>' : ''}
+        ${!q.isDefault ? `<button class="delete-btn" onclick="event.stopPropagation(); deleteQuiz('${q.id}')" title="हटाएं">🗑️</button>` : ''}
       </div>
     </div>
   `).join('');
@@ -269,7 +601,7 @@ async function handleMainAction() {
     if (pinInput === ADMIN_PIN) {
       loginSection.style.display = 'none';
       document.getElementById('addQuizForm').style.display = 'block';
-      document.getElementById('mainActionBtn').textContent = 'प्लस (+) जोड़ें';
+      document.getElementById('mainActionBtn').textContent = '➕ टेस्ट जोड़ें';
       document.getElementById('modalTitle').textContent = '➕ नया टेस्ट जोड़ें';
     } else {
       document.getElementById('pinError').style.display = 'block';
@@ -282,7 +614,7 @@ async function handleMainAction() {
   const type = document.getElementById('paperTypeSelect').value;
 
   if (!name || !url) {
-    alert("कृपया नाम और URL दोनों भरें।");
+    alert("⚠️ कृपया क्विज़ का नाम और JSON URL दोनों भरें।");
     return;
   }
 
@@ -298,16 +630,16 @@ async function handleMainAction() {
   const success = await saveQuizzesOnline();
   
   if (success) {
-    alert("✅ क्लाउड पर सफलतापूर्वक सेव हुआ!");
+    alert("✅ टेस्ट सफलतापूर्वक क्लाउड पर सेव हो गया!");
     closeLoginModal();
     renderHomePage();
   } else {
-    alert("❌ क्लाउड सिंक फेल!");
+    alert("❌ क्लाउड सिंक विफल! कृपया इंटरनेट कनेक्शन जांचें।");
   }
 }
 
 async function deleteQuiz(id) {
-  if (!confirm("क्या आप वाकई इस टेस्ट को हटाना चाहते हैं?")) return;
+  if (!confirm("⚠️ क्या आप वाकई इस टेस्ट को स्थायी रूप से हटाना चाहते हैं?")) return;
   quizzes = quizzes.filter(q => q.id !== id);
   await saveQuizzesOnline();
   renderHomePage();
@@ -318,12 +650,11 @@ function startQuiz(id) {
   if (!quiz) return;
   
   if (quiz.isDefault) {
-    alert("यह एक डेमो आइटम है।");
+    alert("ℹ️ यह एक डेमो आइटम है। कृपया लाइव टेस्ट चुनें।");
     return;
   }
 
   sessionStorage.setItem('currentQuiz', JSON.stringify(quiz));
-  // लिंक अपडेटेड: ldc-quiz.html पर जाएगा
   window.location.href = 'ldc-quiz.html'; 
 }
 
