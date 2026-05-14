@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Affairs - April 2026</title>
+    <style>
+        :host, html, body { margin: 0 !important; padding: 0 !important; width: 100% !important; height: auto !important; overflow-x: hidden !important; }
+        .gk-notes-app {
+            --gkbg: #f8fafc; --gkcard: #ffffff; --gktext: #0f172a; --gktext2: #334155; --gktext3: #64748b;
+            --gkborder: #e2e8f0; --gkaccent: #1e5a9c; --gkaccent-light: #eff6ff; --gkgold: #b8860b;
+            --gkgold-light: #fef9c3; --gkshadow-sm: 0 1px 3px rgba(0,0,0,0.04); --gkshadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --gkradius-sm: 0.5rem; --gkradius-md: 0.75rem; --gkradius-lg: 1rem; --gkradius-xl: 1rem;
+            --gkradius-2xl: 1.5rem; --gktransition: all 0.25s ease;
+            font-family: 'Inter', 'Poppins', system-ui, -apple-system, sans-serif;
+            background: var(--gkbg); color: var(--gktext); max-width: 100%; margin: 0; padding: 16px 12px 24px;
+            transition: background 0.3s, color 0.3s; line-height: 1.75; -webkit-font-smoothing: antialiased; box-sizing: border-box;
+        }
+        .gk-notes-app.dark {
+            --gkbg: #0f172a; --gkcard: #1e293b; --gktext: #f1f5f9; --gktext2: #cbd5e1; --gktext3: #94a3b8;
+            --gkborder: #334155; --gkaccent: #60a5fa; --gkaccent-light: rgba(96,165,250,0.08);
+            --gkgold: #fbbf24; --gkgold-light: rgba(251,191,36,0.15);
+            --gkshadow-sm: 0 1px 3px rgba(0,0,0,0.15); --gkshadow-md: 0 4px 12px rgba(0,0,0,0.25);
+        }
+        .gk-notes-app * { box-sizing: border-box; margin: 0; padding: 0; }
+        .gk-header {
+            background: linear-gradient(135deg, #0f2b4d, #1a4a7a); color: white; border-radius: var(--gkradius-2xl);
+            padding: 24px 20px; margin-bottom: 14px; text-align: center; box-shadow: 0 10px 25px rgba(15,43,77,0.2);
+            position: relative; overflow: hidden;
+        }
+        .gk-header::before { content: ''; position: absolute; top: -35px; right: -35px; width: 110px; height: 110px; background: rgba(255,255,255,0.05); border-radius: 50%; pointer-events: none; }
+        .gk-header h2 { font-size: 1.25rem; font-weight: 800; color: white; position: relative; margin-bottom: 6px; line-height: 1.4; }
+        .gk-header .gk-date { font-size: 0.85rem; opacity: 0.9; position: relative; font-weight: 500; letter-spacing: 0.3px; }
+
+        /* 🔊 Speech Control Bar */
+        .gk-speech-controls {
+            background: var(--gkcard); border: 1px solid var(--gkborder); border-radius: var(--gkradius-lg);
+            padding: 12px 14px; margin-bottom: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+            box-shadow: var(--gkshadow-sm); transition: var(--gktransition); position: sticky; top: 10px; z-index: 20;
+        }
+        .gk-speech-btn {
+            background: var(--gkaccent); color: white; border: none; border-radius: var(--gkradius-sm);
+            padding: 8px 14px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: var(--gktransition);
+            display: inline-flex; align-items: center; gap: 5px; font-family: inherit; user-select: none;
+        }
+        .gk-speech-btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+        .gk-speech-btn:active:not(:disabled) { transform: translateY(0); }
+        .gk-speech-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+        .gk-speech-btn.pause-btn { background: #eab308; color: #0f172a; }
+        .gk-speech-btn.stop-btn { background: #ef4444; }        .gk-speech-status { font-size: 0.75rem; color: var(--gktext3); margin-left: auto; font-weight: 500; padding: 4px 8px; background: var(--gkbg); border-radius: var(--gkradius-sm); border: 1px solid var(--gkborder); min-width: 80px; text-align: center; }
+        
+        #voiceSelect { flex: 1; min-width: 120px; padding: 7px 10px; border-radius: var(--gkradius-sm); border: 1px solid var(--gkborder); background: var(--gkbg); color: var(--gktext); font-size: 0.8rem; }
+        .speed-control { display: flex; align-items: center; gap: 6px; background: var(--gkbg); padding: 5px 10px; border-radius: var(--gkradius-sm); border: 1px solid var(--gkborder); }
+        #speedRange { width: 60px; accent-color: var(--gkaccent); cursor: pointer; }
+        #speedLabel { font-size: 0.75rem; font-weight: 700; min-width: 30px; text-align: center; }
+
+        /* 🌟 Highlighting */
+        .gk-speaking {
+            background: var(--gkgold-light) !important; border-color: var(--gkgold) !important; box-shadow: 0 0 0 2px var(--gkgold-light) !important; transition: all 0.2s ease;
+        }
+        .gk-section { background: var(--gkcard); border: 1px solid var(--gkborder); border-radius: var(--gkradius-xl); padding: 16px 18px; margin-bottom: 14px; box-shadow: var(--gkshadow-sm); transition: var(--gktransition); }
+        .gk-section:hover { box-shadow: var(--gkshadow-md); border-color: var(--gkaccent); }
+        .gk-section-title { font-size: 0.9rem; font-weight: 700; color: var(--gkaccent); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--gkborder); display: flex; align-items: center; gap: 10px; line-height: 1.4; }
+        .gk-section-title::before { content: ''; width: 4px; height: 20px; background: var(--gkgold); border-radius: 2px; flex-shrink: 0; }
+        .gk-item { padding: 6px 0 6px 18px; position: relative; font-size: 0.85rem; line-height: 1.65; color: var(--gktext2); border-bottom: 1px solid var(--gkborder); text-align: justify; }
+        .gk-item:last-child { border-bottom: none; }
+        .gk-item::before { content: ''; position: absolute; left: 4px; top: 14px; width: 5px; height: 5px; background: var(--gkgold); border-radius: 50%; }
+        .gk-item strong { color: var(--gktext); font-weight: 650; display: inline-block; }
+        .gk-subsection { background: var(--gkaccent-light); border-left: 4px solid var(--gkaccent); border-radius: 0 var(--gkradius-md) var(--gkradius-md) 0; padding: 12px 16px; margin: 18px 0 10px; font-size: 0.95rem; font-weight: 700; color: var(--gkaccent); }
+        .gk-footer { text-align: center; padding: 20px 0 0; margin-top: 16px; border-top: 2px dashed var(--gkborder); font-size: 0.8rem; color: var(--gktext3); line-height: 1.7; }
+        @media (max-width: 480px) {
+            .gk-notes-app { padding: 12px 8px 20px; }
+            .gk-header { padding: 20px 14px; border-radius: var(--gkradius-xl); }
+            .gk-header h2 { font-size: 1.15rem; }
+            .gk-section { padding: 14px 14px; border-radius: var(--gkradius-lg); }
+            .gk-section-title { font-size: 0.85rem; }
+            .gk-item { font-size: 0.82rem; padding-left: 16px; }
+            .gk-speech-controls { padding: 10px; gap: 8px; }
+            .gk-speech-btn { padding: 7px 10px; font-size: 0.75rem; flex: 1; justify-content: center; }
+            #voiceSelect { min-width: 100%; order: 1; }
+            .speed-control { order: 2; flex: 1; justify-content: center; }
+            #btnPlay, #btnPause, #btnStop, #speechStatus { order: 3; }
+        }
+    </style>
+</head>
+<body>
+<div class="gk-notes-app" id="caPostRoot">
+    <div class="gk-header">
+        <h2>Current Affairs - April 2026</h2>
+        <div class="gk-date">National • International • Rajasthan | Avi Teach</div>
+    </div>
+
+    <!-- 🔊 Advanced Control Bar -->
+    <div class="gk-speech-controls" aria-label="Text to Speech Controls">
+        <select id="voiceSelect"><option value="">🎙️ लोड हो रहा है...</option></select>
+        <div class="speed-control">
+            <span id="speedLabel">0.9x</span>
+            <input type="range" id="speedRange" min="0.5" max="1.5" step="0.1" value="0.9">
+        </div>        <button id="btnPlay" class="gk-speech-btn" disabled>🔊 सुनें</button>
+        <button id="btnPause" class="gk-speech-btn pause-btn" disabled>⏸️ रोकें</button>
+        <button id="btnStop" class="gk-speech-btn stop-btn" disabled>⏹️ बंद करें</button>
+        <span id="speechStatus" class="gk-speech-status">वॉइस तैयार...</span>
+    </div>
+
+    <!-- NATIONAL & INTERNATIONAL -->
+    <div class="gk-subsection">🇮🇳 राष्ट्रीय एवं अंतर्राष्ट्रीय समसामयिकी</div>
+
+    <div class="gk-section"><div class="gk-section-title">1 April, 2026</div>
+        <div class="gk-item"><strong>राजा रवि वर्मा की पेंटिंग "यशोदा और कृष्ण" का नया रिकॉर्ड:</strong> 1 अप्रैल, 2026 को राजा रवि वर्मा की प्रसिद्ध पेंटिंग सोथबी की नीलामी में £167.20 करोड़ में बिकी, जो नीलामी में बिकने वाली दुनिया की सबसे महंगी भारतीय पेंटिंग है। इसे सीरम इंस्टीट्यूट ऑफ इंडिया के संस्थापक डॉ. साइरस एस. पूनावाला ने खरीदा। इससे पहले एम.एफ. हुसैन की 'United (Gram Yatra)' का ₹118 करोड़ का रिकॉर्ड टूटा।</div>
+    </div>
+
+    <div class="gk-section"><div class="gk-section-title">3 April, 2026</div>
+        <div class="gk-item"><strong>भारतीय मूल की लेखिका और अनुवादक पद्मा विश्वनाथन 2026 के इंटरनेशनल बुकर प्राइज की शॉर्टलिस्ट में:</strong> पद्मा विश्वनाथन ने ब्राजील की लेखिका एना पाउला माइया की पुस्तक 'ऑन अर्थ ऐज इट इज बिनीथ' का अंग्रेजी अनुवाद किया है। पुरस्कार राशि 52 लाख रुपये है, जो लेखक और अनुवादक में बराबर बांटी जाती है।</div>
+        <div class="gk-item"><strong>स्वदेशी बुलेट ट्रेन "बी-28" मार्च 2027 में तैयार होगी:</strong> BEML, बेंगलुरु में तैयार हो रही यह ट्रेन 280 किमी/घंटा की रफ्तार के लिए डिजाइन की गई है, हालांकि शुरुआती चरण में यह 250 किमी/घंटा से चलेगी। सूरत-वापी के बीच 97 किमी लंबे मार्ग पर शुरुआत होगी। मुंबई-अहमदाबाद बुलेट ट्रेन का हिस्सा है, जो अगस्त 2027 तक चालू करने की योजना है।</div>
+    </div>
+
+    <div class="gk-section"><div class="gk-section-title">7 April, 2026</div>
+        <div class="gk-item"><strong>अमेरिका की जेसिका पेगुला ने चार्ल्सटन ओपन टेनिस टूर्नामेंट का खिताब जीता:</strong> पेगुला ने फाइनल में यूलिया स्टारोडुबत्सेवा को 6-2, 6-2 से शिकस्त दी। यह लगातार दूसरा चैंपियनशिप और इस साल का दूसरा खिताब है।</div>
+        <div class="gk-item"><strong>मिसाइल डिजाइनर अलेक्जेंडर लियोनोव का निधन:</strong> 74 वर्ष की आयु में निधन। वे भारत-रूस के संयुक्त उपक्रम 'ब्रह्मोस एयरोस्पेस' के प्रमुख वैज्ञानिकों में से एक थे।</div>
+        <div class="gk-item"><strong>ऑस्ट्रियाई वैज्ञानिकों ने मानव बाल से भी पतला QR कोड तैयार किया:</strong> आकार: सिर्फ 1.977 वर्ग माइक्रोमीटर। इसे फोकस्ड आयन बीम तकनीक से बनाया गया। गिनीज वर्ल्ड रिकॉर्ड्स में शामिल।</div>
+    </div>
+
+    <div class="gk-section"><div class="gk-section-title">9 April, 2026</div>
+        <div class="gk-item"><strong>अमूल का सालाना कारोबार ₹1,00,000 करोड़ के पार:</strong> वित्त वर्ष 2025-26 में अमूल का कारोबार 11% बढ़कर एक लाख करोड़ रुपये रहा। टॉप 5 FMCG: अमूल (₹1L cr), HUL (₹63,672 cr), ITC (₹60,573 cr), पतंजलि (₹33,758 cr), इंडिया टी (₹22,016 cr)।</div>
+        <div class="gk-item"><strong>कोटा की अरुंधती  चौधरी ने एशियन बॉक्सिंग चैंपियनशिप में स्वर्ण पदक जीता:</strong> 9 अप्रैल को फाइनल में कजाकिस्तान की बॉक्सर बख्त सेईदीश को हराया। नवंबर 2025 में वर्ल्ड कप में भी स्वर्ण पदक जीतकर वर्ल्ड चैंपियन का खिताब अपने नाम किया था।</div>
+        <div class="gk-item"><strong>UN में भारत को 4 अहम जिम्मेदारियां + विश्व बैंक GDP अनुमान 6.6%:</strong> प्रीति सरन को CESCR में फिर से चुना गया। विश्व बैंक ने FY 2026-27 के लिए भारत की GDP वृद्धि अनुमान 6.3% से बढ़ाकर 6.6% कर दिया।</div>
+        <div class="gk-item"><strong>हिम सेतु अभियान + IRENA रैंकिंग + वैश्विक क्रिटिकल मिनरल्स रिपोर्ट 2026:</strong> भारतीय सेना ने 24 घंटे में 1405 लोगों को बचाया। IRENA के अनुसार भारत नवीकरणीय ऊर्जा में तीसरे स्थान पर (250.52 GW)। IEA रिपोर्ट: चीन के पास 49% (4.4 करोड़ टन) क्रिटिकल मिनरल्स भंडार, ब्राजील 23%, भारत 8%।</div>    </div>
+
+    <div class="gk-section"><div class="gk-section-title">10-12 April, 2026</div>
+        <div class="gk-item"><strong>ADB ने भारत की वृद्धि दर 6.9% अनुमानित की + दिनेश त्रिवेदी बांग्लादेश में नए उच्चायुक्त + कारगिल हीरो कर्नल सोनम वांगचुक का निधन (61 वर्ष)।</strong></div>
+        <div class="gk-item"><strong>11 अप्रैल: NASA के आर्टेमिस-2 मिशन से 4 अंतरिक्ष यात्री सुरक्षित लौटे:</strong> ओरियन कैप्सूल सैन डिएगो तट पर स्प्लैशडाउन हुआ। चंद्रमा से 4 लाख किमी दूर तक पहुंचे, 11.16 लाख किमी यात्रा की।</div>
+        <div class="gk-item"><strong>12 अप्रैल: आशा भोसले "आशा ताई" का निधन:</strong> 92 वर्ष की आयु में मुंबई में निधन। 20+ भाषाओं में 12,000+ गाने रिकॉर्ड किए। गिनीज बुक ऑफ वर्ल्ड रिकॉर्ड्स में नाम दर्ज।</div>
+    </div>
+
+    <div class="gk-section"><div class="gk-section-title">14-16 April, 2026</div>
+        <div class="gk-item"><strong>ऑस्ट्रेलिया की पहली महिला सेना प्रमुख बनीं सुजन कॉयल:</strong> जुलाई 2026 से पद संभालेंगी। वे अभी जॉइंट कैपेबिलिटीज की चीफ हैं।</div>
+        <div class="gk-item"><strong>ICC ने महिला टी-20 विश्वकप 2026 के लिए रिकॉर्ड ₹817 करोड़ प्राइज मनी घोषित की:</strong> विजेता को ₹218.35 करोड़, उपविजेता को ₹109 करोड़।</div>
+        <div class="gk-item"><strong>PM मोदी ने दिल्ली-देहरादून एक्सप्रेस-वे (210 किमी) का उद्घाटन किया:</strong> यात्रा समय 6 घंटे से घटकर ढाई घंटे। एशिया का सबसे लंबा 12 किमी ग्रीन एलिवेटेड वाइल्डलाइफ कॉरिडोर राजाजी टाइगर नेशनल पार्क के ऊपर से गुजरता है।</div>
+        <div class="gk-item"><strong>सम्राट चौधरी ने बिहार के 24वें मुख्यमंत्री के रूप में शपथ ली:</strong> राज्यपाल लेफ्टिनेंट जनरल सैयद अता हसनैन ने शपथ दिलाई। विजय कुमार चौधरी और विजेंद्र प्रसाद यादव ने डिप्टी सीएम पद की शपथ ली।</div>
+    </div>
+
+    <div class="gk-section"><div class="gk-section-title">17 April, 2026</div>
+        <div class="gk-item"><strong>नेपाल सरकार ने नेताओं की संपत्ति की जांच के लिए आयोग बनाने की घोषणा की:</strong> पूर्व सुप्रीम कोर्ट जज राजेंद्र कुमार भंडारी की अगुवाई में 5 सदस्यीय आयोग। 2006-2026 तक सत्ता में रहे नेताओं की संपत्ति जांच।</div>
+        <div class="gk-item"><strong>मध्यप्रदेश के रीवा जिले में देश का पहला निजी क्षेत्र का न्यूक्लियर पावर प्लांट:</strong> सिरमौर तहसील (क्वोंटी के पास) में टाटा एनर्जी बनाएगी। क्षमता: 220 MW (शुरुआती) → 1000 MW → 2400 MW। ₹28,000 करोड़ निवेश।</div>
+        <div class="gk-item"><strong>गृह मंत्रालय: देश पूरी तरह नक्सलमुक्त घोषित:</strong> 9 राज्यों के 38 जिलों को दो श्रेणियों में बांटा। "लिगेसी एंड इफेक्ट" (37 जिले), "डिस्ट्रिक्ट ऑफ कंसर्न" (पश्चिमी सिंहभूम)।</div>
+        <div class="gk-item"><strong>ऑस्ट्रियाई चांसलर डॉ. क्रिश्चियन स्टॉकर की भारत यात्रा:</strong> रक्षा, साइबर सुरक्षा संवाद, UPI-KFTC भुगतान, MSME एवं अंतरिक्ष सहयोग पर 15 समझौते।</div>
+    </div>
+    <div class="gk-section"><div class="gk-section-title">19-21 April, 2026</div>
+        <div class="gk-item"><strong>भारत-रूस रक्षा समझौता:</strong> एक-दूसरे की जमीन पर 3000 सैनिक, 10 फाइटर जेट, 5 युद्धपोत तैनात। 5 साल वैध।</div>
+        <div class="gk-item"><strong>बेंगलुरु बना चीतों का नया घर:</strong> दक्षिण अफ्रीका से 4 चीते बैनरघट्टा जैविक पार्क में 30 दिन क्वारंटीन में।</div>
+        <div class="gk-item"><strong>देश का पहला पेट्रोग्लिफ संरक्षण पार्क लद्दाख में:</strong> सिंधु/जांस्कर नदी किनारे 400+ स्थल। ASI और राज्य विभाग के बीच MOU। उद्देश्य: जलवायु/मानवीय क्षरण से संरक्षण।</div>
+        <div class="gk-item"><strong>गोवा की साध्वी सतीश सैल फेमिना मिस इंडिया-2026 चुनी गईं:</strong> भुवनेश्वर में। राजनंदिनी पवार (फर्स्ट रनर-अप), अद्वैता (सेकंड रनर-अप)।</div>
+        <div class="gk-item"><strong>DSC A-23 (यार्ड 328) नौसेना में शामिल + पहली उन्नत 3D सेमीकंडक्टर यूनिट (ओडिशा):</strong> DSC चौथा जहाज (मेसर्स टीटागढ़ नेवल द्वारा स्वदेशी)। 3D यूनिट: 70,000 ग्लास पैनल, 50M असेम्बल यूनिट/वर्ष। HIPSPL द्वारा स्थापित।</div>
+        <div class="gk-item"><strong>भारत-दक्षिण कोरिया के बीच 14 MoU पर हस्ताक्षर:</strong> द्विपक्षीय व्यापार 2030 तक $50B लक्ष्य। UPI-KFTC लिंकेज, कोरियाई इंडस्ट्रियल टाउनशिप, 2028 में 'मैत्री उत्सव'।</div>
+    </div>
+
+    <div class="gk-section"><div class="gk-section-title">22-25 April, 2026</div>
+        <div class="gk-item"><strong>शेखा झील पक्षी अभयारण्य (अलीगढ़) भारत का 99वां रामसर स्थल घोषित।</strong></div>
+        <div class="gk-item"><strong>थल सेना प्रमुख जनरल उपेंद्र द्विवेदी US आर्मी वॉर कॉलेज के "इंटरनेशनल हॉल ऑफ फेम" में शामिल।</strong></div>
+        <div class="gk-item"><strong>टाइम्स हायर एजुकेशन एशिया रैंकिंग 2026:</strong> भारत के 128 संस्थान सूची में (एशिया में पहले स्थान पर)। टॉप-10 में चीन का दबदबा। IISc बेंगलुरु (43वां)।</div>
+        <div class="gk-item"><strong>RBI ने पेटीएम पेमेंट बैंक लिमिटेड का लाइसेंस रद्द किया:</strong> ऑडिट रिपोर्ट में बैंकिंग विनियमण अधिनियम, 1949 के नियमों की अनदेखी के आधार पर।</div>
+    </div>
+
+    <div class="gk-section"><div class="gk-section-title">26-28 April, 2026</div>
+        <div class="gk-item"><strong>नीति आयोग नेतृत्व में फेरबदल:</strong> अशोक लाहिड़ी (उपाध्यक्ष), अभय करंदीकर, के.वी. राजू, गोवर्धनदास, डॉ. एम. श्रीनिवास (पूर्णकालिक सदस्य)।</div>
+        <div class="gk-item"><strong>WHO ने पहली बार नवजात/छोटे बच्चों के लिए मलेरिया उपचार (आर्टेमेथर-ल्यूमेफैंट्रिन) को मंजूरी दी।</strong></div>
+        <div class="gk-item"><strong>स्काईरूट एयरोस्पेस ने देश का पहला कक्षीय रॉकेट 'विक्रम-1' तैयार किया:</strong> हैदराबाद में डिजाइन/विकास। CM ए. रेवंत रेड्डी ने श्रीहरिकोटा के लिए रवाना किया।</div>
+        <div class="gk-item"><strong>हिमाचल हाईकोर्ट ने सरकारी कर्मी भर्ती एवं सेवा शर्तें एक्ट-2024 रद्द किया + फोटो पत्रकारिता के जनक रघु राय (83) का निधन।</strong></div>
+        <div class="gk-item"><strong>SIPRI रिपोर्ट 2025:</strong> विश्व सैन्य खर्च $2.887 ट्रिलियन। शीर्ष-5: अमेरिका, चीन, रूस, जर्मनी, भारत ($92.1B, 3.2%)।</div>
+        <div class="gk-item"><strong>लद्दाख में 5 नए जिले (अब कुल 7):</strong> जांस्कर, द्रास, शाम, नुब्रा, चांगथांग। DGCA ने स्काईकिंग एविएशन को पहली सीप्लेन एयरलाइन लाइसेंस दिया। ऑयल इंडिया ने लीबिया (घडामेस बेसिन) में तेल/गैस भंडार खोजा।</div>
+        <div class="gk-item"><strong>भारत-न्यूजीलैंड ऐतिहासिक FTA पर हस्ताक्षर:</strong> NZ में भारत का 100% निर्यात ड्यूटी-फ्री। 15 साल में $20B FDI अपेक्षित। हर साल 5000 भारतीय पेशेवरों को वर्क वीजा। AAP के 7 बागी सांसदों का भाजपा में विलय (राघव चड्ढा, हरभजन सिंह आदि)।</div>
+    </div>
+
+    <div class="gk-section"><div class="gk-section-title">29-30 April, 2026</div>
+        <div class="gk-item"><strong>PM मोदी ने मेरठ-प्रयागराज गंगा एक्सप्रेस-वे (594 किमी) का लोकार्पण किया:</strong> 6 लेन (8 तक विस्तार योग्य), 120 किमी/घंटा। 12 जिले, 18 फ्लाईओवर, 381 अंडरपास, हरदोई में 3.5 किमी एयरस्ट्रिप। समय 12→6 घंटे।</div>        <div class="gk-item"><strong>NSO स्वास्थ्य सर्वेक्षण 2026:</strong> अस्पताल औसत जेब खर्च ₹11,285, सरकारी अस्पतालों में ₹1,100। FDSI/FDI पहलों ने बड़ी भूमिका निभाई।</div>
+        <div class="gk-item"><strong>फिलीपींस 'पैक्स सिलिका' का 13वां सदस्य बना + धोलेरा SEZ में भारत का पहला चिप संयंत्र:</strong> टाटा सेमीकंडक्टर द्वारा ₹91,000 करोड़ निवेश, 21,000 रोजगार।</div>
+        <div class="gk-item"><strong>IMF ग्लोबल GDP रैंकिंग 2025-26:</strong> भारत फिसलकर छठे स्थान ($4.15T)। शीर्ष: अमेरिका ($32.38T), चीन ($20.85T), जर्मनी, जापान, UK।</div>
+        <div class="gk-item"><strong>2025-26 में चीन बना भारत का सबसे बड़ा व्यापारिक साझेदार:</strong> कुल व्यापार $151B। व्यापार घाटा $112.16B। आयात 16% बढ़ा, निर्यात 36.66% बढ़ा।</div>
+        <div class="gk-item"><strong>मथुरा-नागदा तीसरी व चौथी रेल लाइन 'विशेष रेल परियोजना' घोषित:</strong> 568 किमी लंबाई। राजस्थान के कोटा और भरतपुर जिलों से होकर गुजरेगी।</div>
+    </div>
+
+    <!-- RAJASTHAN CURRENT AFFAIRS -->
+    <div class="gk-subsection">🏰 राजस्थान समसामयिकी</div>
+
+    <div class="gk-section"><div class="gk-section-title">1-4 April, 2026</div>
+        <div class="gk-item"><strong>तार बंदी योजना संशोधन:</strong> अब 0.5 हेक्टेयर भूमि होने पर भी अनुदान मिलेगा। सामूहिक प्रस्ताव (न्यूनतम 10 किसान, 5 हेक्टेयर) पर प्रति किसान अधिकतम 400 मीटर/₹40,000 तक सहायता।</div>
+        <div class="gk-item"><strong>केंद्र प्रायोजित योजनाओं में अनुदान:</strong> FY 2025-26, मार्च माह में केंद्र ने राज्य को ₹19,236.9 करोड़ उपलब्ध कराए। स्वास्थ्य, ग्रामीण विकास, शिक्षा आदि के लिए।</div>
+        <div class="gk-item"><strong>खेलो इंडिया ट्राइबल गेम्स 2026 में राजस्थान ने 5 पदक जीते:</strong> रायपुर, जगदलपुर, सरगुजा (छत्तीसगढ़) में आयोजित। 3 रजत, 2 कांस्य। पदक तालिका में 22वां स्थान।</div>
+    </div>
+
+    <div class="gk-section"><div class="gk-section-title">6-9 April, 2026</div>
+        <div class="gk-item"><strong>ग्राम पंचायतों पर 1800 अटल ज्ञान केन्द्रों की स्थापना:</strong> प्रेरकों के माध्यम से युवाओं को रोजगारपरक प्रशिक्षण। ई-पुस्तकालय सुविधा। राज्य बजट 2026-27 में 1000 अतिरिक्त केन्द्रों की घोषणा। प्रत्येक में एक प्रशिक्षित 'अटल प्रेरक'।</div>
+        <div class="gk-item"><strong>लाडो प्रोत्साहन योजना:</strong> बालिका जन्म से 21 वर्ष तक ₹1.5 लाख। 7 किश्तों में: ₹2500 (जन्म), ₹2500 (1 yr/टीकाकरण), ₹4000 (1st), ₹5000 (6th), ₹11000 (10th), ₹25000 (12th), ₹1L (स्नातक/21 yrs)।</div>
+        <div class="gk-item"><strong>जयपुर मेट्रो फेज-2 को केंद्र सरकार से मंजूरी:</strong> ₹13,038 करोड़। प्रहलादपुरा से टोंक रोड तक 41 किमी उत्तर-दक्षिण कोरिडोर। सितंबर 2031 तक लक्ष्य।</div>
+        <div class="gk-item"><strong>HPCL राजस्थान रिफाइनरी लिमिटेड (HRRL) विस्तार:</strong> लागत ₹43,129 cr से बढ़ाकर ₹79,459 cr। 9 MMTPA ग्रीनफील्ड रिफाइनरी-सह-पेट्रोकेमिकल। पेट्रोकेमिकल क्षमता 2.4 MMTPA। देश की पहली ऐसी रिफाइनरी जहां दोनों एक साथ। HPCL कुल इक्विटी निवेश ₹1,16,000 cr।</div>
+    </div>
+    <div class="gk-section"><div class="gk-section-title">10-12 April, 2026</div>
+        <div class="gk-item"><strong>CM ने पुलिस मुख्यालय से 42 महिला पीसीआर वैन को हरी झंडी दिखाई:</strong> महिला सुरक्षा हेतु 24/7 सहायता। अभय कमांड सेंटर (डायल 112 तर्ज) से जुड़ी। MDT, GPS, फोल्डिंग स्ट्रेचर, LED लाइट बार से सुसज्जित।</div>
+        <div class="gk-item"><strong>पोकरण फील्ड फायरिंग रेंज में 'ब्रह्मास्त्र' युद्धाभ्यास:</strong> भारतीय सेना दक्षिणी कमान द्वारा। जमीन-हवा रियल टाइम डेटा शेयरिंग/समन्वय परीक्षण। अपाचे हेलीकॉप्टर, हेलफायर मिसाइल, ड्रोन किलर सिस्टम शामिल।</div>
+        <div class="gk-item"><strong>कृषि राजस्थान एग्रीटेक मीट (ग्राम 2026) रोडमैप जारी:</strong> 23-25 मई 2026। नवीनतम खेती तरीके, वैश्विक प्रणालियां, इन्वेस्टर्स/किसानों के लिए प्लेटफॉर्म।</div>
+    </div>
+
+    <div class="gk-section"><div class="gk-section-title">15-17 April, 2026</div>
+        <div class="gk-item"><strong>200 अंबेडकर ई-लाइब्रेरी + ई-नाम रैंकिंग संशोधित:</strong> शहरों/कस्बों में लाइब्रेरी। ई-नाम पर राजस्थान प्रथम (Trade), द्वितीय (Arrivals), चतुर्थ (e-payment: 44,711 लेन-देन, ₹505 cr+)।</div>
+        <div class="gk-item"><strong>राज्य में "प्रोजेक्ट करकल" का शुभारंभ:</strong> 15 अप्रैल को रणथंभौर टाइगर रिजर्व में। वन विभाग, WII, SACON, टाइगर वॉच के सहयोग से। दुर्लभ जंगली बिल्ली संरक्षण हेतु।</div>
+        <div class="gk-item"><strong>राजस्थान पुलिस 77वां स्थापना दिवस:</strong> प्रशिक्षण संस्थानों में 100 क्षमता वाले 5 बैरक। पुलिस कर्मिक कल्याण फंड में ₹5 cr अतिरिक्त। 500 आवास निर्माण (प्रथम चरण)।</div>
+    </div>
+
+    <div class="gk-section"><div class="gk-section-title">22-26 April, 2026</div>
+        <div class="gk-item"><strong>ग्लोबल सोलर में राजस्थान तीसरे स्थान पर (2090 MW):</strong> 2,45,317 संयंत्र। 1,43,965 उपभोक्ताओं का बिल शून्य। 32,000+ उपभोक्ताओं ने 10 kW+ स्थापित किए। PM सूर्य घर: 686 MW, 1.77 लाख संयंत्र।</div>
+        <div class="gk-item"><strong>43वीं सारस गणना (घना राष्ट्रीय उद्यान):</strong> 2026 में 22 सारस (2025 में 14)। भरतपुर/डीग आर्द्रभूमि में संख्या 79→81।</div>
+        <div class="gk-item"><strong>मॉस्को स्टासवूषू चैम्पियनशिप (रूस):</strong> श्रीगंगानगर के शिव ने 60 किग्रा में स्वर्ण, अजमेर (केकड़ी) के धीरज चौधरी ने 100 किग्रा में रजत।</div>
+        <div class="gk-item"><strong>इंडिया जस्टिस रिपोर्ट 2025-26:</strong> उपभोक्ता संरक्षण में राजस्थान बड़े राज्यों में तीसरा स्थान। 11 मापदंडों पर बेहतर प्रदर्शन। लिखित परीक्षा से सदस्य भर्ती, नए भवन निर्माण।</div>
+        <div class="gk-item"><strong>राज्यीय सहकारी मसाला मेला-2026 जयपुर में संपन्न:</strong> 10 दिवसीय। रिकॉर्ड ₹5.5 करोड़ बिक्री।</div>
+    </div>
+
+    <div class="gk-section"><div class="gk-section-title">28-30 April, 2026</div>
+        <div class="gk-item"><strong>तरल नाइट्रोजन परिवहन वाहनों का वितरण (6 जिले):</strong> अलवर, खैरथल-तिजारा, कोटपूतली-बहरोड़, सलूम्बर, फलौदी, जैसलमेर। राष्ट्रीय गोकुल मिशन के तहत। कृत्रिम गर्भाधान हेतु आवश्यक।</div>
+        <div class="gk-item"><strong>PM कुसुम योजना: 4000 MW क्षमता लक्ष्य पूरा:</strong> 1808 संयंत्र। कंपोनेंट-A में सर्वोच्च, C में तीसरा। 2.62 लाख किसानों को दिन में बिजली। पहले 48 माह में 1000 MW, अगले 1000 MW 5 माह, 3000 MW 4 माह, 4000 MW ढाई माह में। कुसुम-A/C में 10.7 GW स्वीकृत। DISCOM ने 6700 MW अक्टूबर 2026 लक्ष्य निर्धारित। जयपुर (ताला) में 4.9 MW सबसे बड़ा संयंत्र।</div>
+        <div class="gk-item"><strong>निर्भया फंड के अंतर्गत कोटा देश के 10 "समावेशी शहरों" में शामिल:</strong> प्रति शहर ₹10 करोड़। AI कैमरा, ई-रिक्शा, महिला पुलिस गश्त, सुरक्षित प्रतीक्षालय। अन्य 9 शहर: धार, डिब्रूगढ़, कोयम्बटूर, मंडी, मेहसाणा, मुलुगु, संभलपुर, श्रीकाकुलम, वाराणसी।</div>
+        <div class="gk-item"><strong>जयपुर की 7 वर्षीय श्रेयांशी जैन ने FIDE वर्ल्ड कैडेट्स 2026 में स्वर्ण/कांस्य जीता:</strong> सर्बिया में। अंडर-8 बालिका 'ब्लिट्ज सॉल्विंग' में 12 में से 7 पहेलियां सटीक हल कीं।</div>
+        <div class="gk-item"><strong>मारवाड़ रत्न पुरस्कार 2026 घोषणा:</strong> पद्मभूषण कोमल कोठारी सम्मान: प्रो. जॉन डी स्मिथ | महाराजा उम्मेदसिंह: पद्मश्री श्यामसुंदर पालीवाल | गजसिंह (द्वितीय): झीमा देवी (बाड़मेर)। 12 मई को वितरण।</div>
+        <div class="gk-item"><strong>भव्या योजना के तहत 5 जिलों में औद्योगिक हब:</strong> बालोतरा, जयपुर, जोधपुर, कोटा, दौसा। 'बिल्डिंग हाई इम्पैक्ट वैल्यू एडेड फॉर एक्सीलरेटेड डेवलपमेंट'। DPIIT मार्गदर्शन, NIDC संचालन। दो चरणों में 100 क्षेत्र चयन।</div>        <div class="gk-item"><strong>16वीं विधानसभा समितियां गठित (2026-27):</strong> PAC: ठीकाराम जूली | प्राक्कलन-क: संदीप शर्मा | प्राक्कलन-ख: बाबू सिंह राठौड़ | राजकीय उपक्रम: कालीचरण सराफ | महिला/बाल कल्याण: कल्पना देवी | एससी: रमेश खींची | एसटी: फूलसिंह मीणा | अन्य समितियों के सभापति निर्धारित। कार्यकाल 31 मार्च 2027 तक।</div>
+        <div class="gk-item"><strong>जैसलमेर में प्राकृतिक रूप से गोडावण के चूजों का जन्म:</strong> गोडावण ब्रीडिंग सेंटर में 3 चूजे प्राकृतिक तरीके से। कुल 11 चूजे (3 प्राकृतिक + 8 AI)। NCR संरक्षण कार्यक्रम के तहत।</div>
+    </div>
+
+    <div class="gk-footer">
+        AVI TEACH | मासिक सार संकलन | अप्रैल 2026<br />
+        @Aviteach-current-affairs
+    </div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+    const APP_ID = 'caPostRoot';
+    const THEME_KEY = 'aviteach-theme';
+    const synth = window.speechSynthesis;
+    
+    // UI Elements
+    const btnPlay = document.getElementById('btnPlay');
+    const btnPause = document.getElementById('btnPause');
+    const btnStop = document.getElementById('btnStop');
+    const statusEl = document.getElementById('speechStatus');
+    const voiceSelect = document.getElementById('voiceSelect');
+    const speedRange = document.getElementById('speedRange');    const speedLabel = document.getElementById('speedLabel');
+
+    // State
+    let speechSegments = [];
+    let currentIdx = 0;
+    let isPaused = false, isStopped = false;
+    let currentRate = 0.9;
+    let activeUtterance = null;
+
+    function updateStatus(msg) { statusEl.textContent = msg; }
+    function setButtons(play, pause, stop) { btnPlay.disabled = play; btnPause.disabled = pause; btnStop.disabled = stop; }
+    function clearHighlights() { document.querySelectorAll('.gk-speaking').forEach(el => el.classList.remove('gk-speaking')); }
+    function highlight(el) { clearHighlights(); if(el) el.classList.add('gk-speaking'); }
+
+    // 1. Load ONLY Hindi Voices (Natural/Neural prioritized)
+    function loadHindiVoices() {
+        if (!synth) return;
+        const voices = synth.getVoices();
+        const hindi = voices.filter(v => v.lang && v.lang.startsWith('hi'));
+        
+        voiceSelect.innerHTML = '<option value="">🎙️ सिस्टम डिफॉल्ट</option>';
+        if (hindi.length === 0) {
+            voiceSelect.innerHTML += '<option disabled>⚠️ डिवाइस में हिंदी वॉइस नहीं है (Settings > Language > Hindi Add करें)</option>';
+            updateStatus('⚠️ हिंदी वॉइस नहीं मिली');
+            return;
+        }
+
+        // Sort: Google/Microsoft/Apple (Natural) first, then others
+        const sorted = hindi.sort((a, b) => {
+            const aNatural = /google|microsoft|apple|samsung|neural|natural/i.test(a.name);
+            const bNatural = /google|microsoft|apple|samsung|neural|natural/i.test(b.name);
+            return bNatural - aNatural;
+        });
+
+        sorted.forEach(v => {
+            const opt = document.createElement('option');
+            opt.value = voices.indexOf(v); // Store original index
+            const tag = v.localService ? '📱 ऑफलाइन' : '🌐 क्लाउड';
+            opt.textContent = `${tag} | ${v.name}`;
+            voiceSelect.appendChild(opt);
+        });
+        updateStatus('✅ हिंदी वॉइस तैयार');
+        setButtons(false, true, true);
+    }
+
+    if (synth) {
+        loadHindiVoices();
+        if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = loadHindiVoices;
+        setTimeout(loadHindiVoices, 600); setTimeout(loadHindiVoices, 1500);
+    }
+    // 2. Speed Control
+    speedRange.addEventListener('input', () => {
+        currentRate = parseFloat(speedRange.value);
+        speedLabel.textContent = currentRate.toFixed(1) + 'x';
+        if (activeUtterance) activeUtterance.rate = currentRate;
+    });
+
+    // 3. Prepare Segments (Reads .gk-subsection + its inner .gk-section content)
+    function prepareSegments() {
+        clearHighlights();
+        const root = document.getElementById('caPostRoot');
+        const targets = root.querySelectorAll('.gk-subsection, .gk-section');
+        speechSegments = [];
+        
+        targets.forEach(el => {
+            let t = el.innerText.trim();
+            if (!t) return;
+            
+            // Add natural pause markers
+            if (el.classList.contains('gk-subsection')) t += '. ';
+            else if (el.classList.contains('gk-section-title')) t = 'अगली तारीख: ' + t + '. ';
+            else if (el.classList.contains('gk-item')) {
+                if (!/[।.!?\n]$/.test(t)) t += '। ';
+            }
+            speechSegments.push({ el, text: t.replace(/\s+/g, ' ') });
+        });
+    }
+
+    // 4. Zero-Delay Playback Engine
+    function playNext(index) {
+        if (isStopped || index >= speechSegments.length) {
+            if (!isStopped) updateStatus('✅ पूरा हो गया');
+            resetState(); return;
+        }
+        if (isPaused) return;
+
+        const seg = speechSegments[index];
+        const utt = new SpeechSynthesisUtterance(seg.text);
+        utt.lang = 'hi-IN'; utt.rate = currentRate; utt.pitch = 1.0; utt.volume = 1.0;
+        activeUtterance = utt;
+
+        // Apply selected Hindi voice
+        const vIdx = voiceSelect.value;
+        if (vIdx !== "") utt.voice = synth.getVoices()[parseInt(vIdx)];
+
+        // Sync Highlight
+        utt.onstart = () => highlight(seg.el);
+        utt.onend = () => {
+            if (!isPaused && !isStopped) {                currentIdx = index + 1;
+                // 10ms chain gap: prevents mobile buffer crash, feels like 0 delay
+                setTimeout(() => playNext(currentIdx), 10);
+            }
+        };
+        utt.onerror = (e) => {
+            if (!isPaused && !isStopped) {
+                console.warn('Chunk Error:', e.error);
+                currentIdx = index + 1;
+                setTimeout(() => playNext(currentIdx), 20);
+            }
+        };
+
+        updateStatus(`🔊 (${index + 1}/${speechSegments.length})`);
+        try { synth.speak(utt); } catch(err) {
+            currentIdx = index + 1;
+            setTimeout(() => playNext(currentIdx), 50);
+        }
+    }
+
+    function resetState() {
+        isPaused = false; isStopped = false; currentIdx = 0; activeUtterance = null;
+        setButtons(false, true, true); clearHighlights();
+    }
+
+    // 5. Controls
+    btnPlay.addEventListener('click', () => {
+        if (!synth) { updateStatus('⚠️ ब्राउज़र सपोर्ट नहीं करता'); return; }
+        if (isPaused && synth.speaking) {
+            synth.resume(); isPaused = false;
+            updateStatus('🔊 पढ़ रहा है...'); setButtons(true, false, false); return;
+        }
+        synth.cancel(); isStopped = false; isPaused = false;
+        prepareSegments(); currentIdx = 0;
+        playNext(0); setButtons(true, false, false); updateStatus('🔊 शुरू हो रहा है...');
+    });
+
+    btnPause.addEventListener('click', () => {
+        if (synth.speaking && !isPaused) {
+            synth.pause(); isPaused = true; updateStatus('⏸️ रोका गया'); setButtons(true, false, false);
+        }
+    });
+
+    btnStop.addEventListener('click', () => {
+        synth.cancel(); isStopped = true; isPaused = false;
+        updateStatus('⏹️ बंद किया गया'); resetState();
+    });
+
+    // 6. Theme & Init
+    function getAppElement() { return document.getElementById(APP_ID); }    function isDarkModeEnabled() {
+        try { if (window.parent && window.parent !== window && window.parent.document) {
+            const p = window.parent.document.documentElement.classList.contains('dark') || window.parent.document.body.classList.contains('dark');
+            if (p) return true;
+        }} catch(e) {}
+        try { const s = localStorage.getItem(THEME_KEY); if (s) return s === 'dark'; } catch(e) {}
+        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    function applyTheme(isDark) { const a = getAppElement(); if(!a) return; a.classList.toggle('dark', isDark); a.classList.add('gk-notes-app'); }
+    function syncTheme() { applyTheme(isDarkModeEnabled()); }
+    function requestParentTheme() { if (window.parent && window.parent !== window) window.parent.postMessage({ type: 'GK_THEME_REQUEST', source: 'iframe' }, '*'); }
+    function sendThemeToParent(isDark) { if (window.parent && window.parent !== window) window.parent.postMessage({ type: 'GK_THEME_UPDATE', isDark: isDark, source: 'iframe' }, '*'); }
+    window.addEventListener('message', function(e) {
+        const d = e.data || {};
+        if (d.type === 'GK_THEME_UPDATE' && d.source !== 'iframe') { applyTheme(!!d.isDark); return; }
+        if (d.type === 'GK_THEME_REQUEST' && d.source !== 'iframe') { sendThemeToParent(document.getElementById(APP_ID)?.classList.contains('dark')); return; }
+    }, false);
+
+    function init() {
+        syncTheme();
+        if (window.matchMedia) { const m = window.matchMedia('(prefers-color-scheme: dark)'); m.addEventListener ? m.addEventListener('change', syncTheme) : m.addListener(syncTheme); }
+        if (window.parent && window.parent !== window) requestParentTheme();
+        window.gkRefreshTheme = syncTheme;
+        window.gkSetTheme = function(isDark) { applyTheme(isDark); try { localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light'); } catch(e) {} sendThemeToParent(isDark); };
+    }
+    document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
+    [100,300,1000].forEach(d => setTimeout(() => { if(window.parent && window.parent !== window) requestParentTheme(); }, d));
+})();
+</script>
+</body>
+</html>
